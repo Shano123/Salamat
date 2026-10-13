@@ -1,0 +1,575 @@
+// Salamat — Attendance & Department Shift Roster
+// Core data model (see PRD "Core data model").
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  HR_ADMIN
+  HR_VIEWER
+  DEPT_MANAGER
+  LINE_MANAGER
+  EMPLOYEE
+}
+
+enum DepartmentKind {
+  CLINICAL
+  CLINICAL_SUPPORT
+  NON_CLINICAL
+}
+
+enum DepartmentLevel {
+  DEPARTMENT
+  SUB_DEPARTMENT
+  TEAM
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ClockMethod {
+  FINGERPRINT
+  MOBILE
+  BOTH
+}
+
+enum ShiftType {
+  FIXED
+  SPLIT
+  FLEXIBLE
+  ON_CALL
+  OFF
+}
+
+enum TemplateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DISABLED
+}
+
+enum RosterStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PunchType {
+  IN
+  OUT
+  BREAK_START
+  BREAK_END
+}
+
+enum PunchSource {
+  MOBILE
+  KIOSK
+  DEVICE
+  EXCEL_IMPORT
+  CORRECTION
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  EARLY_LEAVE
+  LATE_AND_EARLY
+  ABSENT
+  ON_LEAVE
+  OFF_DAY
+  HOLIDAY
+  MISSING_PUNCH
+  SCHEDULED
+  ON_CALL
+}
+
+enum RequestType {
+  SWAP
+  LEAVE
+  CORRECTION
+  OVERTIME
+  SHIFT_CHANGE
+}
+
+enum RequestStatus {
+  PENDING_PEER
+  PENDING_L1
+  PENDING_L2
+  PENDING_HR
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PeriodStatus {
+  OPEN
+  LOCKED
+}
+
+enum ImportStatus {
+  DRAFT
+  APPLIED
+  UNDONE
+}
+
+model CompanyRules {
+  id                        Int      @id @default(1)
+  maxDailyHours             Float    @default(8)
+  maxWeeklyHours            Float    @default(48)
+  ramadanMaxDailyHours      Float    @default(6)
+  ramadanMaxWeeklyHours     Float    @default(36)
+  ramadanStart              DateTime? @db.Date
+  ramadanEnd                DateTime? @db.Date
+  minRestHours              Float    @default(11)
+  minBreakMinutes           Int      @default(30)
+  breakRequiredAfterHours   Float    @default(6)
+  graceMinutes              Int      @default(10)
+  overtimeRatePercent       Int      @default(150)
+  correctionWindowDays      Int      @default(7)
+  publishDeadlineDays       Int      @default(7)
+  roundingMinutes           Int      @default(0)
+  missedClockInAlertMinutes Int      @default(15)
+  editNoticeHours           Int      @default(48)
+  toilExpiryDays            Int      @default(90)
+  defaultWeekendDays        Int[]    @default([5, 6])
+  timezone                  String   @default("Asia/Riyadh")
+  updatedAt                 DateTime @updatedAt
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  name           String
+  nameAr         String?
+  address        String?
+  lat            Float
+  lng            Float
+  geofenceM      Int          @default(200)
+  timezone       String       @default("Asia/Riyadh")
+  requireSelfie  Boolean      @default(false)
+  requireGeofence Boolean     @default(true)
+  devices        Device[]
+  departments    Department[]
+  holidays       Holiday[]
+  assignments    ShiftAssignment[]
+  createdAt      DateTime     @default(now())
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  name       String
+  brand      String   @default("ZKTeco")
+  serialNo   String   @unique
+  kind       String   @default("FINGERPRINT") // FINGERPRINT | KIOSK
+  apiToken   String   @unique
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  lastSeenAt DateTime?
+  punches    Punch[]
+}
+
+model Department {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  nameEn      String
+  nameAr      String
+  kind        DepartmentKind  @default(NON_CLINICAL)
+  level       DepartmentLevel @default(DEPARTMENT)
+  parentId    String?
+  parent      Department?     @relation("DeptTree", fields: [parentId], references: [id])
+  children    Department[]    @relation("DeptTree")
+  costCenter  String?
+  locationId  String?
+  location    Location?       @relation(fields: [locationId], references: [id])
+  isFloatPool Boolean         @default(false)
+  employees   Employee[]
+  scopes      UserDepartmentScope[]
+  templates   ShiftTemplate[]
+  rosterPeriods RosterPeriod[]
+  assignments ShiftAssignment[]
+  staffing    StaffingRequirement[]
+  requests    Request[]
+  createdAt   DateTime        @default(now())
+}
+
+model Employee {
+  id               String         @id @default(cuid())
+  employeeNo       String         @unique
+  nameEn           String
+  nameAr           String
+  homeDepartmentId String
+  homeDepartment   Department     @relation(fields: [homeDepartmentId], references: [id])
+  jobTitle         String
+  contractHours    Float          @default(48)
+  weekendDays      Int[]          @default([5, 6])
+  skills           String[]       @default([])
+  licenseNo        String?
+  licenseExpiry    DateTime?      @db.Date
+  isClinical       Boolean        @default(false)
+  ramadanHours     Boolean        @default(true)
+  clockMethod      ClockMethod    @default(BOTH)
+  kioskPin         String?
+  boundDevices     String[]       @default([])
+  lineManagerId    String?
+  lineManager      Employee?      @relation("LineManager", fields: [lineManagerId], references: [id])
+  reports          Employee[]     @relation("LineManager")
+  workLocationId   String?
+  status           EmployeeStatus @default(ACTIVE)
+  user             User?
+  assignments      ShiftAssignment[]
+  punches          Punch[]
+  leaveBalances    LeaveBalance[]
+  requests         Request[]      @relation("Requester")
+  swapTargets      Request[]      @relation("SwapTarget")
+  createdAt        DateTime       @default(now())
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(EMPLOYEE)
+  locale       String   @default("en")
+  employeeId   String?  @unique
+  employee     Employee? @relation(fields: [employeeId], references: [id])
+  scopes       UserDepartmentScope[]
+  delegationsGiven    Delegation[] @relation("Delegator")
+  delegationsReceived Delegation[] @relation("Delegate")
+  notifications Notification[]
+  approvals    Approval[]
+  createdAt    DateTime @default(now())
+}
+
+model UserDepartmentScope {
+  userId       String
+  departmentId String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, departmentId])
+}
+
+model Delegation {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  from       User     @relation("Delegator", fields: [fromUserId], references: [id])
+  to         User     @relation("Delegate", fields: [toUserId], references: [id])
+  startDate  DateTime @db.Date
+  endDate    DateTime @db.Date
+  createdAt  DateTime @default(now())
+}
+
+model ShiftTemplate {
+  id                String         @id @default(cuid())
+  code              String
+  name              String
+  color             String         @default("#3b82f6")
+  type              ShiftType      @default(FIXED)
+  startMin          Int            // minutes from midnight
+  endMin            Int
+  split2StartMin    Int?
+  split2EndMin      Int?
+  coreStartMin      Int?
+  coreEndMin        Int?
+  totalHours        Float?
+  breakMin          Int            @default(0)
+  paidBreak         Boolean        @default(false)
+  graceInMin        Int            @default(10)
+  graceOutMin       Int            @default(0)
+  overnight         Boolean        @default(false)
+  isClinical        Boolean        @default(false)
+  isRamadan         Boolean        @default(false)
+  payCode           String?
+  requiredSkills    String[]       @default([])
+  ownerDepartmentId String?
+  ownerDepartment   Department?    @relation(fields: [ownerDepartmentId], references: [id])
+  status            TemplateStatus @default(PENDING)
+  reviewedById      String?
+  reviewNote        String?
+  assignments       ShiftAssignment[]
+  staffing          StaffingRequirement[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([ownerDepartmentId, code])
+}
+
+model StaffingRequirement {
+  id           String        @id @default(cuid())
+  departmentId String
+  department   Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  templateId   String
+  template     ShiftTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  skill        String?       // null = any staff; e.g. "CHARGE_NURSE"
+  minCount     Int
+}
+
+model RosterPeriod {
+  id            String       @id @default(cuid())
+  departmentId  String
+  department    Department   @relation(fields: [departmentId], references: [id])
+  weekStart     DateTime     @db.Date
+  status        RosterStatus @default(DRAFT)
+  publishedById String?
+  publishedAt   DateTime?
+  overrideReason String?
+
+  @@unique([departmentId, weekStart])
+}
+
+model ShiftAssignment {
+  id            String        @id @default(cuid())
+  employeeId    String
+  employee      Employee      @relation(fields: [employeeId], references: [id])
+  date          DateTime      @db.Date
+  templateId    String
+  template      ShiftTemplate @relation(fields: [templateId], references: [id])
+  locationId    String?
+  location      Location?     @relation(fields: [locationId], references: [id])
+  departmentId  String
+  department    Department    @relation(fields: [departmentId], references: [id])
+  status        RosterStatus  @default(DRAFT)
+  isOpenShift   Boolean       @default(false)
+  /// Set when an employee is loaned from another department: PENDING until the host manager accepts.
+  loanStatus    String?
+  version       Int           @default(1)
+  importBatchId String?
+  attendance    AttendanceRecord?
+  punches       Punch[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([departmentId, date])
+  @@index([employeeId, date])
+}
+
+model OpenShift {
+  id           String           @id @default(cuid())
+  departmentId String
+  date         DateTime         @db.Date
+  templateId   String
+  locationId   String?
+  note         String?
+  requiredSkill String?
+  status       String           @default("OPEN") // OPEN | FILLED | CANCELLED
+  createdById  String
+  filledById   String?
+  claims       OpenShiftClaim[]
+  createdAt    DateTime         @default(now())
+}
+
+model OpenShiftClaim {
+  id          String    @id @default(cuid())
+  openShiftId String
+  openShift   OpenShift @relation(fields: [openShiftId], references: [id], onDelete: Cascade)
+  employeeId  String
+  status      String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt   DateTime  @default(now())
+
+  @@unique([openShiftId, employeeId])
+}
+
+model RosterImportBatch {
+  id           String       @id @default(cuid())
+  departmentId String
+  uploadedById String
+  fileName     String
+  layout       String       // GRID | ROWS
+  mode         String       // MERGE | REPLACE
+  fromDate     DateTime     @db.Date
+  toDate       DateTime     @db.Date
+  rowCount     Int
+  status       ImportStatus @default(DRAFT)
+  snapshot     Json?        // assignments replaced, for undo
+  createdAt    DateTime     @default(now())
+}
+
+model Punch {
+  id            String       @id @default(cuid())
+  employeeId    String
+  employee      Employee     @relation(fields: [employeeId], references: [id])
+  timestamp     DateTime
+  type          PunchType?
+  source        PunchSource
+  lat           Float?
+  lng           Float?
+  photoUrl      String?
+  deviceId      String?
+  device        Device?      @relation(fields: [deviceId], references: [id])
+  assignmentId  String?
+  assignment    ShiftAssignment? @relation(fields: [assignmentId], references: [id])
+  importBatchId String?
+  importBatch   PunchImportBatch? @relation(fields: [importBatchId], references: [id])
+  offlineQueued Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  @@unique([employeeId, timestamp, type])
+  @@index([employeeId, timestamp])
+}
+
+model PunchImportBatch {
+  id           String       @id @default(cuid())
+  uploadedById String
+  fileName     String
+  brand        String?
+  rowCount     Int
+  okCount      Int
+  errorCount   Int
+  dupCount     Int
+  status       ImportStatus @default(APPLIED)
+  /// Department-manager imports wait here until HR approves; DRAFT = pending HR.
+  departmentId String?
+  pending      Json?
+  punches      Punch[]
+  createdAt    DateTime     @default(now())
+}
+
+model ColumnMapping {
+  id      String @id @default(cuid())
+  kind    String // PUNCH | PAYROLL
+  name    String // device brand or payroll format
+  mapping Json
+
+  @@unique([kind, name])
+}
+
+model AttendanceRecord {
+  id            String           @id @default(cuid())
+  assignmentId  String           @unique
+  assignment    ShiftAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  status        AttendanceStatus
+  workedMin     Int              @default(0)
+  lateMin       Int              @default(0)
+  earlyMin      Int              @default(0)
+  overtimeMin   Int              @default(0)
+  unapprovedOvertimeMin Int      @default(0)
+  missingPunch  Boolean          @default(false)
+  firstIn       DateTime?
+  lastOut       DateTime?
+  locked        Boolean          @default(false)
+  calculatedAt  DateTime         @default(now())
+}
+
+model LeaveType {
+  id                 String   @id @default(cuid())
+  code               String   @unique
+  nameEn             String
+  nameAr             String
+  paid               Boolean  @default(true)
+  annualDays         Float    @default(0)
+  accrualPerMonth    Float    @default(0)
+  requiresAttachment Boolean  @default(false)
+  isToil             Boolean  @default(false)
+  balances           LeaveBalance[]
+}
+
+model LeaveBalance {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  leaveTypeId String
+  leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
+  year        Int
+  entitled    Float     @default(0)
+  used        Float     @default(0)
+
+  @@unique([employeeId, leaveTypeId, year])
+}
+
+model Holiday {
+  id         String    @id @default(cuid())
+  date       DateTime  @db.Date
+  name       String
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
+}
+
+model Request {
+  id             String        @id @default(cuid())
+  type           RequestType
+  requesterId    String
+  requester      Employee      @relation("Requester", fields: [requesterId], references: [id])
+  createdByUserId String
+  departmentId   String
+  department     Department    @relation(fields: [departmentId], references: [id])
+  targetEmployeeId String?
+  targetEmployee Employee?     @relation("SwapTarget", fields: [targetEmployeeId], references: [id])
+  payload        Json
+  reason         String?
+  status         RequestStatus
+  approvals      Approval[]
+  escalatedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model Approval {
+  id         String   @id @default(cuid())
+  requestId  String
+  request    Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  level      String   // PEER | L1 | L2 | HR
+  approverId String
+  approver   User     @relation(fields: [approverId], references: [id])
+  decision   String   // APPROVED | REJECTED
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model AttendancePeriod {
+  id         String       @id @default(cuid())
+  startDate  DateTime     @db.Date
+  endDate    DateTime     @db.Date
+  status     PeriodStatus @default(OPEN)
+  lockedById String?
+  lockedAt   DateTime?
+
+  @@unique([startDate, endDate])
+}
+
+model ToilEntry {
+  id         String   @id @default(cuid())
+  employeeId String
+  minutes    Int
+  requestId  String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorRole String?
+  entity    String
+  entityId  String
+  action    String
+  before    Json?
+  after     Json?
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+}
