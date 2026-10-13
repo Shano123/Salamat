@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/client";
-import { isRtl } from "@/lib/i18n/dictionaries";
-import { getLocale } from "@/lib/i18n/server";
+
+const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Salamat — Attendance & Shift Roster",
-  description: "Department shift rosters and attendance for hospital teams.",
+  title: { default: "Salamat — Workforce & Attendance", template: "%s · Salamat" },
+  description: "Department shift rosters and attendance management for hospital teams.",
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"}>
+    <html lang="en" dir="ltr" className={inter.variable}>
       <body>
-        <I18nProvider locale={locale}>{children}</I18nProvider>
+        <I18nProvider locale="en">{children}</I18nProvider>
       </body>
     </html>
   );

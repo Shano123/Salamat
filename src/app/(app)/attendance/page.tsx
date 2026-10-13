@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/ActionForm";
+import { Icon } from "@/components/Icon";
 import { fmtMin, Forbidden, PageHeader, StatusBadge } from "@/components/ui";
 import { correctionForEmployee, recalc } from "@/app/actions/attendance";
 import { employeeScope, pageGuard, visibleDepartments } from "@/lib/auth";
@@ -66,7 +67,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                 <td style={{ fontSize: 12 }}>
                   {r.punches.map((p) => (
                     <span key={p.id} title={`${p.source}${p.lat ? ` @ ${p.lat.toFixed(4)},${p.lng?.toFixed(4)}` : ""}`} style={{ marginInlineEnd: 6 }}>
-                      {p.type ?? "?"} {formatTime(p.timestamp, tz)}{p.photoUrl && <a href={p.photoUrl} target="_blank"> 📷</a>}
+                      {p.type ?? "?"} {formatTime(p.timestamp, tz)}{p.photoUrl && <a href={p.photoUrl} target="_blank" aria-label="Selfie" style={{ marginLeft: 4, verticalAlign: "middle" }}><Icon name="camera" size={14} /></a>}
                     </span>
                   ))}
                 </td>

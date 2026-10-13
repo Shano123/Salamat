@@ -4,15 +4,23 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { can } from "@/lib/domain/permissions";
 import { getT } from "@/lib/i18n/server";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { logout } from "../actions/session";
+import { Icon } from "@/components/Icon";
+import { UserMenu } from "@/components/UserMenu";
+import { roleLabel } from "@/lib/roles";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const { t, locale } = await getT();
+  const { t } = await getT();
   const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
   const r = user.role;
-  const item = (href: string, key: string, ok = true, badge?: number) => (ok ? [{ href, label: t(key), badge }] : []);
+  const ICONS: Record<string, string> = {
+    "/dashboard": "dashboard", "/me/schedule": "calendar", "/clock": "clock", "/me/attendance": "checklist", "/me/leave": "leave",
+    "/requests": "file", "/notifications": "bell", "/account": "user", "/inbox": "inbox", "/roster": "grid", "/roster/import": "upload",
+    "/open-shifts": "plusCircle", "/templates": "layers", "/staffing": "users", "/attendance": "activity", "/reports": "chart",
+    "/punches/import": "fingerprint", "/payroll": "wallet", "/periods": "lock", "/departments": "sitemap", "/employees": "idcard",
+    "/leave-setup": "sun", "/locations": "pin", "/users": "shield", "/settings": "settings", "/audit": "history",
+  };
+  const item = (href: string, key: string, ok = true, badge?: number) => (ok ? [{ href, label: t(key), icon: ICONS[href] ?? "file", badge }] : []);
 
   const sections: NavSection[] = [
     {
@@ -70,15 +78,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       tagline={t("tagline")}
       topbar={
         <>
-          {user.delegatedFrom.length > 0 && <span className="badge info">Acting as delegate</span>}
-          <span className="muted">
-            {user.employeeName} · <span className="badge">{r.replace("_", " ").toLowerCase()}</span>
-          </span>
-          <Link href="/notifications" aria-label="Notifications">🔔{unread ? ` ${unread}` : ""}</Link>
-          <LanguageSwitcher current={locale} />
-          <form action={logout}>
-            <button className="small" type="submit">{t("common.logout")}</button>
-          </form>
+          <Link href="/notifications" className="icon-btn" aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}>
+            <Icon name="bell" />
+            {unread > 0 && <span className="dot-count">{unread > 99 ? "99+" : unread}</span>}
+          </Link>
+          <UserMenu
+            name={user.employeeName}
+            email={user.email}
+            role={roleLabel(r)}
+            delegate={user.delegatedFrom.length > 0}
+          />
         </>
       }
     >

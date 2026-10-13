@@ -216,6 +216,13 @@ export function RosterGrid(props: {
                 })}
               </tr>
             ))}
+            {!props.employees.length && (
+              <tr>
+                <td className="emp muted" colSpan={props.dates.length + 1} style={{ padding: 24, textAlign: "center" }}>
+                  No active employees in this department. Choose another department above, or add staff under Employees.
+                </td>
+              </tr>
+            )}
             {props.staffing.map((s, i) => (
               <tr key={i} className="staffing">
                 <td className="emp"><small>Min {s.code}{s.skill ? ` · ${s.skill}` : ""}: {s.minCount}</small></td>

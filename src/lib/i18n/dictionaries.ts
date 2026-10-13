@@ -16,11 +16,11 @@ export function isRtl(l: Locale): boolean {
 
 const en = {
   appName: "Salamat",
-  tagline: "Attendance & Shift Roster",
+  tagline: "Workforce & Attendance",
   // navigation
-  "nav.dashboard": "Live board",
+  "nav.dashboard": "Dashboard",
   "nav.mySchedule": "My schedule",
-  "nav.clock": "Clock in / out",
+  "nav.clock": "Time clock",
   "nav.myAttendance": "My attendance",
   "nav.myLeave": "My leave",
   "nav.requests": "My requests",
@@ -44,10 +44,10 @@ const en = {
   "nav.audit": "Audit log",
   "nav.notifications": "Notifications",
   "nav.account": "My account",
-  "nav.section.me": "Me",
-  "nav.section.manage": "Manage",
-  "nav.section.hr": "HR",
-  "nav.section.admin": "Admin",
+  "nav.section.me": "My workspace",
+  "nav.section.manage": "Operations",
+  "nav.section.hr": "Human resources",
+  "nav.section.admin": "Administration",
   // common
   "common.save": "Save",
   "common.cancel": "Cancel",

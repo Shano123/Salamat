@@ -22,7 +22,14 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
   const today = localDateISO(new Date(), rules.timezone);
   const depts = await visibleDepartments(user);
   if (!depts.length) return <p className="muted">No departments in your scope.</p>;
-  const dept = depts.find((d) => d.id === sp.dept) ?? depts[0];
+  // Without an explicit choice, managers open their own department; HR opens the largest one.
+  const staffed = await db.employee.groupBy({ by: ["homeDepartmentId"], where: { status: "ACTIVE", homeDepartmentId: { in: depts.map((d) => d.id) } }, _count: true });
+  const largest = [...staffed].sort((a, b) => b._count - a._count)[0]?.homeDepartmentId;
+  const dept =
+    depts.find((d) => d.id === sp.dept) ??
+    (user.departments !== "ALL" ? depts.find((d) => d.id === user.homeDepartmentId && staffed.some((x) => x.homeDepartmentId === d.id)) : undefined) ??
+    depts.find((d) => d.id === largest) ??
+    depts[0];
   const view = sp.view === "month" ? "month" : "week";
   const anchor = sp.week && /^\d{4}-\d{2}-\d{2}$/.test(sp.week) ? sp.week : today;
   let from: string;

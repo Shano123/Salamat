@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { roleLabel } from "@/lib/roles";
 import { ActionForm } from "@/components/ActionForm";
 import { Forbidden, PageHeader, StatusBadge } from "@/components/ui";
 import { saveEmployee } from "@/app/actions/employees";
@@ -77,7 +78,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
                 <td style={{ fontSize: 12 }}>{e.skills.join(", ")}</td>
                 <td>{e.licenseNo}{" "}{licenseBadge(e.licenseExpiry)}</td>
                 <td>{e.clockMethod.toLowerCase()}</td>
-                <td>{e.user ? <span className="badge">{e.user.role.replace("_", " ").toLowerCase()}</span> : "—"}</td>
+                <td>{e.user ? <span className="badge">{roleLabel(e.user.role)}</span> : "—"}</td>
                 <td>{editable && <Link className="btn small" href={`/employees?edit=${e.id}#form`}>{t("common.edit")}</Link>}</td>
               </tr>
             ))}

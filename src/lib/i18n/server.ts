@@ -1,14 +1,9 @@
 import "server-only";
-import { cookies } from "next/headers";
-import { getCurrentUser } from "../auth";
-import { isLocale, Locale, translator } from "./dictionaries";
+import { Locale, translator } from "./dictionaries";
 
+/** The app runs in English only. The Arabic and Urdu dictionaries are kept for a future switch. */
 export async function getLocale(): Promise<Locale> {
-  const jar = await cookies();
-  const c = jar.get("locale")?.value;
-  if (isLocale(c)) return c;
-  const u = await getCurrentUser();
-  return u?.locale ?? "en";
+  return "en";
 }
 
 export async function getT() {

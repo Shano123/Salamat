@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { clockPunch, ClockPayload } from "@/app/actions/clock";
+import { Icon } from "@/components/Icon";
 import { useT } from "@/lib/i18n/client";
 
 type PunchType = ClockPayload["type"];
@@ -144,7 +145,7 @@ export function ClockClient({ suggested, selfieAvailable, tz }: { suggested: Pun
       {selfieAvailable && (
         <div className="stack" style={{ alignItems: "center" }}>
           <input ref={fileRef} type="file" accept="image/*" capture="user" onChange={onSelfie} hidden />
-          <button type="button" className="small" onClick={() => fileRef.current?.click()}>📷 {t("clock.selfie")}{selfie ? " ✓" : ""}</button>
+          <button type="button" className="small" onClick={() => fileRef.current?.click()}><Icon name="camera" size={16} /> {t("clock.selfie")}{selfie ? " ✓" : ""}</button>
           {selfie && <img src={selfie} alt="Selfie preview" style={{ width: 96, height: 96, objectFit: "cover", borderRadius: 8 }} />}
         </div>
       )}

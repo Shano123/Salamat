@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { roleLabel } from "@/lib/roles";
 import { ActionForm } from "@/components/ActionForm";
 import { Forbidden, PageHeader } from "@/components/ui";
 import { addDelegation, removeDelegation, saveUser } from "@/app/actions/users";
@@ -56,7 +57,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                   <tr key={u.id}>
                     <td>{u.email}</td>
                     <td>{u.employee ? `${u.employee.nameEn} · ${u.employee.homeDepartment.nameEn}` : "—"}</td>
-                    <td><span className="badge">{u.role.replace("_", " ").toLowerCase()}</span></td>
+                    <td><span className="badge">{roleLabel(u.role)}</span></td>
                     <td style={{ fontSize: 12 }}>{u.scopes.map((s) => s.department.nameEn).join(", ") || (["SUPER_ADMIN", "HR_ADMIN", "HR_VIEWER"].includes(u.role) ? "all" : "—")}</td>
                     <td><Link className="btn small" href={`/users?edit=${u.id}#form`}>{t("common.edit")}</Link></td>
                   </tr>
@@ -70,7 +71,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
               {editing && <input type="hidden" name="id" value={editing.id} />}
               <div className="form-grid">
                 {!editing && <label>Email<input type="email" name="email" required /></label>}
-                <label>Role<select name="role" defaultValue={editing?.role ?? "EMPLOYEE"}>{ROLES.map((r) => <option key={r} value={r}>{r.replace("_", " ").toLowerCase()}</option>)}</select></label>
+                <label>Role<select name="role" defaultValue={editing?.role ?? "EMPLOYEE"}>{ROLES.map((r) => <option key={r} value={r}>{roleLabel(r)}</option>)}</select></label>
                 <label>Linked employee<select name="employeeId" defaultValue={editing?.employeeId ?? ""}><option value="">—</option>{unlinked.map((e) => <option key={e.id} value={e.id}>{e.nameEn} #{e.employeeNo}</option>)}</select></label>
                 <label>{editing ? "New password (optional)" : "Password"}<input type="password" name="password" autoComplete="new-password" minLength={10} required={!editing} /></label>
               </div>

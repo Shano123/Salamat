@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/ActionForm";
+import { roleLabel } from "@/lib/roles";
 import { PageHeader } from "@/components/ui";
 import { changeOwnPassword } from "@/app/actions/users";
 import { requireUser } from "@/lib/auth";
@@ -11,7 +12,7 @@ export default async function AccountPage() {
   const { t } = await getT();
   return (
     <>
-      <PageHeader title={t("nav.account")} subtitle={`${user.email} · ${user.baseRole.replace("_", " ").toLowerCase()}`} />
+      <PageHeader title={t("nav.account")} subtitle={`${user.email} · ${roleLabel(user.baseRole)}`} />
       <div className="card" style={{ maxWidth: 480 }}>
         <h2>Change password</h2>
         <ActionForm action={changeOwnPassword} resetOnSuccess>

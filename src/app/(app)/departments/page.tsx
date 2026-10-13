@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { roleLabel } from "@/lib/roles";
 import { ActionForm } from "@/components/ActionForm";
 import { Forbidden, PageHeader } from "@/components/ui";
 import { saveDepartment, setManagers } from "@/app/actions/departments";
@@ -88,7 +89,7 @@ export default async function DepartmentsPage({ searchParams }: { searchParams: 
                     {managers.map((m) => (
                       <label key={m.id} className="inline">
                         <input type="checkbox" name="userIds" value={m.id} defaultChecked={editing.scopes.some((s) => s.userId === m.id)} />
-                        {m.employee?.nameEn ?? m.email} <span className="badge">{m.role.replace("_", " ").toLowerCase()}</span>
+                        {m.employee?.nameEn ?? m.email} <span className="badge">{roleLabel(m.role)}</span>
                       </label>
                     ))}
                     {!managers.length && <p className="muted">Give users a manager role in Users &amp; roles first.</p>}

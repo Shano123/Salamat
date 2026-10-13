@@ -50,7 +50,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
       {error && <div className="alert danger">{error}</div>}
       {table && (
         <div className="table-wrap">
-          <table>
+          <table className="nowrap">
             <thead><tr>{table.headers.map((x) => <th key={x}>{x}</th>)}</tr></thead>
             <tbody>
               {table.rows.slice(0, 2000).map((r, i) => (

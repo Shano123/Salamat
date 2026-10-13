@@ -17,7 +17,7 @@ export function Forbidden({ message = "You do not have access to this page." }: 
     <div className="card">
       <h2>403</h2>
       <p className="muted">{message}</p>
-      <Link href="/dashboard">Back to the live board</Link>
+      <Link href="/dashboard">Back to dashboard</Link>
     </div>
   );
 }
@@ -61,9 +61,9 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
 
 export function Stat({ label, value, tone }: { label: string; value: React.ReactNode; tone?: string }) {
   return (
-    <div className="card stat">
+    <div className={`card stat${tone ? ` tone-${tone}` : ""}`}>
       <span className="label">{label}</span>
-      <span className="value" style={tone ? { color: `var(--${tone})` } : undefined}>{value}</span>
+      <span className="value">{value}</span>
     </div>
   );
 }
