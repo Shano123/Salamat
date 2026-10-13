@@ -8,6 +8,9 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Direct (non-pooled) connection used for migrations. Same as DATABASE_URL unless the
+  // app connects through a pooler such as Supabase's transaction pooler.
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {

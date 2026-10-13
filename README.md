@@ -15,7 +15,7 @@ Built for one hospital group (≈800 employees, 5 branches, 24/7 clinical and no
 ## Getting started
 
 ```bash
-cp .env.example .env            # set DATABASE_URL, AUTH_SECRET, CRON_SECRET
+cp .env.example .env            # set DATABASE_URL, DIRECT_URL, AUTH_SECRET, CRON_SECRET
 npm install
 npm run db:deploy               # apply prisma/migrations (or `npm run db:push` in development)
 npm run db:seed                 # optional demo hospital
@@ -35,6 +35,15 @@ Demo accounts from the seed (password `Salamat!2026`):
 
 Kiosk: `/kiosk?token=dev-token-kiosk-main` (employee `2005`, PIN `1234`).
 Fingerprint device API token: `dev-token-fingerprint-1`.
+
+### Hosting on Vercel + Supabase
+
+1. Supabase → **Connect**: copy the *Transaction pooler* string (port 6543) and the *Session pooler* string (port 5432).
+2. Vercel → import this repository and set the environment variables:
+   - `DATABASE_URL` = transaction pooler string + `?pgbouncer=true&connection_limit=1`
+   - `DIRECT_URL` = session pooler string
+   - `AUTH_SECRET`, `CRON_SECRET` = long random strings
+3. Build command: `npx prisma migrate deploy && npm run db:seed && npm run build` (drop `npm run db:seed` once you load real data).
 
 Other scripts: `npm test` (unit tests), `npm run typecheck`, `npm run build`.
 

@@ -24,6 +24,10 @@ services:
         fromDatabase:
           name: salamat-db
           property: connectionString
+      - key: DIRECT_URL
+        fromDatabase:
+          name: salamat-db
+          property: connectionString
       - key: AUTH_SECRET
         generateValue: true
       - key: CRON_SECRET
