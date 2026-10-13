@@ -183,10 +183,11 @@ async function main() {
   }
 
   // Attendance records for published shifts (the app recalculates these on every punch).
-  const shifts = await db.shiftAssignment.findMany({ where: { status: "PUBLISHED" }, include: { template: true } });
+  const shifts = await db.shiftAssignment.findMany({ where: { status: "PUBLISHED" }, include: { template: true, attendance: true } });
   const allPunches = await db.punch.findMany();
   const asTpl = (t: (typeof shifts)[number]["template"]) => ({ ...t, type: t.type, status: t.status }) as TemplateLike;
   for (const a of shifts) {
+    if (a.attendance) continue; // re-running the seed never overwrites calculated or locked records
     const mine = shifts.filter((x) => x.employeeId === a.employeeId);
     const punches = allPunches.filter((p) => p.employeeId === a.employeeId);
     const matched = matchPunches(
