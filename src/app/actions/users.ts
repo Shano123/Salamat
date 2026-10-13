@@ -21,22 +21,39 @@ export async function saveUser(_: ActionState, fd: FormData): Promise<ActionStat
     if (PRIVILEGED.includes(role) && actor.role !== "SUPER_ADMIN") throw new Error("Only the Super Admin can grant HR or admin roles.");
     const employeeId = optStr(fd, "employeeId");
     const password = str(fd, "password");
+    if (password || !id) checkPassword(password);
+    const passwordHash = password ? await bcrypt.hash(password, 10) : null;
     await db.$transaction(async (tx) => {
       if (id) {
         const before = await tx.user.findUniqueOrThrow({ where: { id } });
         if (PRIVILEGED.includes(before.role) && actor.role !== "SUPER_ADMIN") throw new Error("Only the Super Admin can change HR or admin users.");
         if (id === actor.id && role !== before.role) throw new Error("You cannot change your own role.");
-        if (password) checkPassword(password);
-        const after = await tx.user.update({ where: { id }, data: { role, employeeId, ...(password ? { passwordHash: await bcrypt.hash(password, 10) } : {}) } });
+        const after = await tx.user.update({ where: { id }, data: { role, employeeId, ...(passwordHash ? { passwordHash } : {}) } });
         await audit(tx, actor, "User", id, "UPDATE", { role: before.role, employeeId: before.employeeId }, { role: after.role, employeeId: after.employeeId, passwordReset: !!password });
       } else {
-        checkPassword(password);
-        const created = await tx.user.create({ data: { email: str(fd, "email").toLowerCase(), role, employeeId, passwordHash: await bcrypt.hash(password, 10) } });
+        const created = await tx.user.create({ data: { email: str(fd, "email").toLowerCase(), role, employeeId, passwordHash: passwordHash! } });
         await audit(tx, actor, "User", created.id, "CREATE", null, { email: created.email, role });
       }
     });
-    return "User saved.";
+    return password ? "User saved. The new password works from the next sign-in." : "User saved.";
   }, "/users");
+}
+
+/** Any signed-in user changes their own password. */
+export async function changeOwnPassword(_: ActionState, fd: FormData): Promise<ActionState> {
+  return run(async () => {
+    const actor = await requireUser();
+    const current = str(fd, "current");
+    const next = str(fd, "next");
+    if (next !== str(fd, "confirm")) throw new Error("The new passwords do not match.");
+    checkPassword(next);
+    const user = await db.user.findUniqueOrThrow({ where: { id: actor.id } });
+    if (!(await bcrypt.compare(current, user.passwordHash))) throw new Error("Your current password is incorrect.");
+    if (current === next) throw new Error("Choose a password different from the current one.");
+    await db.user.update({ where: { id: actor.id }, data: { passwordHash: await bcrypt.hash(next, 10) } });
+    await audit(db, actor, "User", actor.id, "CHANGE_OWN_PASSWORD");
+    return "Password changed.";
+  });
 }
 
 export async function addDelegation(_: ActionState, fd: FormData): Promise<ActionState> {

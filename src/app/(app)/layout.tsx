@@ -24,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         ...item("/me/leave", "nav.myLeave", !!user.employeeId),
         ...item("/requests", "nav.requests", !!user.employeeId),
         ...item("/notifications", "nav.notifications", true, unread),
+        ...item("/account", "nav.account"),
       ],
     },
     {
