@@ -37,7 +37,7 @@ export default async function MySchedule({ searchParams }: { searchParams: Promi
   const days = dateRange(gridFrom, gridTo);
   const prev = monthRange(addDays(from, -1)).from.slice(0, 7);
   const next = addDays(to, 1).slice(0, 7);
-  const dow = locale === "ar" ? ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dow = locale === "ar" ? ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] : locale === "ur" ? ["اتوار", "پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <>

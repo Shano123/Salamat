@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { isLocale } from "@/lib/i18n/dictionaries";
 import { SESSION_COOKIE, sessionCookieOptions, signSession } from "@/lib/session";
 
 export async function login(_: unknown, fd: FormData): Promise<{ error?: string }> {
@@ -26,11 +27,12 @@ export async function logout() {
   redirect("/login");
 }
 
-export async function toggleLocale() {
+/** Switches the interface language (en / ar / ur) and remembers it for the signed-in user. */
+export async function setLocale(fd: FormData) {
+  const next = fd.get("locale");
+  if (!isLocale(next)) return;
   const jar = await cookies();
-  const user = await getCurrentUser();
-  const current = jar.get("locale")?.value ?? user?.locale ?? "en";
-  const next = current === "ar" ? "en" : "ar";
   jar.set("locale", next, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+  const user = await getCurrentUser();
   if (user) await db.user.update({ where: { id: user.id }, data: { locale: next } });
 }

@@ -1,10 +1,10 @@
 import { getT } from "@/lib/i18n/server";
 import { LoginForm } from "./LoginForm";
-import { toggleLocale } from "../actions/session";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { next } = await searchParams;
-  const { t } = await getT();
+  const { t, locale } = await getT();
   return (
     <div className="login">
       <div className="card stack">
@@ -15,9 +15,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <small className="muted">{t("tagline")}</small>
           </div>
           <span className="spacer" />
-          <form action={toggleLocale}>
-            <button className="small" type="submit">{t("common.language")}</button>
-          </form>
+          <LanguageSwitcher current={locale} />
         </div>
         <h2>{t("login.title")}</h2>
         <LoginForm next={next ?? "/dashboard"} />

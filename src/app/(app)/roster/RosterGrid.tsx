@@ -11,6 +11,7 @@ interface Conf { kind: string; severity: string; date: string; employeeId: strin
 
 const DOW_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DOW_AR = ["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
+const DOW_UR = ["اتوار", "پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"];
 
 function weekStartOf(d: string) {
   const dt = new Date(`${d}T00:00:00Z`);
@@ -45,7 +46,7 @@ export function RosterGrid(props: {
   const tplById = new Map(props.templates.map((x) => [x.id, x]));
   const approved = props.templates.filter((x) => x.status === "APPROVED");
   const published = new Set(props.publishedWeeks);
-  const dow = locale === "ar" ? DOW_AR : DOW_EN;
+  const dow = locale === "ar" ? DOW_AR : locale === "ur" ? DOW_UR : DOW_EN;
 
   const cellAsg = (empId: string, date: string) => items.filter((a) => a.employeeId === empId && a.date === date);
   const onLeave = (empId: string, date: string) => props.leave.some((l) => l.employeeId === empId && date >= l.from && date <= l.to);

@@ -112,9 +112,10 @@ export function isWithin(iso: string, from?: string | null, to?: string | null):
 }
 
 /** Umm al-Qura Hijri rendering of a calendar date, for optional display next to Gregorian. */
-export function hijri(iso: string, locale: "en" | "ar" = "en"): string {
+export function hijri(iso: string, locale: "en" | "ar" | "ur" = "en"): string {
+  const tag = locale === "ar" ? "ar-SA" : locale === "ur" ? "ur-PK" : "en";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA-u-ca-islamic-umalqura" : "en-u-ca-islamic-umalqura", {
+    return new Intl.DateTimeFormat(`${tag}-u-ca-islamic-umalqura`, {
       day: "numeric",
       month: "long",
       year: "numeric",

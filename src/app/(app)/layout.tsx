@@ -4,11 +4,12 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { can } from "@/lib/domain/permissions";
 import { getT } from "@/lib/i18n/server";
-import { logout, toggleLocale } from "../actions/session";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { logout } from "../actions/session";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
   const r = user.role;
   const item = (href: string, key: string, ok = true, badge?: number) => (ok ? [{ href, label: t(key), badge }] : []);
@@ -74,9 +75,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {user.employeeName} · <span className="badge">{r.replace("_", " ").toLowerCase()}</span>
           </span>
           <Link href="/notifications" aria-label="Notifications">🔔{unread ? ` ${unread}` : ""}</Link>
-          <form action={toggleLocale}>
-            <button className="small" type="submit">{t("common.language")}</button>
-          </form>
+          <LanguageSwitcher current={locale} />
           <form action={logout}>
             <button className="small" type="submit">{t("common.logout")}</button>
           </form>

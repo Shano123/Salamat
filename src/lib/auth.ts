@@ -6,6 +6,7 @@ import { cache } from "react";
 import { db } from "./db";
 import { Action, activeDelegatorIds, can, isCompanyWide, RoleName, withDescendants } from "./domain/permissions";
 import { toDateISO } from "./domain/time";
+import { isLocale, Locale } from "./i18n/dictionaries";
 import { SESSION_COOKIE, verifySession } from "./session";
 
 const RANK: Record<RoleName, number> = {
@@ -24,7 +25,7 @@ export interface CurrentUser {
   baseRole: RoleName;
   /** Effective role, including rights delegated to this user for today. */
   role: RoleName;
-  locale: "en" | "ar";
+  locale: Locale;
   employeeId: string | null;
   employeeName: string;
   homeDepartmentId: string | null;
@@ -78,7 +79,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     email: user.email,
     baseRole: user.role as RoleName,
     role,
-    locale: user.locale === "ar" ? "ar" : "en",
+    locale: isLocale(user.locale) ? user.locale : "en",
     employeeId: user.employeeId,
     employeeName: user.employee ? (user.locale === "ar" ? user.employee.nameAr : user.employee.nameEn) : user.email,
     homeDepartmentId: user.employee?.homeDepartmentId ?? null,
