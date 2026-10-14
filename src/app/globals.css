@@ -228,25 +228,91 @@ button:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed;
 .alert.info { background: var(--info-soft); border-color: #c4d7f3; border-left-color: var(--primary); color: #174a96; }
 .alert ul { margin: 4px 0 0; padding-left: 18px; }
 
-/* ───────── Roster grid ───────── */
-.roster-wrap { overflow: auto; max-height: 70vh; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); }
-.roster { border-collapse: separate; border-spacing: 0; }
-.roster th, .roster td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 5px; min-width: 72px; text-align: center; }
-.roster th { position: sticky; top: 0; z-index: 2; text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--text-2); }
-.roster th small { color: var(--muted); font-weight: 500; }
-.roster th.emp, .roster td.emp { position: sticky; left: 0; z-index: 1; background: var(--surface); min-width: 220px; text-align: left; padding: 8px 14px; }
-.roster th.emp { z-index: 3; background: var(--surface-2); }
-.roster td.emp strong { font-weight: 600; font-size: 13px; }
-.roster td.weekend { background: #f8f9fb; }
-.roster td.today, .roster th.today { background: #f2f7ff; }
-.roster td.drop { background: var(--primary-soft); outline: 2px dashed var(--primary); outline-offset: -3px; }
-.roster td.has-conflict { box-shadow: inset 0 0 0 2px #e5484d; }
-.roster td.has-warning { box-shadow: inset 0 0 0 2px #f0b44c; }
-.roster tr.staffing td { background: var(--surface-2); font-size: 11.5px; }
-.chip { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 50px; height: 24px; padding: 0 7px; border-radius: 5px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; color: #fff; cursor: grab; user-select: none; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12); }
-.chip.draft { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.22) 0 4px, transparent 4px 8px); }
-.chip.leave { background: var(--surface-3) !important; color: var(--muted); box-shadow: none; }
+/* ───────── Duty roster sheet ───────── */
+.toolbar { padding: 14px 16px; }
 .palette { display: flex; flex-wrap: wrap; gap: 6px; }
+.code-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 26px; padding: 0 8px; border-radius: 5px; border: 1px solid rgba(15,27,45,0.08); font-size: 12px; font-weight: 700; letter-spacing: 0.02em; box-shadow: none; cursor: pointer; user-select: none; }
+button.code-chip:hover { filter: brightness(0.96); border-color: rgba(15,27,45,0.25); }
+.code-chip.selected { outline: 2px solid var(--text); outline-offset: 1px; }
+.code-chip.clear { background: var(--surface); color: var(--muted); border-style: dashed; border-color: var(--border-strong); }
+
+.sheet { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+.sheet-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px 28px; padding: 18px 20px 16px; border-bottom: 3px solid var(--nav-bg); background: linear-gradient(180deg, #fbfcfe, #f4f7fb); }
+.sheet-org { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary); }
+.sheet-title { font-size: 19px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text); margin-top: 2px; }
+.sheet-meta { display: grid; grid-template-columns: repeat(6, auto); gap: 0; margin: 0; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.sheet-meta > div { padding: 6px 14px; border-left: 1px solid var(--border); }
+.sheet-meta > div:first-child { border-left: 0; }
+.sheet-meta dt { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.sheet-meta dd { margin: 1px 0 0; font-size: 13.5px; font-weight: 650; color: var(--text); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { .sheet-meta { grid-template-columns: repeat(3, auto); } .sheet-meta > div:nth-child(4) { border-left: 0; } .sheet-meta > div:nth-child(n+4) { border-top: 1px solid var(--border); } }
+
+.roster-wrap { overflow: auto; max-height: 72vh; background: var(--surface); }
+.roster { border-collapse: separate; border-spacing: 0; font-size: 12px; width: max-content; min-width: 100%; }
+.roster th, .roster td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 4px; height: 30px; text-align: center; white-space: nowrap; }
+.roster thead th { position: sticky; top: 0; z-index: 3; background: var(--nav-bg); color: #e6ecf5; font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0.02em; border-color: rgba(255,255,255,0.08); }
+.roster thead tr.dow-row th { top: 38px; height: 22px; background: var(--nav-bg-2); color: #b9c4d6; font-weight: 500; font-size: 10.5px; }
+.roster thead tr:first-child th { height: 38px; }
+.roster th.c-day { min-width: 38px; width: 38px; padding: 0 2px; line-height: 1.05; }
+.roster th .d-num { display: block; font-size: 13px; font-weight: 700; color: #fff; }
+.roster th .d-mon { display: block; font-size: 9.5px; color: #8fa1bd; text-transform: uppercase; }
+.roster thead th.weekend { background: #0f5c63; }
+.roster thead tr.dow-row th.weekend { background: #127079; color: #d4f1f3; }
+.roster thead th.holiday, .roster thead tr.dow-row th.holiday { background: #a3261f; color: #fff; }
+.roster thead th.today { box-shadow: inset 0 -3px 0 #f5b83d; }
+.roster .c-no { position: sticky; left: 0; z-index: 2; min-width: 38px; width: 38px; background: var(--surface); color: var(--muted); font-variant-numeric: tabular-nums; }
+.roster .c-name { position: sticky; left: 38px; z-index: 2; min-width: 210px; max-width: 260px; text-align: left; padding: 0 10px; background: var(--surface); box-shadow: 1px 0 0 var(--border-strong); overflow: hidden; text-overflow: ellipsis; }
+.roster thead .c-no, .roster thead .c-name { z-index: 4; background: var(--nav-bg); }
+.roster thead th.c-no, .roster thead th.c-id, .roster thead th.c-desig { color: #e6ecf5; text-align: center; }
+.warn-flag { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #f0b44c; color: #fff; font-size: 11px; font-weight: 800; cursor: help; vertical-align: 1px; }
+.roster .c-id { min-width: 74px; font-variant-numeric: tabular-nums; color: var(--text-2); }
+.roster .c-desig { min-width: 110px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); text-align: left; padding: 0 8px; }
+.roster .c-tot { min-width: 56px; background: #f6f8fb; font-weight: 600; font-variant-numeric: tabular-nums; }
+.roster thead .c-tot { background: #1b2f57; line-height: 1.15; }
+.roster td.c-tot.diff.neg { color: var(--danger); background: var(--danger-soft); }
+.roster td.c-tot.diff.pos { color: var(--ok); background: var(--ok-soft); }
+.emp-name { font-weight: 600; font-size: 12.5px; color: var(--text); margin-right: 6px; }
+.roster td.c-name .badge { height: 18px; font-size: 10px; padding: 0 6px; margin-right: 4px; }
+.roster tbody tr:hover td { background-color: inherit; }
+.roster tbody tr:hover td.c-no, .roster tbody tr:hover td.c-name { background: #f2f6fc; }
+.roster td.cell { font-weight: 700; font-size: 11.5px; letter-spacing: 0.02em; position: relative; }
+.roster td.cell.weekend:not([style]) { background: #e8f4f5; }
+.roster td.cell.holiday:not([style]) { background: #fdecea; }
+.roster td.cell.editable { cursor: pointer; }
+.roster td.cell.editable:hover { box-shadow: inset 0 0 0 2px var(--primary); }
+.roster td.cell.draft { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.55) 0 3px, transparent 3px 7px); }
+.roster td.cell.today { box-shadow: inset 2px 0 0 #f5b83d, inset -2px 0 0 #f5b83d; }
+.roster td.drop { outline: 2px dashed var(--primary); outline-offset: -3px; }
+.roster td.has-conflict { box-shadow: inset 0 0 0 2px #e5484d !important; }
+.roster td.has-warning { box-shadow: inset 0 0 0 2px #f0b44c; }
+.roster .code { cursor: grab; }
+.roster tbody.coverage td { background: #f8fafc; font-size: 11.5px; height: 26px; }
+.roster tbody.coverage td.c-name { font-weight: 600; color: var(--text-2); }
+.roster tbody.coverage tr.section td { background: #eef2f7; border-top: 2px solid var(--border-strong); font-weight: 700; color: var(--text); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.06em; }
+.roster tbody.coverage tr.section td small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); }
+.roster tbody.coverage td.count { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.roster tbody.coverage td.low { color: var(--danger); background: var(--danger-soft); font-weight: 700; }
+.roster tbody.coverage tr.total td { font-weight: 700; color: var(--text); background: #eef2f7; }
+.roster tbody.coverage tr.status td.ok { color: var(--ok); font-weight: 700; font-size: 10.5px; }
+.roster tbody.coverage tr.status td.low { font-size: 10.5px; }
+.roster td.coverage-note, .roster tbody.coverage tr.section td.coverage-note { text-transform: none; letter-spacing: 0; font-weight: 400; border-top: 0; white-space: normal; text-align: left; vertical-align: top; padding: 8px 10px; font-size: 10.5px; color: var(--muted); background: var(--surface) !important; min-width: 0; max-width: 320px; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid; vertical-align: middle; }
+
+.sheet-legend { padding: 14px 20px 10px; border-top: 1px solid var(--border); }
+.legend-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); margin-bottom: 8px; }
+.legend-title small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); margin-left: 8px; }
+.legend-items { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12px; color: var(--text-2); }
+.legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.legend-item .code-chip { cursor: default; height: 22px; min-width: 36px; }
+.sheet-remarks { padding: 10px 20px 26px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--text-2); }
+.sheet-sign { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 14px 20px 20px; border-top: 1px solid var(--border); }
+.sign-role { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin-bottom: 6px; }
+.sign-role small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); }
+.sign-line { font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border-strong); padding: 10px 0 2px; }
+@media (max-width: 760px) { .sheet-sign { grid-template-columns: 1fr; } }
+
+.chip { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 50px; height: 24px; padding: 0 7px; border-radius: 5px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; color: #fff; user-select: none; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12); }
+.chip.leave { background: var(--surface-3) !important; color: var(--muted); box-shadow: none; }
 .cell-error { background: var(--danger-soft) !important; color: var(--danger); font-weight: 600; }
 
 /* ───────── Misc ───────── */
@@ -293,8 +359,34 @@ pre.alert { font-family: inherit; }
 .pinpad button { height: 62px; font-size: 22px; font-weight: 600; }
 
 @media print {
-  .sidebar, .topbar, .form-actions, .page-header .row { display: none !important; }
+  @page { size: A4 landscape; margin: 6mm; }
+  .sidebar, .topbar, .form-actions, .page-header, .no-print, .roster-tools { display: none !important; }
   .shell { display: block; }
-  .content { padding: 0; }
+  .content { padding: 0; max-width: none; }
+  body { background: #fff; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet { border: 0; box-shadow: none; border-radius: 0; }
+  .roster-wrap { max-height: none; overflow: visible; }
+  .roster { font-size: 8.5px; width: 100%; }
+  .roster th, .roster td { height: 18px; padding: 0 1px; }
+  .roster th.c-day, .roster .c-day { min-width: 0; width: auto; }
+  .roster .c-no, .roster .c-name, .roster thead th { position: static; }
+  .roster .c-name { min-width: 0; max-width: 150px; padding: 0 4px; }
+  .roster .c-no, .roster .c-id, .roster .c-desig, .roster .c-tot { min-width: 0; padding: 0 2px; }
+  .roster .c-desig { max-width: 70px; }
+  .roster thead tr:first-child th { height: 26px; }
+  .roster thead tr.dow-row th { height: 14px; font-size: 7.5px; }
+  .roster th .d-num { font-size: 8.5px; }
+  .roster th .d-mon { font-size: 6.5px; }
+  .roster tbody.coverage td { height: 15px; font-size: 8px; }
+  .roster tbody.coverage td.coverage-note { display: none; }
+  .roster { font-size: 8px; }
+  .roster .c-name { max-width: 112px; }
+  .roster thead .c-tot { font-size: 7px; }
+  .roster .c-desig { max-width: 52px; }
+  .roster td.cell { font-size: 7.5px; letter-spacing: 0; }
+  .roster td.cell.today, .roster thead th.today { box-shadow: none; }
+  .sheet-head { padding: 0 0 8px; background: none; }
+  .sheet-legend, .sheet-remarks, .sheet-sign { padding-left: 0; padding-right: 0; }
+  .sheet-sign { break-inside: avoid; }
 }
 .table-wrap table.nowrap td { white-space: nowrap; }

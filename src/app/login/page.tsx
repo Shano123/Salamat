@@ -1,4 +1,5 @@
 import { Icon } from "@/components/Icon";
+import { getRules } from "@/lib/settings";
 import { LoginForm } from "./LoginForm";
 
 export const metadata = { title: "Sign in" };
@@ -12,6 +13,7 @@ const POINTS = [
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { next } = await searchParams;
+  const { organizationName } = await getRules();
   return (
     <div className="login">
       <section className="login-hero">
@@ -22,7 +24,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </svg>
           </span>
           <span>
-            <span className="brand-name">Salamat</span>
+            <span className="brand-name">{organizationName}</span>
             <span className="brand-tag">Workforce &amp; Attendance</span>
           </span>
         </div>
@@ -35,7 +37,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             ))}
           </ul>
         </div>
-        <div className="login-foot">© {new Date().getFullYear()} Salamat · Authorised personnel only</div>
+        <div className="login-foot">© {new Date().getFullYear()} {organizationName} · Authorised personnel only</div>
       </section>
       <section className="login-panel">
         <div className="login-card">

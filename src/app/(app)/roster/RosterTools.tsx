@@ -38,7 +38,7 @@ export function RosterTools(props: {
   );
 
   return (
-    <div className="grid grid-2">
+    <div className="grid grid-2 roster-tools">
       <div className="card">
         <h2>{t("roster.conflicts")} ({props.conflicts.length})</h2>
         {props.conflicts.length ? (

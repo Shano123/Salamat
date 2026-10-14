@@ -31,7 +31,12 @@ export async function saveRules(_: ActionState, fd: FormData): Promise<ActionSta
       toilExpiryDays: num(fd, "toilExpiryDays"),
       defaultWeekendDays: fd.getAll("defaultWeekendDays").map(Number),
       timezone: str(fd, "timezone") || "Asia/Riyadh",
+      organizationName: str(fd, "organizationName") || "Salamat Care Hospital",
+      rosterStartDay: num(fd, "rosterStartDay"),
+      standardDailyHours: num(fd, "standardDailyHours"),
     };
+    if (!Number.isInteger(data.rosterStartDay) || data.rosterStartDay < 1 || data.rosterStartDay > 28) throw new Error("Roster period start day must be 1–28.");
+    if (data.standardDailyHours <= 0 || data.standardDailyHours > 24) throw new Error("Standard duty hours must be 1–24.");
     if (data.maxDailyHours <= 0 || data.maxDailyHours > 24) throw new Error("Max daily hours must be 1–24.");
     if (![0, 5, 10, 15, 30].includes(data.roundingMinutes)) throw new Error("Rounding must be 0, 5, 10, 15 or 30 minutes.");
     const before = await db.companyRules.findUnique({ where: { id: 1 } });

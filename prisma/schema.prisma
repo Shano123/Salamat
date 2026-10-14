@@ -144,6 +144,12 @@ model CompanyRules {
   toilExpiryDays            Int      @default(90)
   defaultWeekendDays        Int[]    @default([5, 6])
   timezone                  String   @default("Asia/Riyadh")
+  /// Printed on rosters and reports.
+  organizationName          String   @default("Salamat Care Hospital")
+  /// Day of the month a roster period starts (17 = 17th to 16th of next month; 1 = calendar month).
+  rosterStartDay            Int      @default(1)
+  /// Standard duty hours per working day, used for required hours on the duty roster.
+  standardDailyHours        Float    @default(8)
   updatedAt                 DateTime @updatedAt
 }
 

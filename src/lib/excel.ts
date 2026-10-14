@@ -3,13 +3,16 @@ import ExcelJS from "exceljs";
 import type { Cell } from "./domain/rosterImport";
 import { parseCsv } from "./domain/payroll";
 
-/** Reads the first sheet of an .xlsx or .csv upload into rows of plain cell values. */
-export async function readSheet(file: File): Promise<Cell[][]> {
+/**
+ * Reads one sheet of an .xlsx or .csv upload into rows of plain cell values: the first sheet whose
+ * name matches `prefer` (e.g. "Duty Roster" in a multi-sheet workbook), otherwise the first sheet.
+ */
+export async function readSheet(file: File, prefer?: RegExp): Promise<Cell[][]> {
   const buf = Buffer.from(await file.arrayBuffer());
   if (/\.csv$/i.test(file.name) || file.type === "text/csv") return parseCsv(buf.toString("utf8"));
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(buf as unknown as ArrayBuffer);
-  const ws = wb.worksheets[0];
+  const ws = (prefer && wb.worksheets.find((w) => prefer.test(w.name))) || wb.worksheets[0];
   if (!ws) return [];
   const rows: Cell[][] = [];
   ws.eachRow({ includeEmpty: true }, (row, n) => {

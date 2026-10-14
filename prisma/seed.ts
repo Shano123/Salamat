@@ -1,8 +1,11 @@
 // Demo data: one hospital group, 5 branches, clinical + non-clinical departments,
 // an ICU with a published roster for this week and a draft for next week.
 // Run: npm run db:seed   (all demo users share the password below)
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { buildEmployeeMap, lookupEmployee } from "../src/lib/domain/employeeNo";
 import { computeAttendance, matchPunches } from "../src/lib/domain/attendance";
 import { TemplateLike } from "../src/lib/domain/shift";
 import { addDays, localDateISO, parseDateISO, toDateISO, weekStartOf, zonedToUtc } from "../src/lib/domain/time";
@@ -124,6 +127,8 @@ async function main() {
   }
   void [OC, OFF, M8, E8, N8];
 
+  await seedHospitalWorkbook(hash, main.id, clinical.id, nonClin.id);
+
   if (!(await db.staffingRequirement.count({ where: { departmentId: icu.id } }))) {
     await db.staffingRequirement.createMany({
       data: [
@@ -211,8 +216,141 @@ async function main() {
   console.log(`Seeded. Sign in with any of these (password ${PASSWORD}):
   admin@salamat.test (Super Admin)      hr@salamat.test (HR Admin)        payroll@salamat.test (HR Viewer)
   icu.manager@salamat.test (Dept Mgr)   icu.charge@salamat.test (Line Mgr) 2002@salamat.test (Employee)
+  transport@salamat.test (Driver department manager)
 Kiosk: /kiosk?token=dev-token-kiosk-main  (employee 2002, PIN 1234)
 Fingerprint device token for /api/devices/punches: dev-token-fingerprint-1`);
+}
+
+interface WorkbookData {
+  hospital: string;
+  periodStart: string;
+  stdHoursPerDay: number;
+  departments: string[];
+  holidays: Array<{ date: string; name: string }>;
+  rules: Record<string, number>;
+  shifts: Array<{ code: string; name: string; start1: string | null; end1: string | null; start2: string | null; end2: string | null; hours: number; group: string }>;
+  staff: Array<{ staffId: string; name: string; designation: string | null; department: string; status: string }>;
+  roster: { department: string; dates: string[]; rows: Array<{ staffId: string; codes: string[] }> };
+  punches: Array<[string, string]>;
+}
+
+const GROUP_TEXT: Record<string, string> = {
+  Morning: "#1d4f91", Evening: "#8a4b00", Night: "#3b2f8f", "12h Day": "#0b6b58", Broken: "#8a1f5a",
+  Off: "#64748b", Leave: "#17663a", Holiday: "#9b1c1c", Vacation: "#7a5b00",
+};
+
+/**
+ * One-time load of the hospital's own Excel workbook (prisma/data): departments, staff, shift codes,
+ * public holidays, attendance rules, the published Driver roster and the raw fingerprint punches.
+ * Skipped once the Driver department exists, so HR edits are never overwritten on redeploy.
+ */
+async function seedHospitalWorkbook(hash: string, locationId: string, clinicalId: string, adminId: string) {
+  if (await db.department.findUnique({ where: { code: "DRV" } })) return;
+  const data: WorkbookData = JSON.parse(readFileSync(path.join(__dirname, "data", "driver-roster-2026-09.json"), "utf8"));
+  const title = (s: string) => (s === s.toUpperCase() && s.length > 4 ? s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\bOpd\b/g, "OPD") : s);
+  const CODES: Record<string, string> = { ICU: "ICU", Driver: "DRV", "OR Nurses": "ORN", "OPD MEDICAL STATION": "OPDMED", "OPD Nurse": "OPDN", "NICU & SCBU": "NICU" };
+  const deptIds = new Map<string, string>();
+  for (const name of data.departments) {
+    const code = CODES[name] ?? name.toUpperCase().replace(/[^A-Z0-9]+/g, "").slice(0, 10);
+    const nonClinical = name === "Driver";
+    const d = await db.department.upsert({
+      where: { code },
+      create: { code, nameEn: title(name), nameAr: title(name), kind: nonClinical ? "NON_CLINICAL" : "CLINICAL", parentId: nonClinical ? adminId : clinicalId, level: "SUB_DEPARTMENT", locationId, costCenter: `CC-${code}` },
+      update: {},
+    });
+    deptIds.set(name, d.id);
+  }
+
+  await db.companyRules.update({
+    where: { id: 1 },
+    data: {
+      organizationName: title(data.hospital),
+      rosterStartDay: Number(data.periodStart.slice(8, 10)),
+      standardDailyHours: data.stdHoursPerDay,
+      graceMinutes: data.rules["Late grace (minutes)"] ?? 15,
+      defaultWeekendDays: [5], // Friday (Settings sheet: weekend day 1 = Fri, no second weekend day)
+    },
+  });
+
+  const toMin = (s: string | null) => (s ? Number(s.slice(0, 2)) * 60 + Number(s.slice(3, 5)) : 0);
+  const tplIds = new Map<string, string>();
+  for (const s of data.shifts) {
+    const off = !s.start1;
+    const split = !!s.start2;
+    const startMin = toMin(s.start1);
+    const endMin = toMin(s.end1);
+    const fields = {
+      name: s.name,
+      color: GROUP_TEXT[s.group] ?? "#475569",
+      type: off ? ("OFF" as const) : split ? ("SPLIT" as const) : ("FIXED" as const),
+      startMin,
+      endMin,
+      split2StartMin: split ? toMin(s.start2) : null,
+      split2EndMin: split ? toMin(s.end2) : null,
+      breakMin: off ? 0 : s.hours >= 12 ? 60 : 30,
+      paidBreak: true,
+      graceInMin: data.rules["Late grace (minutes)"] ?? 15,
+      graceOutMin: data.rules["Early-out grace (minutes)"] ?? 15,
+      overnight: !off && ((split && toMin(s.end2) < toMin(s.start2)) || (!split && endMin < startMin && endMin !== 0)),
+      status: "APPROVED" as const,
+    };
+    const existing = await db.shiftTemplate.findFirst({ where: { code: s.code, ownerDepartmentId: null } });
+    const t = existing ? await db.shiftTemplate.update({ where: { id: existing.id }, data: fields }) : await db.shiftTemplate.create({ data: { code: s.code, ...fields } });
+    tplIds.set(s.code, t.id);
+  }
+
+  for (const h of data.holidays) {
+    if (!(await db.holiday.findFirst({ where: { date: parseDateISO(h.date) } }))) await db.holiday.create({ data: { date: parseDateISO(h.date), name: h.name } });
+  }
+
+  const pin = await bcrypt.hash("1234", 10);
+  const staffIds = new Map<string, string>();
+  for (const s of data.staff) {
+    const deptId = deptIds.get(s.department);
+    if (!deptId) continue;
+    const e = await db.employee.upsert({
+      where: { employeeNo: s.staffId },
+      create: { employeeNo: s.staffId, nameEn: s.name, nameAr: s.name, homeDepartmentId: deptId, jobTitle: s.designation || s.department, weekendDays: [5], kioskPin: pin, workLocationId: locationId, clockMethod: "FINGERPRINT", status: s.status === "Inactive" ? "INACTIVE" : "ACTIVE" },
+      update: {},
+    });
+    staffIds.set(s.staffId, e.id);
+  }
+  const drv = deptIds.get(data.roster.department)!;
+  const mgr = await db.user.upsert({ where: { email: "transport@salamat.test" }, create: { email: "transport@salamat.test", role: "DEPT_MANAGER", passwordHash: hash }, update: {} });
+  await db.userDepartmentScope.upsert({ where: { userId_departmentId: { userId: mgr.id, departmentId: drv } }, create: { userId: mgr.id, departmentId: drv }, update: {} });
+
+  // The roster as published in the workbook.
+  const weeks = new Set<string>();
+  for (const row of data.roster.rows) {
+    const employeeId = staffIds.get(row.staffId);
+    if (!employeeId) continue;
+    for (const [i, code] of row.codes.entries()) {
+      const templateId = code ? tplIds.get(code.toUpperCase()) : undefined;
+      if (!templateId) continue;
+      const date = data.roster.dates[i];
+      weeks.add(weekStartOf(date));
+      await db.shiftAssignment.create({ data: { employeeId, date: parseDateISO(date), templateId, departmentId: drv, locationId, status: "PUBLISHED" } });
+    }
+  }
+  for (const w of weeks) {
+    await db.rosterPeriod.upsert({
+      where: { departmentId_weekStart: { departmentId: drv, weekStart: parseDateISO(w) } },
+      create: { departmentId: drv, weekStart: parseDateISO(w), status: "PUBLISHED", publishedAt: parseDateISO(addDays(w, -7)) },
+      update: { status: "PUBLISHED" },
+    });
+  }
+
+  // Raw fingerprint punches (EmpID without the leading zero of the Staff ID; no IN/OUT type).
+  const empMap = buildEmployeeMap([...staffIds].map(([employeeNo, value]) => ({ employeeNo, value })));
+  const punches = data.punches.flatMap(([empId, at]) => {
+    const employeeId = lookupEmployee(empMap, empId);
+    if (!employeeId) return [];
+    const [date, time] = at.split("T");
+    const [h, m, sec] = time.split(":").map(Number);
+    return [{ employeeId, timestamp: new Date(zonedToUtc(date, h * 60 + m, TZ).getTime() + sec * 1000), type: null, source: "EXCEL_IMPORT" as const }];
+  });
+  await db.punch.createMany({ data: punches, skipDuplicates: true });
+  console.log(`Loaded workbook: ${staffIds.size} staff, ${tplIds.size} shift codes, ${punches.length} punches.`);
 }
 
 main()

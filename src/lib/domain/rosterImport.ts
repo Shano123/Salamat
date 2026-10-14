@@ -1,7 +1,10 @@
 // Bulk roster import from Excel. Two layouts:
-//   GRID: employee number | name | <date> | <date> … with shift codes in cells.
+//   GRID: employee number | name | <date> | <date> … with shift codes in cells. The header row
+//         may sit below title rows, as on the hospital's Duty Roster sheet
+//         (No. | Staff Name | Staff ID | Designation | <dates> | totals…, coverage block below).
 //   ROWS: employee number | date | shift code | unit/branch (one row per assignment).
 
+import { buildEmployeeMap, lookupEmployee } from "./employeeNo";
 import { diffDays, toDateISO } from "./time";
 
 export type Cell = string | number | Date | null | undefined;
@@ -89,7 +92,7 @@ export function parseRosterSheet(
   const assignments: ParsedAssignment[] = [];
   if (!rows.length) return { layout: "GRID", assignments, errors: [{ row: 1, col: 1, message: "The sheet is empty." }], from: null, to: null };
 
-  const byNo = new Map(ctx.employees.map((e) => [e.employeeNo.toLowerCase(), e]));
+  const byNo = buildEmployeeMap(ctx.employees.map((e) => ({ employeeNo: e.employeeNo, value: e })));
   const byCode = new Map(ctx.templates.map((t) => [t.code.toUpperCase(), t]));
   const byLoc = new Map(ctx.locations.map((l) => [l.name.toLowerCase(), l]));
   const layout = detectLayout(rows[0]);
@@ -97,7 +100,7 @@ export function parseRosterSheet(
   const resolveEmployee = (raw: Cell, row: number, col: number) => {
     const no = text(raw);
     if (!no) return null;
-    const emp = byNo.get(no.toLowerCase());
+    const emp = lookupEmployee(byNo, no);
     if (!emp) {
       errors.push({ row, col, message: `Unknown employee "${no}".` });
       return null;
@@ -117,19 +120,30 @@ export function parseRosterSheet(
   };
 
   if (layout === "GRID") {
-    const header = rows[0];
+    // The header row is the row (within the top 20) holding the most dates; title blocks may
+    // carry a single date ("Period from") above it.
+    const dateCount = (r: Cell[] | undefined) => (r ?? []).filter((c, i) => i >= 1 && cellToDateISO(c) && !/^\d+$/.test(text(c))).length;
+    const headerIdx = rows.slice(0, 20).reduce((best, r, i) => (dateCount(r) > dateCount(rows[best]) ? i : best), 0);
+    const header = rows[headerIdx] ?? [];
+    const labels = header.map((c) => (c instanceof Date ? "" : text(c).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()));
+    const idCol = labels.findIndex((l) => /^(staff id|staff no|employee|employee (no|number|id)|emp ?(id|no)|id|badge)$/.test(l));
+    const empCol = idCol >= 0 ? idCol : 0;
     const dateCols: Array<{ col: number; date: string }> = [];
     header.forEach((c, i) => {
-      if (i < 1) return;
-      const d = cellToDateISO(c);
+      if (i < 1 || i === empCol) return;
+      const d = typeof c === "number" ? null : cellToDateISO(c);
       if (d) dateCols.push({ col: i + 1, date: d });
-      else if (i >= 2 && text(c)) errors.push({ row: 1, col: i + 1, message: `Header "${text(c)}" is not a date.` });
+      else if (/^\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}$/.test(text(c))) errors.push({ row: headerIdx + 1, col: i + 1, message: `Header "${text(c)}" is not a valid date.` });
     });
-    if (!dateCols.length) errors.push({ row: 1, col: 3, message: "No date columns found in the header row." });
-    for (let r = 1; r < rows.length; r++) {
+    if (!dateCols.length) errors.push({ row: headerIdx + 1, col: 3, message: "No date columns found in the header row." });
+    for (let r = headerIdx + 1; r < rows.length; r++) {
       const row = rows[r];
       if (!row || row.every((c) => text(c) === "")) continue;
-      const emp = resolveEmployee(row[0], r + 1, 1);
+      // The roster's coverage / legend block ends the staff rows.
+      if (row.some((c) => /^(daily coverage|total on duty|coverage status|shift legend)/i.test(text(c)))) break;
+      // Merged header cells repeat their label on the next row (e.g. "Staff ID" over rows 8–9).
+      if (!text(row[empCol]) || text(row[empCol]).toLowerCase() === text(header[empCol]).toLowerCase()) continue;
+      const emp = resolveEmployee(row[empCol], r + 1, empCol + 1);
       if (!emp) continue;
       for (const { col, date } of dateCols) {
         const t = resolveCode(row[col - 1], r + 1, col);

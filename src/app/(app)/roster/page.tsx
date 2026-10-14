@@ -3,13 +3,16 @@ import { Forbidden, PageHeader, StatusBadge } from "@/components/ui";
 import { canManageDepartment, pageGuard, visibleDepartments } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { can } from "@/lib/domain/permissions";
-import { addDays, dateRange, diffDays, localDateISO, monthRange, parseDateISO, toDateISO, weekStartOf } from "@/lib/domain/time";
+import { legendText, periodRange, shiftGroup } from "@/lib/domain/dutyRoster";
+import { scheduledMinutes } from "@/lib/domain/shift";
+import { addDays, dateRange, diffDays, localDateISO, parseDateISO, toDateISO, weekStartOf } from "@/lib/domain/time";
 import { getT } from "@/lib/i18n/server";
-import { approvedLeave } from "@/lib/services/attendance";
+import { approvedLeave, toTemplateLike } from "@/lib/services/attendance";
 import { checkDepartmentRoster, departmentTemplates } from "@/lib/services/roster";
 import { getRules } from "@/lib/settings";
 import { RosterGrid } from "./RosterGrid";
 import { RosterTools } from "./RosterTools";
+import { PrintButton } from "./PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -30,12 +33,13 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
     (user.departments !== "ALL" ? depts.find((d) => d.id === user.homeDepartmentId && staffed.some((x) => x.homeDepartmentId === d.id)) : undefined) ??
     depts.find((d) => d.id === largest) ??
     depts[0];
-  const view = sp.view === "month" ? "month" : "week";
+  // The monthly duty roster (period start day from Settings, e.g. 17th → 16th) is the default view.
+  const view = sp.view === "week" ? "week" : "month";
   const anchor = sp.week && /^\d{4}-\d{2}-\d{2}$/.test(sp.week) ? sp.week : today;
   let from: string;
   let to: string;
   if (view === "month") {
-    const m = monthRange(anchor);
+    const m = periodRange(anchor, rules.rosterStartDay);
     from = m.from;
     to = m.to;
   } else {
@@ -44,8 +48,9 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
   }
   const dates = dateRange(from, to);
 
-  const [home, assignments, templates, periods, staffing, leaveAll, floatPool, otherDepts] = await Promise.all([
-    db.employee.findMany({ where: { homeDepartmentId: dept.id, status: "ACTIVE" }, orderBy: [{ jobTitle: "asc" }, { nameEn: "asc" }] }),
+  const [home, assignments, templates, periods, staffing, leaveAll, floatPool, otherDepts, holidayRows] = await Promise.all([
+    // Staff list order (as on the Excel Staff sheet), so row numbers stay stable month to month.
+    db.employee.findMany({ where: { homeDepartmentId: dept.id, status: "ACTIVE" }, orderBy: [{ createdAt: "asc" }, { nameEn: "asc" }] }),
     db.shiftAssignment.findMany({
       where: { date: { gte: parseDateISO(from), lte: parseDateISO(to) }, isOpenShift: false, OR: [{ departmentId: dept.id }, { employee: { homeDepartmentId: dept.id } }] },
       include: { template: true, department: true },
@@ -56,7 +61,12 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
     approvedLeave(null, from, to),
     db.employee.findMany({ where: { homeDepartment: { isFloatPool: true }, status: "ACTIVE", homeDepartmentId: { not: dept.id } }, orderBy: { nameEn: "asc" } }),
     db.department.findMany({ where: { id: { not: dept.id } }, orderBy: { nameEn: "asc" } }),
+    db.holiday.findMany({ where: { date: { gte: parseDateISO(from), lte: parseDateISO(to) }, OR: [{ locationId: null }, ...(dept.locationId ? [{ locationId: dept.locationId }] : [])] }, orderBy: { date: "asc" } }),
   ]);
+  const shiftInfo = (x: Parameters<typeof toTemplateLike>[0] & { name: string }) => {
+    const like = { ...toTemplateLike(x), name: x.name };
+    return { group: shiftGroup(like), minutes: scheduledMinutes(like), legend: legendText(like) };
+  };
   const guestIds = [...new Set(assignments.filter((a) => a.departmentId === dept.id).map((a) => a.employeeId))].filter((id) => !home.some((e) => e.id === id));
   const guests = guestIds.length ? await db.employee.findMany({ where: { id: { in: guestIds } }, include: { homeDepartment: true } }) : [];
   const { conflicts } = await checkDepartmentRoster(dept.id, from, to);
@@ -76,7 +86,7 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader title={`${t("nav.roster")} · ${nm(dept)}`} subtitle={`${from} → ${to}`}>
+      <PageHeader title={`${t("nav.roster")} · ${nm(dept)}`} subtitle={`${from} → ${to}${view === "month" && rules.rosterStartDay !== 1 ? ` · roster period starts on day ${rules.rosterStartDay}` : ""}`}>
         <form className="row">
           <input type="hidden" name="view" value={view} />
           <input type="hidden" name="week" value={anchor} />
@@ -90,9 +100,11 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
         <Link className="btn" href={q({ week: nextAnchor })}>→</Link>
         <Link className={`btn ${view === "week" ? "primary" : ""}`} href={q({ view: "week" })}>{t("common.week")}</Link>
         <Link className={`btn ${view === "month" ? "primary" : ""}`} href={q({ view: "month" })}>{t("common.month")}</Link>
+        <a className="btn" href={`/api/roster/export?dept=${dept.id}&from=${from}&to=${to}`}>Excel</a>
+        <PrintButton />
       </PageHeader>
 
-      <div className="row" style={{ marginBottom: 12 }}>
+      <div className="row no-print" style={{ marginBottom: 12 }}>
         {weekStarts.map((w) => (
           <span key={w} className="row" style={{ gap: 4 }}>
             <small className="muted">{w}</small>
@@ -104,6 +116,11 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
 
       <RosterGrid
         departmentId={dept.id}
+        departmentName={nm(dept)}
+        organizationName={rules.organizationName}
+        title={view === "month" ? "Monthly Staff Duty Roster" : "Weekly Staff Duty Roster"}
+        holidays={holidayRows.map((h) => ({ date: toDateISO(h.date), name: h.name }))}
+        standardHours={rules.standardDailyHours}
         dates={dates}
         today={today}
         canEdit={canEdit}
@@ -111,17 +128,17 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
         publishedWeeks={weekStarts.filter((w) => periodStatus[w] === "PUBLISHED")}
         weekendDays={rules.defaultWeekendDays}
         employees={[
-          ...home.map((e) => ({ id: e.id, name: nm(e), sub: `${e.employeeNo} · ${e.jobTitle}`, skills: e.skills, guest: null as string | null })),
-          ...guests.map((e) => ({ id: e.id, name: nm(e), sub: `${e.employeeNo} · ${e.jobTitle}`, skills: e.skills, guest: nm(e.homeDepartment) })),
+          ...home.map((e) => ({ id: e.id, name: nm(e), employeeNo: e.employeeNo, jobTitle: e.jobTitle, skills: e.skills, guest: null as string | null })),
+          ...guests.map((e) => ({ id: e.id, name: nm(e), employeeNo: e.employeeNo, jobTitle: e.jobTitle, skills: e.skills, guest: nm(e.homeDepartment) })),
         ]}
-        templates={templates.map((x) => ({ id: x.id, code: x.code, name: x.name, color: x.color, status: x.status, type: x.type }))}
+        templates={templates.map((x) => ({ id: x.id, code: x.code, name: x.name, status: x.status, type: x.type, ...shiftInfo(x) }))}
         assignments={assignments.map((a) => ({
           id: a.id,
           employeeId: a.employeeId,
           date: toDateISO(a.date),
           templateId: a.templateId,
           code: a.template.code,
-          color: a.template.color,
+          ...(({ group, minutes }) => ({ group, minutes }))(shiftInfo(a.template)),
           status: a.status,
           departmentId: a.departmentId,
           departmentName: nm(a.department),
@@ -129,7 +146,7 @@ export default async function RosterPage({ searchParams }: { searchParams: Promi
           type: a.template.type,
         }))}
         leave={leaveAll.map((l) => ({ employeeId: l.employeeId, from: l.from, to: l.to }))}
-        staffing={staffing.map((s) => ({ templateId: s.templateId, code: s.template.code, skill: s.skill, minCount: s.minCount }))}
+        staffing={staffing.map((s) => ({ templateId: s.templateId, code: s.template.code, group: shiftInfo(s.template).group, skill: s.skill, minCount: s.minCount }))}
         conflicts={conflicts.map((c) => ({ kind: c.kind, severity: c.severity, date: c.date, employeeId: c.employeeId ?? null, message: c.message }))}
       />
 

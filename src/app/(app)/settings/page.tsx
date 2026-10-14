@@ -60,6 +60,9 @@ export default async function SettingsPage() {
           <fieldset>
             <legend>Roster</legend>
             <div className="form-grid">
+              <label>Hospital name (printed on rosters)<input name="organizationName" defaultValue={r.organizationName} required /></label>
+              <F name="rosterStartDay" label="Roster period starts on day (1 = calendar month)" value={r.rosterStartDay} />
+              <F name="standardDailyHours" label="Standard duty hours per working day" step={0.5} value={r.standardDailyHours} />
               <F name="publishDeadlineDays" label="Publish deadline (days before week)" value={r.publishDeadlineDays} />
               <F name="editNoticeHours" label="Short-notice edit window (h)" value={r.editNoticeHours} />
               <label>Timezone<input name="timezone" defaultValue={r.timezone} /></label>

@@ -55,7 +55,7 @@ export async function importRoster(_: ActionState, fd: FormData): Promise<Action
     if (!can(user.role, "roster.import") || !canManageDepartment(user, departmentId)) throw new Error("You can only import for your own department.");
     if (!file || !file.size) throw new Error("Choose an Excel or CSV file.");
 
-    const sheet = await readSheet(file);
+    const sheet = await readSheet(file, /duty\s*roster|^roster$/i);
     const [employees, templates, locations] = await Promise.all([
       db.employee.findMany({ where: { status: "ACTIVE" }, select: { id: true, employeeNo: true, homeDepartmentId: true } }),
       db.shiftTemplate.findMany({ where: { status: "APPROVED", OR: [{ ownerDepartmentId: departmentId }, { ownerDepartmentId: null }] } }),

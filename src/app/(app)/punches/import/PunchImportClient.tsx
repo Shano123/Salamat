@@ -17,10 +17,10 @@ function guess(headers: string[], key: keyof PunchMapping): string {
   const h = headers.map((x) => x.toLowerCase());
   const find = (...needles: string[]) => headers[h.findIndex((x) => needles.some((n) => x.includes(n)))] ?? "";
   switch (key) {
-    case "employeeNo": return find("employee", "emp", "user id", "ac-no", "badge", "رقم");
+    case "employeeNo": return find("empid", "emp id", "employee", "emp", "staff id", "user id", "ac-no", "badge", "رقم");
     case "date": return h.some((x) => x.includes("date") && !x.includes("time")) ? find("date") : "";
     case "time": return h.some((x) => x === "time" || (x.includes("time") && !x.includes("date"))) ? headers[h.findIndex((x) => x === "time" || (x.includes("time") && !x.includes("date")))] : "";
-    case "datetime": return h.some((x) => x.includes("date") && x.includes("time")) ? find("datetime", "date/time", "date time") : "";
+    case "datetime": return h.some((x) => x.includes("date") && x.includes("time")) ? find("datetime", "date/time", "date time", "date and time", "date & time") : "";
     case "type": return find("type", "state", "status", "check");
     case "device": return find("device", "terminal", "branch", "machine");
     case "source": return find("source", "verify");

@@ -49,7 +49,8 @@ export function validateTemplate(t: TemplateLike, rules: CompanyRulesLike): stri
     if (v < 0 || v >= 1440) errors.push("Start and end must be between 00:00 and 23:59.");
   }
   if (t.startMin === t.endMin) errors.push("Start and end cannot be equal.");
-  if (!t.overnight && t.endMin < t.startMin && t.type !== "SPLIT") {
+  // A shift ending exactly at midnight (16:00–00:00) stays on its own date and is not overnight.
+  if (!t.overnight && t.endMin < t.startMin && t.endMin !== 0 && t.type !== "SPLIT") {
     errors.push("End is before start: mark the template as overnight.");
   }
   if (t.overnight && !crossesMidnight(t)) errors.push("Overnight is set but the shift does not cross midnight.");

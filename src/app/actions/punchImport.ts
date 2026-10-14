@@ -5,6 +5,7 @@ import { canManageDepartment, requirePermission } from "@/lib/auth";
 import { ActionState, run, str } from "@/lib/actions";
 import { db } from "@/lib/db";
 import { toCsv } from "@/lib/domain/payroll";
+import { buildEmployeeMap } from "@/lib/domain/employeeNo";
 import { DEFAULT_MAPPING, parsePunchRows, PunchMapping } from "@/lib/domain/punchImport";
 import { localDateISO, toDateISO } from "@/lib/domain/time";
 import { readSheet } from "@/lib/excel";
@@ -31,7 +32,7 @@ export async function importPunches(_: ActionState, fd: FormData): Promise<Actio
     const step = str(fd, "step") as "columns" | "preview" | "apply";
     const file = fd.get("file") as File | null;
     if (!file || !file.size) throw new Error("Choose a file.");
-    const sheet = await readSheet(file);
+    const sheet = await readSheet(file, /raw\s*punch|punch/i);
     const headers = (sheet[0] ?? []).map((h) => String(h ?? "").trim());
     const saved = await db.columnMapping.findMany({ where: { kind: "PUNCH" }, orderBy: { name: "asc" } });
     const mappings = saved.map((m) => ({ name: m.name, mapping: m.mapping as unknown as PunchMapping }));
@@ -47,7 +48,7 @@ export async function importPunches(_: ActionState, fd: FormData): Promise<Actio
     const deptId = isHr ? null : str(fd, "departmentId");
     if (!isHr && (!deptId || !canManageDepartment(user, deptId))) throw new Error("Department managers import for their own department only.");
     const employees = await db.employee.findMany({ where: deptId ? { homeDepartmentId: deptId } : {}, select: { id: true, employeeNo: true } });
-    const empMap = new Map(employees.map((e) => [e.employeeNo.toLowerCase(), e.id]));
+    const empMap = buildEmployeeMap(employees.map((e) => ({ employeeNo: e.employeeNo, value: e.id })));
     const timestamps = await db.punch.findMany({ where: { employeeId: { in: employees.map((e) => e.id) } }, select: { employeeId: true, timestamp: true } });
     const preview = parsePunchRows(headers, sheet.slice(1), mapping, {
       tz: rules.timezone,
@@ -145,6 +146,12 @@ export async function undoPunchBatch(_: ActionState, fd: FormData): Promise<Acti
   }, "/punches/import");
 }
 
+/** Template in the fingerprint device's raw export layout (Raw Punch sheet): one row per punch, no IN/OUT type. */
 export async function punchTemplateCsv(): Promise<string> {
-  return toCsv(["employee_no", "date", "time", "punch_type", "device", "source"], [["1001", toDateISO(new Date()), "07:02", "in", "MAIN-ZK-01", "fingerprint"], ["1001", toDateISO(new Date()), "15:05", "out", "MAIN-ZK-01", "fingerprint"]]);
+  const d = toDateISO(new Date());
+  const day = new Date(`${d}T00:00:00Z`).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+  return toCsv(["EmpID", "Day", "Date", "Time", "Date and Time"], [
+    ["91070", day, d, "07:58:12", `${d} 07:58:12`],
+    ["91070", day, d, "16:01:40", `${d} 16:01:40`],
+  ]);
 }

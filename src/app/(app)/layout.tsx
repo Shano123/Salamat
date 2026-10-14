@@ -7,11 +7,12 @@ import { getT } from "@/lib/i18n/server";
 import { Icon } from "@/components/Icon";
 import { UserMenu } from "@/components/UserMenu";
 import { roleLabel } from "@/lib/roles";
+import { getRules } from "@/lib/settings";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const { t } = await getT();
-  const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
+  const [unread, rules] = await Promise.all([db.notification.count({ where: { userId: user.id, readAt: null } }), getRules()]);
   const r = user.role;
   const ICONS: Record<string, string> = {
     "/dashboard": "dashboard", "/me/schedule": "calendar", "/clock": "clock", "/me/attendance": "checklist", "/me/leave": "leave",
@@ -74,7 +75,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <Shell
       sections={sections}
-      brand={t("appName")}
+      brand={rules.organizationName}
       tagline={t("tagline")}
       topbar={
         <>

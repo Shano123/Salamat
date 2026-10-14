@@ -1,6 +1,7 @@
 // Bulk raw punch import (Excel/CSV) with per-device-brand column mapping.
 
 import type { PunchKind } from "./attendance";
+import { lookupEmployee } from "./employeeNo";
 import { cellToDateISO, Cell } from "./rosterImport";
 import { hhmmToMinutes, toDateISO, zonedToUtc } from "./time";
 
@@ -97,7 +98,7 @@ export function parsePunchRows(
   mapping: PunchMapping,
   ctx: {
     tz: string;
-    employees: Map<string, string>; // employeeNo (lowercase) → id
+    employees: Map<string, string>; // from buildEmployeeMap: employeeNo → id
     lockedRanges: Array<{ from: string; to: string }>;
     existingKeys: Set<string>; // `${employeeId}|${iso timestamp}`
   },
@@ -127,7 +128,7 @@ export function parsePunchRows(
     const row = i + 2;
     if (!raw || raw.every((c) => c == null || String(c).trim() === "")) return;
     const no = String(raw[cEmp] ?? "").trim();
-    const employeeId = ctx.employees.get(no.toLowerCase());
+    const employeeId = lookupEmployee(ctx.employees, no);
     if (!employeeId) return preview.errors.push({ row, message: `Unknown employee "${no}".`, raw });
     let ts: Date | null = null;
     if (cDt >= 0) ts = parseDateTime(raw[cDt], ctx.tz);

@@ -45,20 +45,31 @@ export function matchPunches(punches: PunchLike[], shifts: ScheduledShift[], tz:
   return result;
 }
 
-/** Assigns IN/OUT to untyped punches by time: first is IN, last is OUT, pairs in between are breaks. */
-export function pairUntyped(punches: PunchLike[]): PunchLike[] {
+/**
+ * Assigns IN/OUT to untyped punches (raw fingerprint data). Without a shift window the first is
+ * IN and the last is OUT. With the shift window (as on the Excel attendance rules):
+ *   IN  = the last punch at or before shift start; if none, the first punch before mid-shift (late);
+ *   OUT = the last punch from mid-shift onwards.
+ * Punches in between (vehicle trips, gate passes) stay as extra punches and do not change hours.
+ */
+export function pairUntyped(punches: PunchLike[], window?: { start: Date; end: Date }): PunchLike[] {
   const sorted = [...punches].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   if (sorted.every((p) => p.type)) return sorted;
   const untyped = sorted.filter((p) => !p.type);
-  return sorted.map((p) => {
-    if (p.type) return p;
-    const i = untyped.indexOf(p);
-    let type: PunchKind;
-    if (i === 0) type = "IN";
-    else if (i === untyped.length - 1) type = "OUT";
-    else type = i % 2 === 1 ? "BREAK_START" : "BREAK_END";
-    return { ...p, type };
-  });
+  let inId: string | undefined;
+  let outId: string | undefined;
+  if (window) {
+    const start = window.start.getTime();
+    const mid = start + (window.end.getTime() - start) / 2;
+    const before = untyped.filter((p) => p.timestamp.getTime() < mid);
+    const early = before.filter((p) => p.timestamp.getTime() <= start);
+    inId = (early.length ? early[early.length - 1] : before[0])?.id;
+    outId = untyped.filter((p) => p.timestamp.getTime() >= mid).pop()?.id;
+  } else {
+    inId = untyped[0]?.id;
+    outId = untyped.length > 1 ? untyped[untyped.length - 1].id : undefined;
+  }
+  return sorted.map((p) => (p.type ? p : { ...p, type: p.id === inId ? "IN" : p.id === outId ? "OUT" : null }));
 }
 
 export type AttendanceStatusName =
@@ -107,11 +118,11 @@ function roundDown(mins: number, step: number): number {
 
 export function computeAttendance(input: AttendanceInput): AttendanceResult {
   const { date, template: t, tz, now } = input;
-  const punches = pairUntyped(input.punches);
   if (t.type === "OFF") return { ...EMPTY, status: "OFF_DAY" };
   if (input.onLeave) return { ...EMPTY, status: "ON_LEAVE" };
 
   const window = shiftWindow(date, t, tz)!;
+  const punches = pairUntyped(input.punches, window);
   const ins = punches.filter((p) => p.type === "IN");
   const outs = punches.filter((p) => p.type === "OUT");
   const firstIn = ins[0]?.timestamp ?? null;

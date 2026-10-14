@@ -58,14 +58,14 @@ Other scripts: `npm test` (unit tests), `npm run typecheck`, `npm run build`.
 | My leave (balances, time off in lieu, holidays) | `/me/leave` | employees |
 | My requests (leave, swap / give-away, shift change, correction, overtime) | `/requests` | employees |
 | Approval inbox (filters, bulk approve, overdue flag) | `/inbox` | L1, L2, HR |
-| Roster grid (week / month, drag-and-drop, paint, conflicts, publish, copy last week, bulk assign, rotation, float pool, loans) | `/roster` | managers, HR |
-| Excel roster import (template, grid or row layout, merge/replace, per-cell errors, undo) | `/roster/import` | Dept Manager, HR |
+| Monthly duty roster in the hospital's Excel layout (period from the Settings start day, e.g. 17th → 16th; No. / Staff Name / Staff ID / Designation, colour-coded shift codes, Duty Days / Off / Leave / Planned vs Required hours, daily coverage with LOW flags, legend, signature block, A4 landscape print), plus week view, drag-and-drop, paint, conflicts, publish, copy last week, bulk assign, rotation, float pool, loans | `/roster` | managers, HR |
+| Excel roster import: the Duty Roster sheet as-is (title rows, Staff ID column, coverage block ignored), the app's own export, or a row layout; merge/replace, per-cell errors, undo | `/roster/import` | Dept Manager, HR |
 | Open shifts (post, claim, approve) | `/open-shifts` | managers, employees |
 | Shift templates (HR approval, rule checks, disable) | `/templates` | Dept Manager, HR |
 | Minimum staffing per unit / shift / role | `/staffing` | Dept Manager, HR |
 | Attendance records, manager-raised corrections, recalculation | `/attendance` | managers, HR |
 | Reports (daily, timesheet, lateness, absence, overtime, leave, roster vs actual, scorecards) + Excel/CSV | `/reports` | managers, HR, HR Viewer |
-| Raw punch import with column mapping per device brand | `/punches/import` | HR (Dept Managers with HR approval) |
+| Raw punch import: the device's Raw Punch sheet (`EmpID | Day | Date | Time | Date and Time`, no IN/OUT) is read directly; EmpIDs that lost the Staff ID's leading zero still match; column mapping per device brand for other formats | `/punches/import` | HR (Dept Managers with HR approval) |
 | Payroll export with configurable columns | `/payroll` | HR Admin |
 | Pay periods (lock / reopen) | `/periods` | HR Admin |
 | Departments tree and managers | `/departments` | HR |
@@ -76,6 +76,12 @@ Other scripts: `npm test` (unit tests), `npm run typecheck`, `npm run build`.
 | Company rules | `/settings` | HR |
 | Audit log | `/audit` | HR, HR Viewer |
 | Notifications | `/notifications` | everyone |
+
+## Hospital workbook data
+
+`prisma/data/driver-roster-2026-09.json` holds the hospital's own workbook (*Driver Attendance, 17 Sep – 16 Oct 2026*): departments, staff, the 16 shift codes (M1–M3, E1–E2, N1, D12, N12, B1–B3, X, L, EID, ND, V), public holidays, attendance rules (15 min late / early-out grace), the published Driver roster and 230 raw fingerprint punches. The seed loads it once (skipped when the Driver department exists) and sets the roster period to start on the 17th, Friday as the weekend and 8 standard hours a day. Department manager login: `transport@salamat.test`.
+
+Untyped device punches are read the way the workbook does: IN = last punch at or before shift start (otherwise the first punch before mid-shift, counted late), OUT = last punch from mid-shift on; punches in between (vehicle trips) are extra punches and do not change hours.
 
 ## Integrations
 
