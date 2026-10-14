@@ -1,9 +1,11 @@
 import "server-only";
+import { cache } from "react";
 import { db } from "./db";
 import { CompanyRulesLike, DEFAULT_RULES } from "./domain/rules";
 import { toDateISO } from "./domain/time";
 
-export async function getRules(): Promise<
+/** Company rules, read once per request (layout, page and services share the result). */
+export const getRules = cache(async (): Promise<
   CompanyRulesLike & {
     overtimeRatePercent: number;
     missedClockInAlertMinutes: number;
@@ -13,7 +15,7 @@ export async function getRules(): Promise<
     rosterStartDay: number;
     standardDailyHours: number;
   }
-> {
+> => {
   const r = await db.companyRules.findUnique({ where: { id: 1 } });
   if (!r) {
     return {
@@ -32,4 +34,4 @@ export async function getRules(): Promise<
     ramadanStart: r.ramadanStart ? toDateISO(r.ramadanStart) : null,
     ramadanEnd: r.ramadanEnd ? toDateISO(r.ramadanEnd) : null,
   };
-}
+});

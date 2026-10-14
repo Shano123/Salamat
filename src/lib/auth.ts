@@ -40,16 +40,12 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const jar = await cookies();
   const uid = await verifySession(jar.get(SESSION_COOKIE)?.value);
   if (!uid) return null;
-  const user = await db.user.findUnique({
-    where: { id: uid },
-    include: { employee: true, scopes: true },
-  });
-  if (!user) return null;
-
   const today = toDateISO(new Date());
-  const delegations = await db.delegation.findMany({
-    where: { toUserId: uid, startDate: { lte: new Date(today) }, endDate: { gte: new Date(today) } },
-  });
+  const [user, delegations] = await Promise.all([
+    db.user.findUnique({ where: { id: uid }, include: { employee: true, scopes: true } }),
+    db.delegation.findMany({ where: { toUserId: uid, startDate: { lte: new Date(today) }, endDate: { gte: new Date(today) } } }),
+  ]);
+  if (!user) return null;
   const delegatorIds = activeDelegatorIds(
     uid,
     delegations.map((d) => ({ fromUserId: d.fromUserId, toUserId: d.toUserId, startDate: toDateISO(d.startDate), endDate: toDateISO(d.endDate) })),
