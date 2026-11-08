@@ -1,0 +1,37 @@
+# RSBRI Fashion — storefront prototype
+
+A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD v2.0 (Pakistan edition)**. It covers every Phase 1 page, so the brand, layout and shopping flow can be reviewed and tested before the production build (Shopify or Next.js, PRD §13).
+
+**Run it:** open `index.html` in a browser, or serve the folder from any static host. There is no build step and no backend. The cart, wishlist, orders and sign-in are saved in the browser's localStorage.
+
+## What's included (mapped to the PRD)
+
+| PRD | Built |
+|---|---|
+| §4 Brand | Ivory / charcoal / deep-maroon palette, gold detailing, red only for sale. Cormorant Garamond headings + Inter body. Mughal-arch motif. |
+| §5 Country stores | `/en-pk/` URL prefix, header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), hreflang tags, +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
+| §7 Navigation | Announcement bar, mega-menu (desktop), drawer (mobile), full footer, floating WhatsApp, cookie banner. |
+| §8.1 Home | Hero slider with separate mobile art (H-1), department tiles (H-2), category circles (H-3), New In + Best Sellers carousels (H-4), deal strip with countdown (H-5), trust strip (H-6), shoppable social gallery (H-7), WhatsApp/email opt-in (H-8). |
+| §8.2 Listing | 2/4-column grid with second image on hover, department-specific filters (women: type, pieces, fabric, size, colour, occasion, price; bedding: category, bed size, thread count, material, pieces, colour, price), 6 sort options, badges, quick view + quick add, "Load more" with `?page=` URLs. |
+| §8.3 Product | Gallery + zoom + fabric close-up, price / strike-through / % saved, colour + size / bed-size selectors with sold-out greyed, size guides (in/cm), pieces & metres, care, delivery estimate by city, Add to bag / Buy now / Wishlist / Share on WhatsApp / Order on WhatsApp, Complete the look / Matching cushions, back-in-stock alert, recently viewed, Product JSON-LD. |
+| §8.4 Search, cart, account | Predictive search with Roman-Urdu synonyms (chadar → bedsheet, razai → quilt, kameez → kurti…), mini cart + cart page, free-delivery progress bar, discount codes (`WELCOME10`, `EID500`), gift wrap, mobile + OTP sign-in, orders, re-order, saved address, exchange request. |
+| §10 Checkout | One page: mobile → address → delivery (standard / express by city) → payment (COD, JazzCash, Easypaisa, cards via gateway, bank/IBFT/Raast), Rs. 100 prepaid incentive, COD cap, confirmation with WhatsApp confirm + order-status timeline, order tracking. |
+| Other pages | About, Contact, Delivery, Exchange & Returns, Size Guide, Bedsheet Size Guide, FAQ, Fabric & Care, Privacy, Terms, Gift Cards, Journal, 404. |
+
+## Placeholders to replace before launch
+
+- **Imagery:** every product and banner image is generated SVG artwork (`assets/art.js`). Replace it with real photography (WebP, through a CDN).
+- **Catalogue:** `assets/data.js` holds 31 demo products. Replace it with the real product feed.
+- **WhatsApp number:** `STORE.whatsapp` in `assets/data.js`.
+- **Payments, couriers, OTP and sign-in** are simulated in the prototype. Connect them to the real gateway, courier and SMS APIs in the production build.
+- **Policy copy** (privacy, terms, bank details) is placeholder text. Have it reviewed by your legal and tax advisers.
+
+## Files
+
+```
+index.html          page shell, header, footer, drawers, icons
+assets/styles.css   design system and all components
+assets/data.js      store settings, cities, categories, products, search synonyms
+assets/art.js       SVG placeholder artwork generator
+assets/app.js       routing, pages, cart, checkout, search, account
+```
