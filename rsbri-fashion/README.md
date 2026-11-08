@@ -25,6 +25,23 @@ A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD 
 - **Free delivery:** orders over Rs. 3,000 (`STORE.freeDeliveryThreshold`).
 - **Urdu:** interface text is translated in `assets/i18n.js`. Product names, fabric names and city names stay in English. Copy with inline formatting uses `T(english, urdu)` in `assets/app.js`.
 
+## Back office (demo): stock, staff access, affiliates
+
+Open **Staff login** in the footer (`#/en-pk/admin`). Demo accounts: Rizwan / Owner / PIN 1234, Sana / Order staff / 2222, Bilal / Stock keeper / 3333.
+
+| Section | What it does in the prototype | On the live Shopify store |
+|---|---|---|
+| Overview | Sales today, COD orders waiting for confirmation, share paid online, low-stock and sold-out counts, affiliate sales | Shopify admin home and Analytics |
+| Orders | Filter by status, move orders through Pending → Confirmed → Packed → Dispatched → Delivered, or cancel. Cancelling returns the items to stock. | Shopify Orders, plus a COD-confirmation app and the Leopards/TCS apps for booking |
+| Stock | One quantity for each product, colour and size. Search, filter low or sold out, adjust with − / + / +10, set the low-stock alert level. The shop shows "Only N left", greys out sold-out sizes, stops the bag going over stock, and takes stock off when an order is placed. | Shopify Products → Inventory (per variant, CSV import/export, low-stock reports) |
+| Staff & access | Add staff, give each one a role (Owner, Manager, Order staff, Stock keeper, Content editor), disable accounts, reset PINs. There is always at least one owner. A role only sees its own sections. | Shopify Settings → Users and permissions (staff accounts with their own logins, two-step verification, per-section permissions) |
+| Affiliates | Set the commission %, customer discount % and link window (days). Approve, pause and add affiliates, copy links, record payouts. Each affiliate code works as a discount code and in a link (`?ref=CODE`). Commission is pending until the order is delivered. | An affiliate app from the Shopify App Store (for example UpPromote or GoAffPro), with payouts by JazzCash, Easypaisa or bank |
+| Activity | Who changed what and when: stock, orders, staff, affiliates, sign-ins | Shopify's staff activity and order timeline |
+
+Public affiliate sign-up page: footer → **Become an affiliate** (`#/en-pk/affiliates`), in English and Urdu.
+
+The prototype keeps all of this in the browser's localStorage, so it is for trying the flows only. It is not secure (PINs are stored in the browser) and not shared between devices. The live store must use Shopify's own staff accounts.
+
 ## Placeholders to replace before launch
 
 - **Imagery:** every product and banner image is generated SVG artwork (`assets/art.js`). Replace it with real photography (WebP, through a CDN).

@@ -52,6 +52,141 @@
     code: store.get('code', null)
   };
 
+  /* ================= back office (demo): stock, staff, affiliates, activity =================
+     Prototype only: everything is kept in this browser's localStorage so the flows can be
+     tried end to end. On the live store this data lives in Shopify (see README). */
+
+  /* ---- stock: one quantity per product × colour × size ---- */
+  function variantsOf(p) {
+    var sizes = p.sizes || p.bedSizes || [null], out = [];
+    p.colors.forEach(function (c, ci) { sizes.forEach(function (s) { out.push({ c: ci, s: s, k: p.id + '|' + ci + '|' + (s || '') }); }); });
+    return out;
+  }
+  function seedStock() {
+    var st = {};
+    R.PRODUCTS.forEach(function (p, i) {
+      variantsOf(p).forEach(function (v, j) {
+        st[v.k] = p.soldOut.indexOf(v.s) > -1 ? 0 : p.lowStock ? 1 + (j % 3) : 5 + ((i * 7 + j * 5) % 26);
+      });
+    });
+    return st;
+  }
+  var STOCK = (function () {
+    var saved = store.get('stock', null), seeded = seedStock();
+    if (saved) Object.keys(seeded).forEach(function (k) { if (typeof saved[k] === 'number') seeded[k] = saved[k]; });
+    store.set('stock', seeded);
+    return seeded;
+  })();
+  var SETTINGS = store.get('settings', { lowStockAt: 5 });
+  function stockOf(p, c, s) { var v = STOCK[p.id + '|' + (c || 0) + '|' + (s || '')]; return typeof v === 'number' ? v : 0; }
+  function totalStock(p) { return variantsOf(p).reduce(function (a, v) { return a + (STOCK[v.k] || 0); }, 0); }
+  function isOut(p, c, s) { return stockOf(p, c, s) <= 0; }
+  function setStock(k, q, reason, who) {
+    var before = STOCK[k] || 0; q = Math.max(0, Math.round(+q || 0));
+    if (q === before) return false;
+    STOCK[k] = q; store.set('stock', STOCK);
+    logActivity('Stock', variantLabel(k), before + ' → ' + q + (reason ? ' · ' + reason : ''), who);
+    return true;
+  }
+  function variantLabel(k) {
+    var a = k.split('|'), p = byId(a[0]); if (!p) return k;
+    return p.sku + ' ' + p.title + ' · ' + p.colors[+a[1]].name + (a[2] ? ' · ' + a[2] : '');
+  }
+
+  /* ---- staff & roles ---- */
+  var PERMS = [
+    ['overview', 'See dashboard'], ['orders.view', 'See orders'], ['orders.edit', 'Confirm & update orders'],
+    ['stock.view', 'See stock'], ['stock.edit', 'Change stock'], ['affiliates.manage', 'Manage affiliates & payouts'],
+    ['staff.manage', 'Add staff & change access'], ['activity.view', 'See activity log']
+  ];
+  var ROLES = {
+    owner: { name: 'Owner', perms: PERMS.map(function (x) { return x[0]; }) },
+    manager: { name: 'Manager', perms: ['overview', 'orders.view', 'orders.edit', 'stock.view', 'stock.edit', 'affiliates.manage', 'activity.view'] },
+    orders: { name: 'Order staff', perms: ['overview', 'orders.view', 'orders.edit', 'stock.view'] },
+    stock: { name: 'Stock keeper', perms: ['overview', 'stock.view', 'stock.edit'] },
+    content: { name: 'Content editor', perms: ['overview', 'stock.view'] }
+  };
+  var STAFF = store.get('staff', null) || [
+    { id: 'u1', name: 'Rizwan', login: 'rizwan', role: 'owner', pin: '1234', active: true },
+    { id: 'u2', name: 'Sana (demo)', login: '0300-1111111', role: 'orders', pin: '2222', active: true },
+    { id: 'u3', name: 'Bilal (demo)', login: '0300-2222222', role: 'stock', pin: '3333', active: true }
+  ];
+  function saveStaff() { store.set('staff', STAFF); }
+  function adminUser() { var id = store.get('adminUser', null); return STAFF.filter(function (u) { return u.id === id && u.active; })[0] || null; }
+  function can(perm, u) { u = u || adminUser(); return !!(u && ROLES[u.role] && ROLES[u.role].perms.indexOf(perm) > -1); }
+
+  /* ---- activity log ---- */
+  var ACTIVITY = store.get('activity', []);
+  function logActivity(type, target, detail, who) {
+    var u = adminUser();
+    ACTIVITY.unshift({ at: Date.now(), who: who || (u ? u.name : 'Website'), type: type, target: target, detail: detail });
+    if (ACTIVITY.length > 400) ACTIVITY.length = 400;
+    store.set('activity', ACTIVITY);
+  }
+
+  /* ---- affiliates ---- */
+  var AFFSET = store.get('affset', { rate: 10, customerPct: 5, days: 30 });
+  var AFFILIATES = store.get('affiliates', null) || [
+    { code: 'AYESHA10', name: 'Ayesha Khan (demo)', phone: '0301-2345678', handle: '@ayesha.styles', city: 'Lahore', status: 'active', clicks: 148, paid: 0, joined: Date.now() - 40 * 864e5 },
+    { code: 'HIRAHOME', name: 'Hira Home Decor (demo)', phone: '0333-4567890', handle: '@hira.homedecor', city: 'Karachi', status: 'active', clicks: 96, paid: 500, joined: Date.now() - 25 * 864e5 },
+    { code: 'SADIA', name: 'Sadia Bridal Tips (demo)', phone: '0345-1112233', handle: '@sadia.bridal', city: 'Islamabad', status: 'pending', clicks: 0, paid: 0, joined: Date.now() - 2 * 864e5 }
+  ];
+  function saveAffiliates() { store.set('affiliates', AFFILIATES); }
+  function affByCode(code, activeOnly) {
+    code = String(code || '').trim().toUpperCase();
+    var a = AFFILIATES.filter(function (x) { return x.code === code; })[0];
+    return a && (!activeOnly || a.status === 'active') ? a : null;
+  }
+  function affStats(a) {
+    var os = state.orders.filter(function (o) { return o.aff === a.code && o.status >= 0; });
+    var sales = os.reduce(function (s, o) { return s + o.totals.total; }, 0);
+    // commission is earned once an order is delivered; until then it is pending
+    var earned = os.filter(function (o) { return o.status === 4; }).reduce(function (s, o) { return s + (o.commission || 0); }, 0);
+    var pending = os.filter(function (o) { return o.status < 4; }).reduce(function (s, o) { return s + (o.commission || 0); }, 0);
+    return { orders: os.length, sales: sales, earned: earned, pending: pending, balance: Math.max(0, earned - (a.paid || 0)) };
+  }
+  /* referral link: ?ref=CODE on any page (hash query or real query string) */
+  function captureRef() {
+    var m = (location.search.match(/[?&]ref=([^&]+)/) || location.hash.match(/[?&]ref=([^&]+)/) || [])[1];
+    if (!m) return;
+    var a = affByCode(decodeURIComponent(m), true); if (!a) return;
+    var cur = store.get('ref', null);
+    if (!cur || cur.code !== a.code) { a.clicks = (a.clicks || 0) + 1; saveAffiliates(); }
+    store.set('ref', { code: a.code, at: Date.now() });
+    if (!state.code) { state.code = a.code; store.set('code', a.code); }
+    toast(T(AFFSET.customerPct + '% off applied — referred by ' + a.name.replace(/ \(demo\)$/, ''), a.name.replace(/ \(demo\)$/, '') + ' کے حوالے سے ' + AFFSET.customerPct + '% رعایت لاگو'));
+  }
+  function activeRef() {
+    var r = store.get('ref', null);
+    return r && Date.now() - r.at < AFFSET.days * 864e5 && affByCode(r.code, true) ? r.code : null;
+  }
+
+  /* demo orders so the admin isn't empty on first open */
+  function seedOrders() {
+    if (store.get('ordersSeeded', false)) return [];
+    store.set('ordersSeeded', true);
+    var P = R.PRODUCTS, d = 864e5, t0 = Date.now();
+    function o(id, ago, name, city, pay, status, lines, aff) {
+      var sub = lines.reduce(function (s, l) { return s + now(P[l[0]]) * l[3]; }, 0);
+      var ship = sub >= 3000 ? 0 : 250, pre = pay === 'cod' ? 0 : 100, total = sub + ship - pre;
+      return { id: id, at: t0 - ago, demo: true, phone: '0300-55500' + id.slice(-2), email: '', addr: { fname: name.split(' ')[0], lname: name.split(' ')[1] || '', city: city, area: 'Demo area', street: 'Demo street', landmark: '' },
+        lines: lines.map(function (l) { return { k: P[l[0]].id + '|' + l[1] + '|' + (l[2] || ''), id: P[l[0]].id, color: l[1], size: l[2], qty: l[3] }; }),
+        totals: { sub: sub, disc: 0, ship: ship, gw: 0, pre: pre, total: total }, pay: pay, ship: 'standard', status: status,
+        aff: aff || null, commission: aff ? Math.round(sub * AFFSET.rate / 100) : 0 };
+    }
+    return [
+      o('RS-100411', 0.1 * d, 'Mehwish Ali', 'Faisalabad', 'cod', 0, [[0, 0, null, 1], [15, 0, 'M', 1]]),
+      o('RS-100410', 0.3 * d, 'Nimra Shah', 'Lahore', 'jazzcash', 1, [[22, 0, 'King', 1]], 'AYESHA10'),
+      o('RS-100409', 1.2 * d, 'Farah Iqbal', 'Karachi', 'cod', 0, [[8, 1, 'S', 2]]),
+      o('RS-100408', 2.1 * d, 'Rabia Noor', 'Islamabad', 'card', 3, [[19, 1, 'Double', 1], [28, 0, null, 2]], 'HIRAHOME'),
+      o('RS-100407', 3.4 * d, 'Saima Tariq', 'Multan', 'easypaisa', 4, [[2, 0, null, 1]], 'AYESHA10'),
+      o('RS-100406', 5.0 * d, 'Uzma Javed', 'Rawalpindi', 'cod', -1, [[6, 0, null, 1]])
+    ];
+  }
+
+  (function () { var s = seedOrders(); if (s.length) { state.orders = state.orders.concat(s); store.set('orders', state.orders); } })();
+  function statusName(st) { return st < 0 ? 'Cancelled' : STATUSES[st]; }
+
   /* colour family for filters */
   function colorFamily(hex) {
     var h = hex.replace('#', ''), r = parseInt(h.substr(0, 2), 16) / 255, g = parseInt(h.substr(2, 2), 16) / 255, b = parseInt(h.substr(4, 2), 16) / 255;
@@ -174,7 +309,9 @@
     if (p.sale) b.push('<span class="badge sale">−' + pctOff(p) + '%</span>');
     if (p.badges.indexOf('new') > -1) b.push('<span class="badge new">New</span>');
     if (p.badges.indexOf('best') > -1) b.push('<span class="badge best">Bestseller</span>');
-    if (p.lowStock) b.push('<span class="badge low">Low stock</span>');
+    var ts = totalStock(p);
+    if (ts <= 0) b.unshift('<span class="badge out">Sold out</span>');
+    else if (ts <= SETTINGS.lowStockAt) b.push('<span class="badge low">Low stock</span>');
     return '<div class="badges">' + b.slice(0, 2).join('') + '</div>';
   }
   function metaLine(p) {
@@ -474,7 +611,8 @@
   function renderPdpInfo() {
     var p = PDP.p, w = state.wish.indexOf(p.id) > -1;
     var opts = p.sizes || p.bedSizes;
-    var allOut = opts && opts.every(function (s) { return p.soldOut.indexOf(s) > -1; });
+    var allOut = opts ? opts.every(function (s) { return isOut(p, PDP.color, s); }) : isOut(p, PDP.color, null);
+    var left = (!opts || PDP.size) ? stockOf(p, PDP.color, PDP.size) : 0;
     var city = R.CITIES.filter(function (c) { return c.name === state.city; })[0] || R.CITIES[0];
     var specs = [['SKU', p.sku], ['Fabric', p.fabric]];
     if (p.dept === 'women') {
@@ -499,11 +637,12 @@
         p.colors.map(function (c, i) { return '<button class="sw-btn' + (i === PDP.color ? ' on' : '') + '" data-color="' + i + '" aria-label="' + esc(c.name) + '" aria-pressed="' + (i === PDP.color) + '"><i style="background:' + c.hex + '"></i></button>'; }).join('') + '</div></div>' +
 
       (opts ? '<div class="opt-block"><div class="opt-head"><span>' + (p.sizes ? 'Size' : 'Bed size') + ': <b id="sel-size">' + (PDP.size || 'Select') + '</b></span><button class="link" data-guide="' + sizeGuideType(p) + '">' + (p.sizes ? 'Size guide' : 'Bedsheet sizes') + '</button></div><div class="opts-row">' +
-        opts.map(function (s) { var out = p.soldOut.indexOf(s) > -1; return '<button class="size-btn' + (PDP.size === s ? ' on' : '') + (out ? ' out' : '') + '" data-size="' + esc(s) + '"' + (out ? ' aria-disabled="true" title="Sold out — tap to get notified"' : '') + '>' + esc(s) + '</button>'; }).join('') +
+        opts.map(function (s) { var out = isOut(p, PDP.color, s); return '<button class="size-btn' + (PDP.size === s ? ' on' : '') + (out ? ' out' : '') + '" data-size="' + esc(s) + '"' + (out ? ' aria-disabled="true" title="Sold out — tap to get notified"' : '') + '>' + esc(s) + '</button>'; }).join('') +
         '</div><div class="error" id="size-err" hidden>Please select a ' + (p.sizes ? 'size' : 'bed size') + '.</div></div>' : '') +
 
       (p.dept === 'women' && !p.stitched ? '<div class="opt-block" style="font-size:13.5px;color:var(--ink-2)">' + ic('ruler', 'sm') + ' <span style="vertical-align:3px">Unstitched — ' + esc(p.meters) + '</span></div>' : '') +
 
+      (left > 0 && left <= 3 ? '<p class="stock-note">' + T('Only ' + left + ' left — order soon', 'صرف ' + left + ' باقی — جلد آرڈر کریں') + '</p>' : '') +
       '<div id="notify-wrap"></div>' +
       '<div class="buy-row"><div class="qty"><button data-qty="-1" aria-label="Decrease quantity">' + ic('minus', 'sm') + '</button><input id="qty" type="number" min="1" max="10" value="' + PDP.qty + '" aria-label="Quantity"><button data-qty="1" aria-label="Increase quantity">' + ic('plus', 'sm') + '</button></div>' +
         '<button class="btn btn-dark" id="add-cart"' + (allOut ? ' disabled' : '') + '>' + (allOut ? 'Sold out' : 'Add to bag') + '</button>' +
@@ -559,7 +698,7 @@
   function pdpAdd(goCheckout) {
     var p = PDP.p, opts = p.sizes || p.bedSizes;
     if (opts && !PDP.size) { $('#size-err').hidden = false; $('#size-err').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
-    if (PDP.size && p.soldOut.indexOf(PDP.size) > -1) return;
+    if (isOut(p, PDP.color, PDP.size)) { toast(T('Sorry, this is sold out', 'معذرت، یہ ختم ہو گیا ہے')); return; }
     addToCart(p.id, PDP.color, PDP.size, PDP.qty, !goCheckout);
     if (goCheckout) go(BASE + 'checkout');
   }
@@ -568,17 +707,28 @@
   function lineKey(id, c, s) { return id + '|' + c + '|' + (s || ''); }
   function addToCart(id, color, size, qty, openDrawer) {
     var k = lineKey(id, color, size), l = state.cart.filter(function (x) { return x.k === k; })[0];
-    if (l) l.qty = Math.min(10, l.qty + qty); else state.cart.push({ k: k, id: id, color: color, size: size, qty: qty });
+    var max = Math.min(10, stockOf(byId(id), color, size)), have = l ? l.qty : 0;
+    if (max <= 0) { toast(T('Sorry, this is sold out', 'معذرت، یہ ختم ہو گیا ہے')); return; }
+    var nq = Math.min(max, have + qty);
+    if (l) l.qty = nq; else state.cart.push({ k: k, id: id, color: color, size: size, qty: nq });
     saveCart();
-    if (openDrawer) openPanel('cart'); else toast('Added to your bag');
+    if (have + qty > max) toast(T('Only ' + max + ' in stock — your bag has the maximum', 'اسٹاک میں صرف ' + max + ' — بیگ میں زیادہ سے زیادہ تعداد شامل ہے'));
+    if (openDrawer) openPanel('cart'); else if (have + qty <= max) toast('Added to your bag');
   }
   function saveCart() { store.set('cart', state.cart); updateCounts(); }
   function subtotal() { return state.cart.reduce(function (s, l) { var p = byId(l.id); return s + (p ? now(p) * l.qty : 0); }, 0); }
   function savings() { return state.cart.reduce(function (s, l) { var p = byId(l.id); return s + (p && p.sale ? (p.price - p.sale) * l.qty : 0); }, 0); }
   function codeDiscount(sub) {
-    var c = state.code && S.discountCodes[state.code]; if (!c) return 0;
+    var c = codeInfoFor(state.code); if (!c) return 0;
     if (c.min && sub < c.min) return 0;
     return c.type === 'pct' ? Math.round(sub * c.value / 100) : c.value;
+  }
+  /* store codes from data.js, plus every active affiliate code (customer discount set in admin) */
+  function codeInfoFor(code) {
+    if (!code) return null;
+    if (S.discountCodes[code]) return S.discountCodes[code];
+    var a = affByCode(code, true);
+    return a ? { type: 'pct', value: AFFSET.customerPct, label: AFFSET.customerPct + '% off with ' + a.code } : null;
   }
   function freeBar(sub) {
     var left = S.freeDeliveryThreshold - sub, pct = Math.min(100, sub / S.freeDeliveryThreshold * 100);
@@ -612,7 +762,7 @@
     document.title = 'Your bag | RSBRI Fashion';
     if (!state.cart.length) return crumbs([['Bag']]) + '<div class="wrap"><div class="empty"><h2>Your bag is empty</h2><p>Your next favourite outfit is waiting.</p><a class="btn btn-dark" href="' + BASE + 'new-in">Shop New In</a></div></div>';
     var sub = subtotal(), disc = codeDiscount(sub), gw = state.giftWrap ? S.giftWrapFee : 0;
-    var codeInfo = state.code ? (disc ? '<div class="sum-row"><span>Code ' + esc(state.code) + ' <button class="link muted" data-code-rm style="font-size:12px">remove</button></span><span class="green" style="color:var(--ok)">−' + money(disc) + '</span></div>' : '<p class="error">' + esc(S.discountCodes[state.code].label) + ' — not yet eligible.</p>') : '';
+    var codeInfo = state.code ? (disc ? '<div class="sum-row"><span>Code ' + esc(state.code) + ' <button class="link muted" data-code-rm style="font-size:12px">remove</button></span><span class="green" style="color:var(--ok)">−' + money(disc) + '</span></div>' : '<p class="error">' + esc((codeInfoFor(state.code) || { label: 'Code ' + state.code }).label) + ' — not yet eligible.</p>') : '';
     return crumbs([['Bag']]) + '<div class="wrap"><div class="plp-head"><h1>Your bag</h1></div><div class="cart-page"><div>' + freeBar(sub) + state.cart.map(function (l) { return lineHTML(l); }).join('') +
       '<label class="check" style="margin-top:20px">' + '<input type="checkbox" id="gift"' + (state.giftWrap ? ' checked' : '') + '><span>' + ic('gift', 'sm') + ' ' + T('<b>Add gift wrap</b> (' + money(S.giftWrapFee) + ') — RSBRI box with a handwritten card. Perfect for Eid and weddings.', '<b>گفٹ ریپ شامل کریں</b> (' + money(S.giftWrapFee) + ') — ہاتھ سے لکھے کارڈ کے ساتھ RSBRI باکس۔ عید اور شادیوں کے لیے بہترین۔') + '</span></label></div>' +
       '<aside class="summary"><h3>Order summary</h3>' +
@@ -630,7 +780,7 @@
     var g = $('#gift'); if (g) g.onchange = function () { state.giftWrap = g.checked; store.set('giftWrap', g.checked); rerender(); };
     var f = $('#code-form'); if (f) f.onsubmit = function (e) {
       e.preventDefault(); var v = $('#code').value.trim().toUpperCase();
-      if (S.discountCodes[v]) { state.code = v; store.set('code', v); toast('Code ' + v + ' applied'); rerender(); }
+      if (codeInfoFor(v)) { state.code = v; store.set('code', v); toast('Code ' + v + ' applied'); rerender(); }
       else { $('#code').classList.add('err'); toast('That code isn\'t valid. Try WELCOME10'); }
     };
   }
@@ -744,8 +894,15 @@
       if (!ok) { if (first) first.focus(); return; }
       var addr = { fname: $('#fname').value.trim(), lname: $('#lname').value.trim(), city: $('#city').value, area: $('#area').value.trim(), street: $('#street').value.trim(), landmark: $('#landmark').value.trim() };
       var id = 'RS-' + (Date.now() % 1e6 + 100000);
-      var order = { id: id, at: Date.now(), phone: $('#phone').value.trim(), email: $('#email').value.trim(), addr: addr, lines: state.cart.slice(), totals: t, pay: CO.pay, ship: CO.ship, status: CO.pay === 'cod' ? 0 : 1 };
+      // re-check stock at the moment of ordering (another order may have taken the last piece)
+      var short = state.cart.filter(function (l) { return stockOf(byId(l.id), l.color, l.size) < l.qty; });
+      if (short.length) { toast(T('Some items just sold out — please review your bag', 'کچھ اشیاء ابھی ختم ہو گئیں — براہ کرم بیگ دیکھیں')); openPanel('cart'); return; }
+      var aff = (affByCode(state.code, true) || {}).code || activeRef();
+      var order = { id: id, at: Date.now(), phone: $('#phone').value.trim(), email: $('#email').value.trim(), addr: addr, lines: state.cart.slice(), totals: t, pay: CO.pay, ship: CO.ship, status: CO.pay === 'cod' ? 0 : 1,
+        aff: aff || null, commission: aff ? Math.round((t.sub - t.disc) * AFFSET.rate / 100) : 0 };
       state.orders.unshift(order); store.set('orders', state.orders);
+      order.lines.forEach(function (l) { setStock(l.k, stockOf(byId(l.id), l.color, l.size) - l.qty, 'Order ' + id, 'Website'); });
+      logActivity('Order', id, 'Placed · ' + money(t.total) + ' · ' + PAY_LABEL[CO.pay] + (aff ? ' · affiliate ' + aff : ''), 'Website');
       if (state.user) { state.user.addresses = [addr]; store.set('user', state.user); }
       state.cart = []; state.code = null; state.giftWrap = false; store.set('code', null); store.set('giftWrap', false); saveCart();
       go(BASE + 'order/' + id);
@@ -754,6 +911,7 @@
 
   var STATUSES = ['Pending confirmation', 'Confirmed', 'Packed', 'Dispatched', 'Delivered'];
   function timeline(st) {
+    if (st < 0) return '<p class="error" style="margin:24px 0">' + T('This order was cancelled.', 'یہ آرڈر منسوخ کر دیا گیا۔') + '</p>';
     return '<ol class="timeline">' + STATUSES.map(function (s, i) { return '<li class="' + (i <= st ? 'done' : '') + '"><i>' + (i <= st ? ic('check') : '') + '</i>' + s + '</li>'; }).join('') + '</ol>';
   }
   var PAY_LABEL = { cod: 'Cash on Delivery', jazzcash: 'JazzCash', easypaisa: 'Easypaisa', card: 'Debit / Credit card', bank: 'Bank transfer' };
@@ -786,7 +944,7 @@
     var u = state.user, orders = state.orders.filter(function (o) { return o.phone.replace(/\D/g, '').slice(-10) === u.phone.replace(/\D/g, '').slice(-10); });
     return crumbs([['Account']]) + '<div class="wrap"><div class="page" style="max-width:900px"><span class="eyebrow">My account</span><h1>Assalam o Alaikum</h1><p>Signed in as <b>' + esc(u.phone) + '</b> · <button class="link" id="logout">Sign out</button></p>' +
       '<h2>Orders</h2>' + (orders.length ? orders.map(function (o) {
-        return '<div class="box" style="margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><b>' + o.id + '</b> · ' + new Date(o.at).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' }) + '<br><span class="muted">' + o.lines.length + ' item(s) · ' + money(o.totals.total) + ' · ' + STATUSES[o.status] + '</span></div>' +
+        return '<div class="box" style="margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><b>' + o.id + '</b> · ' + new Date(o.at).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' }) + '<br><span class="muted">' + o.lines.length + ' item(s) · ' + money(o.totals.total) + ' · ' + statusName(o.status) + '</span></div>' +
           '<div style="display:flex;gap:8px"><a class="btn btn-outline" href="' + BASE + 'order/' + o.id + '">View</a><button class="btn btn-dark" data-reorder="' + o.id + '">Re-order</button></div></div>';
       }).join('') : '<p class="muted">No orders yet.</p>') +
       '<h2>Saved addresses</h2>' + (u.addresses && u.addresses.length ? u.addresses.map(function (a) { return '<div class="box">' + esc(a.fname + ' ' + a.lname) + '<br>' + esc(a.street + ', ' + a.area + ', ' + a.city) + '</div>'; }).join('') : '<p class="muted">Your address will be saved at your next checkout.</p>') +
@@ -819,7 +977,7 @@
       '<form id="track" class="fgrid two" novalidate><div class="field"><label for="tord">Order number</label><input class="input" id="tord" placeholder="RS-123456" value="' + esc(q.o || '') + '"></div><div class="field"><label for="tph">Mobile number</label><input class="input" id="tph" inputmode="tel" placeholder="03XX-XXXXXXX"></div><button class="btn btn-dark" style="grid-column:1/-1">Track</button></form>' +
       '<div id="track-res">' + (o ? trackResult(o) : '') + '</div></div></div>';
   }
-  function trackResult(o) { return '<div class="box" style="margin-top:24px"><b>Order ' + o.id + '</b> · ' + STATUSES[o.status] + timeline(o.status) + '<p class="muted" style="margin:0;font-size:13px">Courier tracking number appears here once your order is dispatched.</p></div>'; }
+  function trackResult(o) { return '<div class="box" style="margin-top:24px"><b>Order ' + o.id + '</b> · ' + statusName(o.status) + timeline(o.status) + '<p class="muted" style="margin:0;font-size:13px">Courier tracking number appears here once your order is dispatched.</p></div>'; }
   function mountTrack() {
     var f = $('#track'); if (!f) return;
     f.onsubmit = function (e) {
@@ -906,6 +1064,56 @@
     document.title = pg[0] + ' | RSBRI Fashion';
     return crumbs([[pg[0]]]) + '<div class="wrap"><article class="page"><h1>' + pg[0] + '</h1>' + pg[1] + '</article></div>';
   }
+  /* ---------------- AFFILIATE PROGRAMME (public page) ---------------- */
+  function viewAffiliateProgram() {
+    document.title = T('Affiliate programme', 'ایفیلیٹ پروگرام') + ' | RSBRI Fashion';
+    var r = AFFSET.rate, c = AFFSET.customerPct, d = AFFSET.days;
+    return crumbs([[T('Affiliate programme', 'ایفیلیٹ پروگرام')]]) + '<div class="wrap"><article class="page">' +
+      '<span class="eyebrow">' + T('RSBRI Affiliate Programme', 'RSBRI ایفیلیٹ پروگرام') + '</span>' +
+      '<h1>' + T('Earn with RSBRI', 'RSBRI کے ساتھ کمائیں') + '</h1>' +
+      '<p>' + T('Share RSBRI with your followers and earn <b>' + r + '% commission</b> on every order you bring. Your followers get <b>' + c + '% off</b> with your personal code.',
+        'RSBRI کو اپنے فالوورز کے ساتھ شیئر کریں اور آپ کے ذریعے آنے والے ہر آرڈر پر <b>' + r + '% کمیشن</b> کمائیں۔ آپ کے فالوورز کو آپ کے کوڈ سے <b>' + c + '% رعایت</b> ملے گی۔') + '</p>' +
+      '<div class="aff-steps">' + [
+        [T('Apply', 'درخواست دیں'), T('Fill in the form below. It takes two minutes.', 'نیچے فارم پُر کریں۔ صرف دو منٹ لگتے ہیں۔')],
+        [T('Get your link & code', 'لنک اور کوڈ حاصل کریں'), T('Once approved (within 2 working days) we WhatsApp you a personal link and discount code.', 'منظوری کے بعد (2 کاروباری دن میں) ہم آپ کو واٹس ایپ پر ذاتی لنک اور کوڈ بھیجیں گے۔')],
+        [T('Share', 'شیئر کریں'), T('Post on Instagram, TikTok, Facebook or WhatsApp status.', 'انسٹاگرام، ٹک ٹاک، فیس بک یا واٹس ایپ اسٹیٹس پر پوسٹ کریں۔')],
+        [T('Get paid', 'ادائیگی وصول کریں'), T('Commission is confirmed when the order is delivered and paid monthly to JazzCash, Easypaisa or your bank.', 'آرڈر ڈیلیور ہونے پر کمیشن پکا ہوتا ہے اور ہر ماہ جاز کیش، ایزی پیسہ یا بینک میں ادا کیا جاتا ہے۔')]
+      ].map(function (s, i) { return '<div class="aff-step"><span class="n">' + (i + 1) + '</span><div><b>' + s[0] + '</b><p>' + s[1] + '</p></div></div>'; }).join('') + '</div>' +
+      '<h2>' + T('Apply now', 'ابھی درخواست دیں') + '</h2>' +
+      '<form id="aff-form" class="fgrid two" novalidate>' +
+        '<div class="field"><label for="af-name">' + T('Full name', 'پورا نام') + '</label><input class="input" id="af-name" autocomplete="name" required></div>' +
+        '<div class="field"><label for="af-phone">' + T('WhatsApp number', 'واٹس ایپ نمبر') + '</label><div class="phone"><span>🇵🇰 +92</span><input class="input" id="af-phone" inputmode="tel" placeholder="03XX-XXXXXXX" required></div></div>' +
+        '<div class="field"><label for="af-handle">' + T('Instagram / TikTok / Facebook page', 'انسٹاگرام / ٹک ٹاک / فیس بک پیج') + '</label><input class="input" id="af-handle" placeholder="@yourpage" required></div>' +
+        '<div class="field"><label for="af-followers">' + T('Followers', 'فالوورز') + '</label><select class="input" id="af-followers"><option value="under-5k">Under 5,000</option><option value="5k-50k">5,000 – 50,000</option><option value="50k-plus">50,000+</option></select></div>' +
+        '<div class="field"><label for="af-city">' + T('City', 'شہر') + '</label><select class="input" id="af-city">' + R.CITIES.map(function (x) { return '<option value="' + esc(x.name) + '" translate="no">' + x.name + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="af-payout">' + T('Payout method', 'ادائیگی کا طریقہ') + '</label><select class="input" id="af-payout"><option value="JazzCash">JazzCash</option><option value="Easypaisa">Easypaisa</option><option value="Bank">' + T('Bank account', 'بینک اکاؤنٹ') + '</option></select></div>' +
+        '<div style="grid-column:1/-1"><button class="btn btn-primary">' + T('Send application', 'درخواست بھیجیں') + '</button></div>' +
+      '</form><div id="aff-done"></div>' +
+      '<h2>' + T('Programme terms', 'پروگرام کی شرائط') + '</h2><ul>' +
+        '<li>' + T('Orders count for ' + d + ' days after someone clicks your link, or whenever your code is used.', 'آپ کے لنک پر کلک کے ' + d + ' دن بعد تک، یا جب بھی آپ کا کوڈ استعمال ہو، آرڈر آپ کے کھاتے میں شمار ہوں گے۔') + '</li>' +
+        '<li>' + T('Commission is ' + r + '% of the order value after discounts, excluding delivery.', 'کمیشن رعایت کے بعد آرڈر کی رقم کا ' + r + '% ہے، ڈیلیوری شامل نہیں۔') + '</li>' +
+        '<li>' + T('Cancelled, refused (RTO) and returned orders do not earn commission.', 'منسوخ، واپس شدہ (RTO) یا ریٹرن آرڈرز پر کمیشن نہیں ملتا۔') + '</li>' +
+        '<li>' + T('Ordering through your own link is not allowed.', 'اپنے ہی لنک سے آرڈر کرنا منع ہے۔') + '</li></ul>' +
+      '</article></div>';
+  }
+  function mountAffiliateProgram() {
+    var f = $('#aff-form'); if (!f) return;
+    f.onsubmit = function (e) {
+      e.preventDefault();
+      var name = $('#af-name').value.trim(), ph = $('#af-phone').value.trim(), handle = $('#af-handle').value.trim();
+      var ok = true;
+      [['af-name', !!name], ['af-phone', validPhone(ph)], ['af-handle', !!handle]].forEach(function (x) { $('#' + x[0]).classList.toggle('err', !x[1]); ok = ok && x[1]; });
+      if (!ok) { toast(T('Please fill in your name, a valid WhatsApp number and your page', 'براہ کرم نام، درست واٹس ایپ نمبر اور اپنا پیج درج کریں')); return; }
+      var base = (name.replace(/[^A-Za-z]/g, '').toUpperCase() || 'RSBRI').slice(0, 6), code;
+      do { code = base + (10 + Math.floor(Math.random() * 90)); } while (affByCode(code));
+      AFFILIATES.push({ code: code, name: name, phone: ph, handle: handle, city: $('#af-city').value, followers: $('#af-followers').value, payout: $('#af-payout').value, status: 'pending', clicks: 0, paid: 0, joined: Date.now() });
+      saveAffiliates(); logActivity('Affiliate', code, 'Applied · ' + handle, 'Website');
+      f.remove();
+      $('#aff-done').innerHTML = '<div class="box">' + ic('check', 'sm') + ' <b>' + T('Thank you, ' + esc(name) + '!', 'شکریہ، ' + esc(name) + '!') + '</b><p style="margin:6px 0 0">' +
+        T('Your application is under review. Your code will be <b>' + code + '</b>. We\'ll WhatsApp you within 2 working days.', 'آپ کی درخواست زیرِ غور ہے۔ آپ کا کوڈ <b>' + code + '</b> ہو گا۔ ہم 2 کاروباری دن میں واٹس ایپ کریں گے۔') + '</p></div>';
+    };
+  }
+
   function viewNotFound() {
     document.title = 'Page not found | RSBRI Fashion';
     return '<div class="wrap"><div class="empty" style="padding:100px 16px"><span class="eyebrow">404</span><h2 style="font-size:46px;margin-top:10px">This page has moved on</h2><p>But our new collection hasn\'t. Let\'s get you back.</p><a class="btn btn-dark" href="' + BASE + '">Go to homepage</a></div></div>';
@@ -925,7 +1133,7 @@
     function draw() {
       $('#qv-img').src = R.art.product(p, sel.c, 0);
       $('#qv-opts').innerHTML = '<div class="opt-block"><div class="opt-head"><span>Colour: <b>' + esc(p.colors[sel.c].name) + '</b></span></div><div class="opts-row">' + p.colors.map(function (c, i) { return '<button class="sw-btn' + (i === sel.c ? ' on' : '') + '" data-qvc="' + i + '" aria-label="' + esc(c.name) + '"><i style="background:' + c.hex + '"></i></button>'; }).join('') + '</div></div>' +
-        (opts ? '<div class="opt-block"><div class="opt-head"><span>' + (p.sizes ? 'Size' : 'Bed size') + ': <b>' + (sel.s || 'Select') + '</b></span></div><div class="opts-row">' + opts.map(function (s) { var out = p.soldOut.indexOf(s) > -1; return '<button class="size-btn' + (sel.s === s ? ' on' : '') + (out ? ' out' : '') + '" data-qvs="' + esc(s) + '"' + (out ? ' disabled' : '') + '>' + esc(s) + '</button>'; }).join('') + '</div></div>' : '');
+        (opts ? '<div class="opt-block"><div class="opt-head"><span>' + (p.sizes ? 'Size' : 'Bed size') + ': <b>' + (sel.s || 'Select') + '</b></span></div><div class="opts-row">' + opts.map(function (s) { var out = isOut(p, sel.c, s); return '<button class="size-btn' + (sel.s === s ? ' on' : '') + (out ? ' out' : '') + '" data-qvs="' + esc(s) + '"' + (out ? ' disabled' : '') + '>' + esc(s) + '</button>'; }).join('') + '</div></div>' : '');
     }
     modal('<div class="qv"><div class="qv-img"><img id="qv-img" alt="' + esc(p.title) + '"></div><div class="qv-info"><span class="eyebrow">' + esc(catName(p.dept, p.cat)) + '</span><h3 style="margin-top:8px">' + esc(p.title) + '</h3>' + priceHTML(p) +
       '<p class="muted" style="font-size:14px">' + esc(p.desc) + '</p><div id="qv-opts"></div><span class="error" id="qv-err" hidden>Please select a size.</span>' +
@@ -967,6 +1175,7 @@
     document.title = 'RSBRI Fashion — Women\'s Clothing & Bedding | Pakistan';
 
     var P = R.PRODUCTS;
+    captureRef();
     if (!seg.length) { html = viewHome(); mount = mountHome; }
     else if (SLUG_DEPT[seg[0]]) {
       var dept = SLUG_DEPT[seg[0]], D = R.DEPARTMENTS[dept];
@@ -1001,6 +1210,8 @@
     else if (seg[0] === 'account') { html = viewAccount(); mount = mountAccount; }
     else if (seg[0] === 'track') { html = viewTrack(); mount = mountTrack; }
     else if (seg[0] === 'wishlist') html = viewWishlist();
+    else if (seg[0] === 'affiliates') { html = viewAffiliateProgram(); mount = mountAffiliateProgram; }
+    else if (seg[0] === 'admin' && R.admin) { html = R.admin.view(seg.slice(1)); mount = R.admin.mount; }
     else if (seg[0] === 'page' && seg[1]) html = viewPage(seg[1]);
     else html = viewNotFound();
 
@@ -1072,7 +1283,7 @@
       if ((el = t.closest('[data-color]'))) { PDP.color = +el.dataset.color; renderGallery(); renderPdpInfo(); return; }
       if ((el = t.closest('[data-size]'))) {
         var sz = el.dataset.size;
-        if (PDP.p.soldOut.indexOf(sz) > -1) {
+        if (isOut(PDP.p, PDP.color, sz)) {
           $('#notify-wrap').innerHTML = '<div class="notify"><p><b>' + esc(sz) + ' is sold out.</b> Get a WhatsApp or email alert when it\'s back in stock.</p><form class="inline-field" id="notify-form"><input class="input" placeholder="03XX-XXXXXXX or email" aria-label="WhatsApp number or email" required><button class="btn btn-dark">Notify me</button></form></div>';
           $('#notify-form').onsubmit = function (ev) { ev.preventDefault(); $('#notify-wrap').innerHTML = '<div class="notify"><p style="margin:0">' + ic('check', 'sm') + ' We\'ll message you when ' + esc(sz) + ' is back.</p></div>'; };
           return;
@@ -1101,6 +1312,18 @@
   $('#search-input').addEventListener('keydown', function (e) { if (e.key === 'Enter' && this.value.trim()) go(BASE + 'search?q=' + encodeURIComponent(this.value.trim())); });
   window.addEventListener('scroll', function () { $('#header').classList.toggle('scrolled', window.scrollY > 10); }, { passive: true });
   window.addEventListener('hashchange', function () { route(false); });
+
+  /* ---------------- shared with admin.js ---------------- */
+  R.app = {
+    state: state, store: store, S: S, BASE: function () { return BASE; }, $: $, $$: $$, esc: esc, money: money, ic: ic, toast: toast, rerender: rerender, go: go,
+    byId: byId, productUrl: productUrl, catName: catName, now: now, validPhone: validPhone,
+    STOCK: STOCK, SETTINGS: SETTINGS, variantsOf: variantsOf, stockOf: stockOf, totalStock: totalStock, setStock: setStock, saveSettings: function () { store.set('settings', SETTINGS); },
+    PERMS: PERMS, ROLES: ROLES, STAFF: STAFF, saveStaff: saveStaff, adminUser: adminUser, can: can,
+    ACTIVITY: ACTIVITY, logActivity: logActivity,
+    AFFSET: AFFSET, AFFILIATES: AFFILIATES, saveAffiliates: saveAffiliates, affStats: affStats, affByCode: affByCode,
+    STATUSES: STATUSES, statusName: statusName, PAY_LABEL: PAY_LABEL,
+    saveOrders: function () { store.set('orders', state.orders); }
+  };
 
   /* ---------------- boot ---------------- */
   store.set('lang', LANG);

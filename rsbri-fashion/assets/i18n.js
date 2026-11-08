@@ -168,6 +168,7 @@
     'Body measurements. Between sizes? Choose the larger size for a relaxed fit.': 'جسمانی پیمائش۔ دو سائز کے بیچ ہیں؟ آرام دہ فٹنگ کے لیے بڑا سائز لیں۔',
     'Delivery information': 'ڈیلیوری کی معلومات', 'Exchange & returns': 'تبادلہ اور واپسی', 'Frequently asked questions': 'عام سوالات',
     'Terms of service': 'شرائط و ضوابط', 'Gift cards': 'گفٹ کارڈز', 'Zone': 'زون', 'Time': 'وقت', 'Fee': 'فیس', 'Major cities': 'بڑے شہر', 'Rest of Pakistan': 'باقی پاکستان',
+    'Become an affiliate': 'ایفیلیٹ بنیں', 'Staff login': 'اسٹاف لاگ ان',
     'This page has moved on': 'یہ صفحہ موجود نہیں', 'Go to homepage': 'ہوم پیج پر جائیں'
   };
 
