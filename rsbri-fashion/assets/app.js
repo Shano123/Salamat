@@ -208,8 +208,8 @@
     var C = R.COLLECTIONS;
     var slides = [
       { tone: C[1].tone, subject: 'kurta', eyebrow: 'Eid ul Adha · Naya Collection', title: 'The <em>Eid</em> Edit', text: 'Hand-finished chikankari, chiffon and silk — festive pieces made to be remembered.', cta: ['Shop the Eid Edit', BASE + 'collections/eid-edit'], cta2: ['Shop Women', BASE + 'women'] },
-      { tone: ['#1F4A3C', '#EFE5D2', '#C9A45C'], subject: 'bed', eyebrow: 'Wedding Season', title: 'Bridal <em>bed sets</em> for the jahez', text: '8 and 10-piece sateen and velvet sets in maroon, emerald and ivory gold.', cta: ['Shop Bridal Sets', BASE + 'bedding-home/bridal-bed-sets'], cta2: ['All Bedding', BASE + 'bedding-home'] },
-      { tone: ['#E9DFCB', '#F7F1E6', '#2F5D50'], subject: 'kurta', light: true, eyebrow: 'Summer Lawn 2026', title: 'Lawn, <em>lightly</em> done', text: 'Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', cta: ['Shop Lawn', BASE + 'women/unstitched'], cta2: ['New In', BASE + 'new-in'] }
+      { tone: ['#13263A', '#EFE8DA', '#C9A23F'], subject: 'bed', eyebrow: 'Wedding Season', title: 'Bridal <em>bed sets</em> for the jahez', text: '8 and 10-piece sateen and velvet sets in royal blue, emerald and ivory gold.', cta: ['Shop Bridal Sets', BASE + 'bedding-home/bridal-bed-sets'], cta2: ['All Bedding', BASE + 'bedding-home'] },
+      { tone: ['#E6E2D8', '#F7F4EC', '#1E4A66'], subject: 'kurta', light: true, eyebrow: 'Summer Lawn 2026', title: 'Lawn, <em>lightly</em> done', text: 'Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', cta: ['Shop Lawn', BASE + 'women/unstitched'], cta2: ['New In', BASE + 'new-in'] }
     ];
     var hero = '<section class="hero" aria-roledescription="carousel" aria-label="Featured campaigns"><div class="hero-track">' + slides.map(function (s, i) {
       var copy = '<div class="wrap" style="height:100%"><div class="slide-copy"><span class="eyebrow">' + s.eyebrow + '</span>' +
@@ -237,8 +237,8 @@
     var womanHero = R.PRODUCTS.filter(function (p) { return p.cat === 'luxury-pret'; })[0];
     var homeHero = R.PRODUCTS.filter(function (p) { return p.cat === 'bridal-bed-sets'; })[0];
     var depts = '<section class="section" style="padding-top:12px"><div class="wrap depts">' +
-      '<a class="dept reveal" href="' + BASE + 'women"><img src="' + R.art.product(womanHero, 1, 0) + '" alt="Women\'s clothing" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E7CF92">Department</span><h3>Women</h3><p>' + esc(R.DEPARTMENTS.women.blurb) + '</p><span class="btn btn-light">Shop Women</span></div></a>' +
-      '<a class="dept reveal" href="' + BASE + 'bedding-home"><img src="' + R.art.product(homeHero, 0, 0) + '" alt="Bedding and home textiles" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E7CF92">Department</span><h3>Bedding &amp; Home</h3><p>' + esc(R.DEPARTMENTS.home.blurb) + '</p><span class="btn btn-light">Shop Bedding</span></div></a>' +
+      '<a class="dept reveal" href="' + BASE + 'women"><img src="' + R.art.product(womanHero, 1, 0) + '" alt="Women\'s clothing" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E8C766">Department</span><h3>Women</h3><p>' + esc(R.DEPARTMENTS.women.blurb) + '</p><span class="btn btn-light">Shop Women</span></div></a>' +
+      '<a class="dept reveal" href="' + BASE + 'bedding-home"><img src="' + R.art.product(homeHero, 0, 0) + '" alt="Bedding and home textiles" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E8C766">Department</span><h3>Bedding &amp; Home</h3><p>' + esc(R.DEPARTMENTS.home.blurb) + '</p><span class="btn btn-light">Shop Bedding</span></div></a>' +
       '</div></section>';
 
     var newSec = '<section class="section" style="padding-top:0"><div class="wrap"><div class="sec-head reveal"><div><span class="eyebrow">Just landed</span><h2>New In</h2></div><a href="' + BASE + 'new-in">View all</a></div>' + rail(newIn) + '</div></section>';
@@ -887,7 +887,7 @@
     'privacy': ['Privacy policy', '<p>We collect only what we need to process your orders and, with your consent, to send you offers. We never sell your data. Card payments are handled by our payment gateway — RSBRI never sees or stores your card details.</p><p class="muted">This is placeholder copy. Final policy to be reviewed against PECA 2016 and applicable data-protection law.</p>'],
     'terms': ['Terms of service', '<p>All prices are in Pakistani Rupees and include sales tax. Orders are subject to availability and confirmation.</p><p class="muted">Placeholder copy — to be finalised with legal and tax advisers (FBR requirements).</p>'],
     'gift-cards': ['Gift cards', '<p>The perfect Eid and wedding gift. Digital gift cards from Rs. 2,000 to Rs. 50,000, delivered instantly by WhatsApp or email.</p><p class="muted">Coming soon.</p>'],
-    'journal': ['Journal', '<p>Styling tips, bedding care and behind-the-scenes from the RSBRI studio.</p><h2>How to choose a bridal bed set</h2><p>Start with the bed size, then pick a colour story that works with the room — maroon and gold for tradition, ivory and gold for a softer look.</p><h2>Lawn season: 5 ways to style a 3-piece</h2><p>From office to dinner — dupatta draping, trouser cuts and accessories.</p>']
+    'journal': ['Journal', '<p>Styling tips, bedding care and behind-the-scenes from the RSBRI studio.</p><h2>How to choose a bridal bed set</h2><p>Start with the bed size, then pick a colour story that works with the room — royal blue and gold for tradition, ivory and gold for a softer look.</p><h2>Lawn season: 5 ways to style a 3-piece</h2><p>From office to dinner — dupatta draping, trouser cuts and accessories.</p>']
   };
   function viewPage(slug) {
     var pg = PAGES[slug]; if (!pg) return viewNotFound();

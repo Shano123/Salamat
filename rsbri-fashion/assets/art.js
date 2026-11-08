@@ -84,7 +84,7 @@
       '<path d="' + KURTA + '" fill="url(#' + pid + ')"/>' +
       '<path d="M258 140Q300 230 342 140" fill="none" stroke="' + shade(ink, 0.15) + '" stroke-width="7" opacity=".7"/>' +
       '<path d="M190 676H410" stroke="' + shade(ink, 0.1) + '" stroke-width="14" opacity=".55"/>' +
-      '<path d="M191 660H409" stroke="#C9A45C" stroke-width="2" stroke-dasharray="2 6" opacity=".9"/>' +
+      '<path d="M191 660H409" stroke="#C9A23F" stroke-width="2" stroke-dasharray="2 6" opacity=".9"/>' +
       '<path d="M404 262L414 706M196 262L186 706" stroke="#000" stroke-opacity=".08" stroke-width="6"/>';
   }
 
@@ -99,7 +99,7 @@
       out += '<rect x="' + l[0] + '" y="' + (l[1] + l[3] - 16) + '" width="' + l[2] + '" height="16" rx="6" fill="#000" opacity=".08"/>';
     });
     out += '<rect x="140" y="250" width="320" height="22" fill="' + shade(ink, 0.05) + '" opacity=".5"/>' +
-      '<path d="M146 282H454" stroke="#C9A45C" stroke-width="2.4" stroke-dasharray="3 7"/>' +
+      '<path d="M146 282H454" stroke="#C9A23F" stroke-width="2.4" stroke-dasharray="3 7"/>' +
       '<path d="M420 236c40 20 70 70 60 140" fill="none" stroke="' + shade(c, 0.5) + '" stroke-width="26" stroke-linecap="round" opacity=".85"/>' +
       '<rect x="230" y="190" width="140" height="34" rx="2" fill="#fbf8f2" opacity=".92"/><text x="300" y="213" font-family="Georgia,serif" font-size="15" letter-spacing="4" text-anchor="middle" fill="#3a302a">RSBRI</text>';
     return out;
@@ -110,7 +110,7 @@
     return '<rect width="600" height="800" fill="' + studio + '"/>' +
       '<path d="' + archPath(80, 50, 440, 720) + '" fill="' + shade(studio, -0.05) + '"/>' +
       '<path d="' + d + '" fill="' + c + '"/><path d="' + d + '" fill="url(#' + pid + ')"/>' +
-      '<path d="M170 690C250 700 330 720 430 700" stroke="#C9A45C" stroke-width="10" fill="none" opacity=".8"/>' +
+      '<path d="M170 690C250 700 330 720 430 700" stroke="#C9A23F" stroke-width="10" fill="none" opacity=".8"/>' +
       Array.apply(null, Array(12)).map(function (_, i) { var x = 182 + i * 21; return '<path d="M' + x + ' ' + (696 + (i % 3) * 3) + 'v28" stroke="' + shade(c, -0.25) + '" stroke-width="3"/>'; }).join('') +
       '<path d="M260 140C240 320 300 480 260 690" stroke="#000" stroke-opacity=".07" stroke-width="20" fill="none"/>';
   }
@@ -139,8 +139,8 @@
       '<rect x="0" y="440" width="600" height="40" fill="' + shade(wall, -0.24) + '"/>' +
       '<g transform="rotate(-6 300 380)"><rect x="140" y="220" width="320" height="320" rx="46" fill="' + c + '"/>' +
       '<rect x="140" y="220" width="320" height="320" rx="46" fill="url(#' + pid + ')"/>' +
-      '<rect x="164" y="244" width="272" height="272" rx="30" fill="none" stroke="#C9A45C" stroke-width="2" stroke-dasharray="3 6"/>' +
-      '<circle cx="146" cy="226" r="9" fill="#C9A45C"/><circle cx="454" cy="226" r="9" fill="#C9A45C"/><circle cx="146" cy="534" r="9" fill="#C9A45C"/><circle cx="454" cy="534" r="9" fill="#C9A45C"/></g>' +
+      '<rect x="164" y="244" width="272" height="272" rx="30" fill="none" stroke="#C9A23F" stroke-width="2" stroke-dasharray="3 6"/>' +
+      '<circle cx="146" cy="226" r="9" fill="#C9A23F"/><circle cx="454" cy="226" r="9" fill="#C9A23F"/><circle cx="146" cy="534" r="9" fill="#C9A23F"/><circle cx="454" cy="534" r="9" fill="#C9A23F"/></g>' +
       '<ellipse cx="300" cy="580" rx="180" ry="14" fill="#000" opacity=".1"/>';
   }
 
@@ -164,12 +164,12 @@
         '<path d="M-40 260C160 200 300 360 640 280V420C360 500 160 360 -40 430Z" fill="#000" opacity=".07"/>' +
         '<rect width="600" height="800" fill="url(#g' + pid + ')"/>';
     } else if (view === 2) {
-      inner = '<defs>' + pattern(pid, 'lattice', '#C9A45C', 1.8, 0.85) + '</defs>' +
+      inner = '<defs>' + pattern(pid, 'lattice', '#C9A23F', 1.8, 0.85) + '</defs>' +
         '<rect width="600" height="800" fill="' + shade(c, -0.08) + '"/>' +
         '<rect x="0" y="260" width="600" height="280" fill="url(#' + pid + ')"/>' +
-        '<path d="M0 250H600M0 550H600" stroke="#C9A45C" stroke-width="4"/>' +
-        '<path d="M0 236H600M0 564H600" stroke="#C9A45C" stroke-width="1.5" stroke-dasharray="2 8"/>' +
-        '<circle cx="300" cy="400" r="70" fill="none" stroke="#E7CF92" stroke-width="3"/><circle cx="300" cy="400" r="20" fill="#E7CF92"/>';
+        '<path d="M0 250H600M0 550H600" stroke="#C9A23F" stroke-width="4"/>' +
+        '<path d="M0 236H600M0 564H600" stroke="#C9A23F" stroke-width="1.5" stroke-dasharray="2 8"/>' +
+        '<circle cx="300" cy="400" r="70" fill="none" stroke="#E8C766" stroke-width="3"/><circle cx="300" cy="400" r="20" fill="#E8C766"/>';
     } else {
       inner = '<defs>' + pattern(pid, p.motif, ink, 1, p.motif === 'plain' ? 0.6 : 0.42) + '</defs>' + SHAPES[p.shape](c, p.motif, ink, pid, studio);
     }

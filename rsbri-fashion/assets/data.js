@@ -75,10 +75,10 @@
   };
 
   var COLLECTIONS = [
-    { slug: 'summer-lawn', name: 'Summer Lawn', blurb: 'Breathable printed lawn for long Pakistani summers.', tone: ['#E8DCC4', '#2F5D50', '#C9A45C'] },
-    { slug: 'eid-edit', name: 'The Eid Edit', blurb: 'Festive pieces and gifting for Eid ul Fitr and Eid ul Adha.', tone: ['#5E1A28', '#E9D9B8', '#C9A45C'] },
+    { slug: 'summer-lawn', name: 'Summer Lawn', blurb: 'Breathable printed lawn for long Pakistani summers.', tone: ['#E9E4D8', '#1E4A66', '#C9A23F'] },
+    { slug: 'eid-edit', name: 'The Eid Edit', blurb: 'Festive pieces and gifting for Eid ul Fitr and Eid ul Adha.', tone: ['#1E4A66', '#EDE6D6', '#D4AF4A'] },
     { slug: 'winter', name: 'Winter', blurb: 'Khaddar, karandi and velvet — warmth with craft.', tone: ['#3B3A4A', '#D9CBB3', '#A77B4F'] },
-    { slug: 'wedding-season', name: 'Wedding Season', blurb: 'Formals and bridal bedding for shaadi season.', tone: ['#7A2434', '#F1E6D2', '#C9A45C'] }
+    { slug: 'wedding-season', name: 'Wedding Season', blurb: 'Formals and bridal bedding for shaadi season.', tone: ['#163A52', '#F1E9D8', '#C9A23F'] }
   ];
 
   var SIZES = ['XS', 'S', 'M', 'L', 'XL'];
@@ -122,7 +122,7 @@
     ['Shireen Percale Bedsheet', 'home', 'bedsheets', null, 'Percale', 3, 4990, 3490, [['White', '#F3F0EA'], ['Dusty Rose', '#D4A6A1'], ['Grey', '#A9A6A3']], 'stripe', 'bed', { threadCount: 300, badges: ['best'] }],
     ['Bahaar Printed Cotton Bedsheet', 'home', 'bedsheets', 'summer-lawn', 'Cotton', 3, 3290, 0, [['Blue Floral', '#6E8DB5'], ['Green Floral', '#7EA27A']], 'floral', 'bed', { threadCount: 180, badges: ['new'] }],
     ['Shahi Sateen Bedsheet', 'home', 'bedsheets', 'eid-edit', 'Sateen', 3, 6990, 0, [['Ivory', '#EDE3CF'], ['Champagne', '#D8C29B'], ['Charcoal', '#4A4847']], 'plain', 'bed', { threadCount: 400, badges: [] }],
-    ['Dulhan 8-Piece Bridal Bed Set', 'home', 'bridal-bed-sets', 'wedding-season', 'Sateen', 8, 34990, 27990, [['Maroon & Gold', '#6E1E2C'], ['Ivory & Gold', '#E9DCC0']], 'lattice', 'bed', { threadCount: 400, badges: ['best'], bridal: true }],
+    ['Dulhan 8-Piece Bridal Bed Set', 'home', 'bridal-bed-sets', 'wedding-season', 'Sateen', 8, 34990, 27990, [['Royal Blue & Gold', '#1E4A66'], ['Ivory & Gold', '#E9DCC0']], 'lattice', 'bed', { threadCount: 400, badges: ['best'], bridal: true }],
     ['Mehndi 10-Piece Bridal Set', 'home', 'bridal-bed-sets', 'wedding-season', 'Velvet', 10, 49990, 0, [['Emerald & Gold', '#1F4A3C'], ['Red & Gold', '#8E1B2A']], 'paisley', 'bed', { threadCount: 300, badges: ['new'], bridal: true, lowStock: true }],
     ['Cloud Microfibre Comforter Set', 'home', 'comforters', 'winter', 'Microfibre', 6, 14990, 11990, [['Silver', '#BDBAB6'], ['Blush', '#E5C4BC']], 'check', 'bed', { threadCount: 220, gsm: 300, badges: ['best'] }],
     ['Ajrak Cotton Razai', 'home', 'duvets-quilts', 'winter', 'Cotton', 1, 8990, 0, [['Ajrak Red', '#8C2A24'], ['Ajrak Indigo', '#24365A']], 'lattice', 'bed', { threadCount: 200, gsm: 400, badges: ['new'] }],
