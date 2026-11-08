@@ -9,7 +9,7 @@ A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD 
 | PRD | Built |
 |---|---|
 | §4 Brand | Champagne-ivory / ink / petrol-blue palette with gold detailing, red only for sale. Cormorant Garamond headings + Inter body. Mughal-arch motif. |
-| §5 Country stores | `/en-pk/` URL prefix, header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), hreflang tags, +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
+| §5 Country stores & language | English `/en-pk/` and Urdu `/ur-pk/` (right-to-left, Noto Nastaliq Urdu, header/menu switch), hreflang for both. `/en-pk/` URL prefix, header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), hreflang tags, +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
 | §7 Navigation | Announcement bar, mega-menu (desktop), drawer (mobile), full footer, floating WhatsApp, cookie banner. |
 | §8.1 Home | Hero slider with separate mobile art (H-1), department tiles (H-2), category circles (H-3), New In + Best Sellers carousels (H-4), deal strip with countdown (H-5), trust strip (H-6), shoppable social gallery (H-7), WhatsApp/email opt-in (H-8). |
 | §8.2 Listing | 2/4-column grid with second image on hover, department-specific filters (women: type, pieces, fabric, size, colour, occasion, price; bedding: category, bed size, thread count, material, pieces, colour, price), 6 sort options, badges, quick view + quick add, "Load more" with `?page=` URLs. |
@@ -17,6 +17,13 @@ A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD 
 | §8.4 Search, cart, account | Predictive search with Roman-Urdu synonyms (chadar → bedsheet, razai → quilt, kameez → kurti…), mini cart + cart page, free-delivery progress bar, discount codes (`WELCOME10`, `EID500`), gift wrap, mobile + OTP sign-in, orders, re-order, saved address, exchange request. |
 | §10 Checkout | One page: mobile → address → delivery (standard / express by city) → payment (COD, JazzCash, Easypaisa, cards via gateway, bank/IBFT/Raast), Rs. 100 prepaid incentive, COD cap, confirmation with WhatsApp confirm + order-status timeline, order tracking. |
 | Other pages | About, Contact, Delivery, Exchange & Returns, Size Guide, Bedsheet Size Guide, FAQ, Fabric & Care, Privacy, Terms, Gift Cards, Journal, 404. |
+
+## Store settings
+
+- **Logo:** `assets/logo.webp` (header) and `assets/logo-light.webp` (dark footer), made from the brand logo file.
+- **Warehouse:** Faisalabad. Delivery zones, times and express cities are set per city in `CITIES` in `assets/data.js`.
+- **Free delivery:** orders over Rs. 3,000 (`STORE.freeDeliveryThreshold`).
+- **Urdu:** interface text is translated in `assets/i18n.js`. Product names, fabric names and city names stay in English. Copy with inline formatting uses `T(english, urdu)` in `assets/app.js`.
 
 ## Placeholders to replace before launch
 

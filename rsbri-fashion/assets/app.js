@@ -31,6 +31,16 @@
     set: function (k, v) { try { localStorage.setItem('rsbri:' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
   };
 
+  /* Language comes from the URL prefix (/en-pk/ or /ur-pk/, PRD §5), then the saved preference. */
+  var LANG = (location.hash.match(/^#\/(en|ur)-pk(\/|\?|$)/) || [])[1] || store.get('lang', 'en');
+  BASE = '#/' + LANG + '-pk/';
+  /* T(english, urdu): for copy with inline markup that the text-node translator can't reorder. */
+  function T(en, ur) { return LANG === 'ur' ? ur : en; }
+  function otherLangHash() {
+    var other = LANG === 'ur' ? 'en' : 'ur', h = location.hash || BASE;
+    return /^#\/(en|ur)-pk/.test(h) ? h.replace(/^#\/(en|ur)-pk/, '#/' + other + '-pk') : '#/' + other + '-pk/' + h.replace(/^#\/?/, '');
+  }
+
   var state = {
     cart: store.get('cart', []),
     wish: store.get('wish', []),
@@ -207,9 +217,9 @@
     var best = P.slice().sort(function (a, b) { return b.sold - a.sold; }).slice(0, 10);
     var C = R.COLLECTIONS;
     var slides = [
-      { tone: C[1].tone, subject: 'kurta', eyebrow: 'Eid ul Adha · Naya Collection', title: 'The <em>Eid</em> Edit', text: 'Hand-finished chikankari, chiffon and silk — festive pieces made to be remembered.', cta: ['Shop the Eid Edit', BASE + 'collections/eid-edit'], cta2: ['Shop Women', BASE + 'women'] },
-      { tone: ['#13263A', '#EFE8DA', '#C9A23F'], subject: 'bed', eyebrow: 'Wedding Season', title: 'Bridal <em>bed sets</em> for the jahez', text: '8 and 10-piece sateen and velvet sets in royal blue, emerald and ivory gold.', cta: ['Shop Bridal Sets', BASE + 'bedding-home/bridal-bed-sets'], cta2: ['All Bedding', BASE + 'bedding-home'] },
-      { tone: ['#E6E2D8', '#F7F4EC', '#1E4A66'], subject: 'kurta', light: true, eyebrow: 'Summer Lawn 2026', title: 'Lawn, <em>lightly</em> done', text: 'Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', cta: ['Shop Lawn', BASE + 'women/unstitched'], cta2: ['New In', BASE + 'new-in'] }
+      { tone: C[1].tone, subject: 'kurta', eyebrow: T('Eid ul Adha · Naya Collection', 'عید الاضحیٰ · نیا کلیکشن'), title: T('The <em>Eid</em> Edit', '<em>عید</em> ایڈٹ'), text: T('Hand-finished chikankari, chiffon and silk — festive pieces made to be remembered.', 'ہاتھ سے تیار چکن کاری، شیفون اور سلک — یادگار تہوار کے ملبوسات۔'), cta: [T('Shop the Eid Edit', 'عید ایڈٹ دیکھیں'), BASE + 'collections/eid-edit'], cta2: [T('Shop Women', 'خواتین کی خریداری'), BASE + 'women'] },
+      { tone: ['#13263A', '#EFE8DA', '#C9A23F'], subject: 'bed', eyebrow: T('Wedding Season', 'شادی سیزن'), title: T('Bridal <em>bed sets</em> for the jahez', 'جہیز کے لیے <em>برائیڈل بیڈ سیٹس</em>'), text: T('8 and 10-piece sateen and velvet sets in royal blue, emerald and ivory gold.', 'رائل بلیو، زمردی اور آئیوری گولڈ میں 8 اور 10 پیس ساٹن اور ویلوٹ سیٹس۔'), cta: [T('Shop Bridal Sets', 'برائیڈل سیٹس خریدیں'), BASE + 'bedding-home/bridal-bed-sets'], cta2: [T('All Bedding', 'تمام بیڈنگ'), BASE + 'bedding-home'] },
+      { tone: ['#E6E2D8', '#F7F4EC', '#1E4A66'], subject: 'kurta', light: true, eyebrow: T('Summer Lawn 2026', 'سمر لان 2026'), title: T('Lawn, <em>lightly</em> done', 'ہلکی پھلکی <em>لان</em>'), text: T('Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', '2 اور 3 پیس پرنٹڈ اور کڑھائی والی لان — ہوادار، پکے رنگ، صرف ' + money(3990) + ' سے۔'), cta: [T('Shop Lawn', 'لان خریدیں'), BASE + 'women/unstitched'], cta2: [T('New In', 'نئی آمد'), BASE + 'new-in'] }
     ];
     var hero = '<section class="hero" aria-roledescription="carousel" aria-label="Featured campaigns"><div class="hero-track">' + slides.map(function (s, i) {
       var copy = '<div class="wrap" style="height:100%"><div class="slide-copy"><span class="eyebrow">' + s.eyebrow + '</span>' +
@@ -243,7 +253,7 @@
 
     var newSec = '<section class="section" style="padding-top:0"><div class="wrap"><div class="sec-head reveal"><div><span class="eyebrow">Just landed</span><h2>New In</h2></div><a href="' + BASE + 'new-in">View all</a></div>' + rail(newIn) + '</div></section>';
 
-    var deal = '<section class="deal"><div class="wrap"><div><span class="eyebrow">White Week · Limited time</span><h2>Up to <em>' + maxSale() + '% off</em></h2><p>On selected lawn, comforters and bed sets. While stocks last.</p></div>' +
+    var deal = '<section class="deal"><div class="wrap"><div><span class="eyebrow">White Week · Limited time</span><h2>' + T('Up to <em>' + maxSale() + '% off</em>', '<em>' + maxSale() + '%</em> تک رعایت') + '</h2><p>On selected lawn, comforters and bed sets. While stocks last.</p></div>' +
       '<div class="timer" id="timer" aria-label="Sale ends in"></div><div><a class="btn btn-light" href="' + BASE + 'sale">Shop the Sale</a></div></div></section>';
 
     var bestSec = '<section class="section"><div class="wrap"><div class="sec-head reveal"><div><span class="eyebrow">Loved across Pakistan</span><h2>Best Sellers</h2></div><a href="' + BASE + 'best-sellers">View all</a></div>' + rail(best) + '</div></section>';
@@ -251,7 +261,7 @@
     var bridal = R.PRODUCTS.filter(function (p) { return p.cat === 'bridal-bed-sets'; })[1];
     var editorial = '<section class="section" style="padding-top:0"><div class="wrap split">' +
       '<div class="split-media reveal"><img src="' + R.art.product(bridal, 0, 0) + '" alt="Mehndi 10-piece bridal bed set" loading="lazy"></div>' +
-      '<div class="split-copy reveal"><span class="eyebrow">The Jahez Edit</span><h2>Bridal bedding, <em>beautifully</em> boxed.</h2>' +
+      '<div class="split-copy reveal"><span class="eyebrow">The Jahez Edit</span><h2>' + T('Bridal bedding, <em>beautifully</em> boxed.', 'برائیڈل بیڈنگ، <em>خوبصورت</em> پیکنگ میں۔') + '</h2>' +
       '<p>Our bridal sets arrive gift-boxed and ready for the rukhsati — every piece you need for a complete, coordinated bedroom.</p>' +
       '<ul><li>King and Super King sizes (100 × 108″ / 108 × 108″)</li><li>Sateen and velvet, 300–400 thread count</li><li>Bedsheet, pillow covers, cushions, comforter &amp; runner</li><li>Free gift wrap and a handwritten card</li></ul>' +
       '<a class="btn btn-primary" href="' + BASE + 'bedding-home/bridal-bed-sets">Shop Bridal Sets</a></div></div></section>';
@@ -478,7 +488,7 @@
       if (p.bedSizes) specs.push(['Sizes', p.bedSizes.map(function (s) { var b = R.BED_SIZES.filter(function (x) { return x.name === s; })[0]; return s + ' — ' + b.dims; }).join('<br>')]);
     }
     $('#pdp-info').innerHTML =
-      '<span class="eyebrow">' + esc(catName(p.dept, p.cat)) + (p.collection ? ' · ' + esc(R.COLLECTIONS.filter(function (c) { return c.slug === p.collection; })[0].name) : '') + '</span>' +
+      '<span class="eyebrow"><span>' + esc(catName(p.dept, p.cat)) + '</span>' + (p.collection ? ' · <span>' + esc(R.COLLECTIONS.filter(function (c) { return c.slug === p.collection; })[0].name) + '</span>' : '') + '</span>' +
       '<h1>' + esc(p.title) + '</h1>' +
       '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="rating"><span class="stars" aria-hidden="true">★★★★★</span>' + p.rating.toFixed(1) + ' · ' + (12 + p.sold % 80) + ' reviews</span><span class="pdp-sku">SKU ' + p.sku + '</span></div>' +
       '<div class="pdp-price">' + (p.sale ? '<span class="now sale">' + money(p.sale) + '</span><s>' + money(p.price) + '</s><span class="save">Save ' + pctOff(p) + '% · ' + money(p.price - p.sale) + '</span>' : '<span class="now">' + money(p.price) + '</span>') + '</div>' +
@@ -502,7 +512,7 @@
         '<a class="btn btn-outline" target="_blank" rel="noopener" href="' + waLink('Look what I found at RSBRI Fashion: ' + p.title + ' — ' + absUrl(productUrl(p))) + '">' + ic('share', 'sm') + 'Share</a></div>' +
 
       '<div class="delivery-box">' +
-        '<div class="row">' + ic('truck') + '<div>Delivery to <label class="sr-only" for="city-sel">City</label><select id="city-sel">' + R.CITIES.map(function (c) { return '<option' + (c.name === city.name ? ' selected' : '') + '>' + c.name + '</option>'; }).join('') + '</select>: <b>' + city.days + ' working days</b>' +
+        '<div class="row">' + ic('truck') + '<div>Delivery to <label class="sr-only" for="city-sel">City</label><select id="city-sel">' + R.CITIES.map(function (c) { return '<option value="' + esc(c.name) + '"' + (c.name === city.name ? ' selected' : '') + ' translate="no">' + c.name + '</option>'; }).join('') + '</select>: <b>' + city.days + ' working days</b>' +
           '<div class="muted" style="font-size:12.5px">' + (now(p) >= S.freeDeliveryThreshold ? 'Free delivery on this item' : 'Free delivery on orders over ' + money(S.freeDeliveryThreshold)) + '</div></div></div>' +
         '<div class="row">' + ic('cash') + '<div>Cash on Delivery available · JazzCash · Easypaisa · Cards</div></div>' +
         '<div class="row">' + ic('swap') + '<div>7-day exchange on unused items with tags' + (p.dept === 'women' && !p.stitched ? ' (cut fabric excluded)' : '') + '</div></div>' +
@@ -512,7 +522,7 @@
         '<details open><summary>Description' + ic('plus') + '</summary><div class="acc-body"><p style="margin-top:0">' + esc(p.desc) + '</p></div></details>' +
         '<details><summary>Details &amp; pieces' + ic('plus') + '</summary><div class="acc-body"><table class="spec">' + specs.map(function (s) { return '<tr><th>' + s[0] + '</th><td>' + s[1] + '</td></tr>'; }).join('') + '</table></div></details>' +
         '<details><summary>Fabric &amp; care' + ic('plus') + '</summary><div class="acc-body">' + esc(p.care) + '<br><br><small class="muted">Colours may vary slightly due to photography and screen settings.</small></div></details>' +
-        '<details><summary>Delivery &amp; exchange' + ic('plus') + '</summary><div class="acc-body">Dispatched within 24 hours from our Lahore warehouse via TCS / Leopards. Lahore 1–2 days, major cities 2–3 days, rest of Pakistan 4–7 days. You\'ll get WhatsApp and SMS updates with your tracking number. <a class="link" href="' + BASE + 'page/returns">Exchange policy</a></div></details>' +
+        '<details><summary>Delivery &amp; exchange' + ic('plus') + '</summary><div class="acc-body">Dispatched within 24 hours from our Faisalabad warehouse via TCS / Leopards. Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 days. You\'ll get WhatsApp and SMS updates with your tracking number. <a class="link" href="' + BASE + 'page/returns">Exchange policy</a></div></details>' +
       '</div>';
     updateWaOrder();
   }
@@ -571,7 +581,7 @@
   }
   function freeBar(sub) {
     var left = S.freeDeliveryThreshold - sub, pct = Math.min(100, sub / S.freeDeliveryThreshold * 100);
-    return '<div class="free-bar' + (left <= 0 ? ' done' : '') + '">' + (left > 0 ? 'Add <b>' + money(left) + '</b> more for <b>free delivery</b>' : ic('check', 'sm') + ' <b style="vertical-align:3px">You\'ve unlocked free delivery!</b>') + '<div class="bar"><i style="width:' + pct + '%"></i></div></div>';
+    return '<div class="free-bar' + (left <= 0 ? ' done' : '') + '">' + (left > 0 ? T('Add <b>' + money(left) + '</b> more for <b>free delivery</b>', '<b>مفت ڈیلیوری</b> کے لیے مزید <b>' + money(left) + '</b> کی خریداری کریں') : ic('check', 'sm') + ' <b style="vertical-align:3px">' + T('You\'ve unlocked free delivery!', 'آپ کو مفت ڈیلیوری مل گئی!') + '</b>') + '<div class="bar"><i style="width:' + pct + '%"></i></div></div>';
   }
   function lineHTML(l, compact) {
     var p = byId(l.id); if (!p) return '';
@@ -603,7 +613,7 @@
     var sub = subtotal(), disc = codeDiscount(sub), gw = state.giftWrap ? S.giftWrapFee : 0;
     var codeInfo = state.code ? (disc ? '<div class="sum-row"><span>Code ' + esc(state.code) + ' <button class="link muted" data-code-rm style="font-size:12px">remove</button></span><span class="green" style="color:var(--ok)">−' + money(disc) + '</span></div>' : '<p class="error">' + esc(S.discountCodes[state.code].label) + ' — not yet eligible.</p>') : '';
     return crumbs([['Bag']]) + '<div class="wrap"><div class="plp-head"><h1>Your bag</h1></div><div class="cart-page"><div>' + freeBar(sub) + state.cart.map(function (l) { return lineHTML(l); }).join('') +
-      '<label class="check" style="margin-top:20px">' + '<input type="checkbox" id="gift"' + (state.giftWrap ? ' checked' : '') + '><span>' + ic('gift', 'sm') + ' <b>Add gift wrap</b> (' + money(S.giftWrapFee) + ') — RSBRI box with a handwritten card. Perfect for Eid and weddings.</span></label></div>' +
+      '<label class="check" style="margin-top:20px">' + '<input type="checkbox" id="gift"' + (state.giftWrap ? ' checked' : '') + '><span>' + ic('gift', 'sm') + ' ' + T('<b>Add gift wrap</b> (' + money(S.giftWrapFee) + ') — RSBRI box with a handwritten card. Perfect for Eid and weddings.', '<b>گفٹ ریپ شامل کریں</b> (' + money(S.giftWrapFee) + ') — ہاتھ سے لکھے کارڈ کے ساتھ RSBRI باکس۔ عید اور شادیوں کے لیے بہترین۔') + '</span></label></div>' +
       '<aside class="summary"><h3>Order summary</h3>' +
       '<form id="code-form" class="inline-field" style="margin-bottom:16px"><input class="input" id="code" placeholder="Discount code" aria-label="Discount code" style="min-height:44px"><button class="btn btn-outline" style="min-height:44px;padding:0 18px">Apply</button></form>' +
       '<div class="sum-row"><span>Subtotal</span><span>' + money(sub) + '</span></div>' + codeInfo +
@@ -637,19 +647,19 @@
     document.title = 'Checkout | RSBRI Fashion';
     if (!state.cart.length) return '<div class="wrap"><div class="empty"><h2>Your bag is empty</h2><p>Add something you love, then come back to check out.</p><a class="btn btn-dark" href="' + BASE + '">Continue shopping</a></div></div>';
     var u = state.user || {}, a = (u.addresses && u.addresses[0]) || {};
-    var express = R.CITIES.filter(function (c) { return c.zone === 'local' || c.name === 'Karachi' || c.name === 'Islamabad'; }).map(function (c) { return c.name; });
+    var express = R.CITIES.filter(function (c) { return c.express; }).map(function (c) { return c.name; });
     return '<div class="wrap"><nav class="crumbs" aria-label="Breadcrumb"><a href="' + BASE + 'cart">Bag</a><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>' +
       '<form class="co" id="co-form" novalidate><div>' +
       '<section class="co-step"><h2><span class="n">1</span>Contact</h2><div class="fgrid">' +
         '<div class="field"><label for="phone">Mobile number</label><div class="phone"><span>🇵🇰 +92</span><input class="input" id="phone" inputmode="tel" autocomplete="tel" placeholder="03XX-XXXXXXX" value="' + esc(u.phone || '') + '" required></div><span class="hint">We\'ll send order updates by WhatsApp &amp; SMS.</span></div>' +
         '<div class="field"><label for="email">Email <span class="muted">(optional)</span></label><input class="input" id="email" type="email" autocomplete="email" value="' + esc(u.email || '') + '"></div>' +
         '<label class="check"><input type="checkbox" id="wa-opt" checked> Send me new launches &amp; offers on WhatsApp</label>' +
-        (state.user ? '' : '<p class="hint" style="margin:0">Have an account? <a class="link" href="' + BASE + 'account">Sign in with OTP</a> — or continue as a guest.</p>') +
+        (state.user ? '' : '<p class="hint" style="margin:0">' + T('Have an account? <a class="link" href="' + BASE + 'account">Sign in with OTP</a> — or continue as a guest.', 'اکاؤنٹ ہے؟ <a class="link" href="' + BASE + 'account">OTP سے سائن ان کریں</a> — یا بطور مہمان جاری رکھیں۔') + '</p>') +
       '</div></section>' +
       '<section class="co-step"><h2><span class="n">2</span>Delivery address</h2><div class="fgrid two">' +
         '<div class="field"><label for="fname">First name</label><input class="input" id="fname" autocomplete="given-name" value="' + esc(a.fname || '') + '" required></div>' +
         '<div class="field"><label for="lname">Last name</label><input class="input" id="lname" autocomplete="family-name" value="' + esc(a.lname || '') + '" required></div>' +
-        '<div class="field"><label for="city">City</label><select class="input" id="city" required>' + R.CITIES.map(function (c) { return '<option' + (c.name === (a.city || state.city) ? ' selected' : '') + '>' + c.name + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="city">City</label><select class="input" id="city" required>' + R.CITIES.map(function (c) { return '<option value="' + esc(c.name) + '"' + (c.name === (a.city || state.city) ? ' selected' : '') + ' translate="no">' + c.name + '</option>'; }).join('') + '</select></div>' +
         '<div class="field"><label for="area">Area / Sector</label><input class="input" id="area" placeholder="e.g. DHA Phase 5, Gulberg III, F-7/2" value="' + esc(a.area || '') + '" required></div>' +
         '<div class="field" style="grid-column:1/-1"><label for="street">Street &amp; house no.</label><input class="input" id="street" autocomplete="street-address" placeholder="House 12, Street 4" value="' + esc(a.street || '') + '" required></div>' +
         '<div class="field" style="grid-column:1/-1"><label for="landmark">Nearest landmark</label><input class="input" id="landmark" placeholder="e.g. Near Jamia Masjid, opposite Imtiaz Store" value="' + esc(a.landmark || '') + '"><span class="hint">Helps the courier find you faster.</span></div>' +
@@ -662,7 +672,7 @@
   function renderCheckoutDynamic() {
     var city = $('#city').value, sub = subtotal();
     var c = R.CITIES.filter(function (x) { return x.name === city; })[0];
-    var expressOK = c && (c.zone === 'local' || city === 'Karachi' || city === 'Islamabad');
+    var expressOK = !!(c && c.express);
     if (!expressOK && CO.ship === 'express') CO.ship = 'standard';
     var std = shippingFor(city, sub, 'standard');
     $('#ship-opts').innerHTML =
@@ -701,7 +711,7 @@
       (CO.pay === 'cod' && t.sub >= 50000 ? '<p class="error">Orders above ' + money(50000) + ' need advance payment — please choose another method.</p>' : '') +
       '<button class="btn btn-primary btn-block" type="submit">' + (CO.pay === 'cod' ? 'Place order · ' : 'Pay ') + money(t.total) + '</button>' +
       '<div class="secure-note">' + ic('lock', 'sm') + ' Your information is protected</div>' +
-      '<p class="muted" style="font-size:11.5px;text-align:center;margin:10px 0 0">By placing your order you agree to our <a class="link" href="' + BASE + 'page/terms">Terms</a> and <a class="link" href="' + BASE + 'page/privacy">Privacy Policy</a>.</p></div>';
+      '<p class="muted" style="font-size:11.5px;text-align:center;margin:10px 0 0">' + T('By placing your order you agree to our <a class="link" href="' + BASE + 'page/terms">Terms</a> and <a class="link" href="' + BASE + 'page/privacy">Privacy Policy</a>.', 'آرڈر دے کر آپ ہماری <a class="link" href="' + BASE + 'page/terms">شرائط</a> اور <a class="link" href="' + BASE + 'page/privacy">پرائیویسی پالیسی</a> سے اتفاق کرتے ہیں۔') + '</p></div>';
   }
   function mountCheckout() {
     if (!$('#co-form')) return;
@@ -877,12 +887,13 @@
 
   var PAGES = {
     'about': ['About RSBRI', '<p>RSBRI Fashion is a Pakistani label for women\'s clothing and home textiles. We design every print, choose every fabric and finish every piece with the care of a designer house — and we sell it directly to you, so you get premium quality at honest prices.</p><h2>Our promise</h2><ul><li>Fabrics you can trust — true-to-description lawn, khaddar, sateen and percale.</li><li>Clear measurements — metres per piece and bedsheet sizes on every product.</li><li>Service that answers — WhatsApp us and a real person replies.</li></ul>'],
-    'contact': ['Contact & WhatsApp', '<p>We\'re here 10am – 8pm PKT, Monday to Saturday.</p><ul><li><b>WhatsApp:</b> <a class="link" target="_blank" rel="noopener" href="' + waLink('Assalam o Alaikum RSBRI!') + '">+92 300 1234567</a></li><li><b>Email:</b> care@rsbrifashion.com</li><li><b>Warehouse:</b> Lahore, Pakistan</li></ul><p>For order questions, please keep your order number (RS-XXXXXX) handy.</p>'],
-    'delivery': ['Delivery information', '<p>We ship across Pakistan with TCS and Leopards, and Pakistan Post for remote areas.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th>Time</th><th>Fee</th></tr></thead><tbody><tr><td>Lahore</td><td>1–2 working days</td><td>Rs. 200</td></tr><tr><td>Major cities</td><td>2–4 working days</td><td>Rs. 250</td></tr><tr><td>Rest of Pakistan</td><td>4–7 working days</td><td>Rs. 350</td></tr><tr><td>Express (Lahore, Karachi, Islamabad)</td><td>Next working day</td><td>Rs. 450</td></tr></tbody></table></div><p><b>Free standard delivery</b> on all orders over ' + money(S.freeDeliveryThreshold) + '. You\'ll get WhatsApp and SMS updates at every step: confirmed → dispatched (with tracking) → out for delivery → delivered.</p>'],
-    'returns': ['Exchange & returns', '<p>Not quite right? Exchange it within <b>7 days</b> of delivery.</p><ul><li>Items must be unused, unwashed and have original tags.</li><li>Refunds are issued as store credit, or to your JazzCash/Easypaisa wallet or bank account.</li><li>Not eligible: cut unstitched fabric, opened pillows, and final-sale items.</li><li>Request from your account or on WhatsApp — we\'ll arrange a courier pickup.</li></ul>'],
+    'contact': ['Contact & WhatsApp', '<p>We\'re here 10am – 8pm PKT, Monday to Saturday.</p><ul><li><b>WhatsApp:</b> <a class="link" target="_blank" rel="noopener" href="' + waLink('Assalam o Alaikum RSBRI!') + '">+92 300 1234567</a></li><li><b>Email:</b> care@rsbrifashion.com</li><li><b>Warehouse:</b> Faisalabad, Pakistan</li></ul><p>For order questions, please keep your order number (RS-XXXXXX) handy.</p>'],
+    'delivery': ['Delivery information', '<p>We ship across Pakistan with TCS and Leopards, and Pakistan Post for remote areas.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th>Time</th><th>Fee</th></tr></thead><tbody><tr><td>Faisalabad</td><td>1–2 working days</td><td>Rs. 200</td></tr><tr><td>Major cities</td><td>1–4 working days</td><td>Rs. 250</td></tr><tr><td>Rest of Pakistan</td><td>4–7 working days</td><td>Rs. 350</td></tr><tr><td>Express (Faisalabad, Lahore, Islamabad, Rawalpindi)</td><td>Next working day</td><td>Rs. 450</td></tr></tbody></table></div><p><b>Free standard delivery</b> on all orders over ' + money(S.freeDeliveryThreshold) + '. You\'ll get WhatsApp and SMS updates at every step: confirmed → dispatched (with tracking) → out for delivery → delivered.</p>'],
+    'returns': ['Exchange & returns', T('<p>Not quite right? Exchange it within <b>7 days</b> of delivery.</p><ul><li>Items must be unused, unwashed and have original tags.</li><li>Refunds are issued as store credit, or to your JazzCash/Easypaisa wallet or bank account.</li><li>Not eligible: cut unstitched fabric, opened pillows, and final-sale items.</li><li>Request from your account or on WhatsApp — we\'ll arrange a courier pickup.</li></ul>',
+      '<p>پسند نہیں آیا؟ ڈیلیوری کے <b>7 دن</b> کے اندر تبدیل کریں۔</p><ul><li>اشیاء غیر استعمال شدہ، بغیر دھلی اور اصل ٹیگ کے ساتھ ہوں۔</li><li>رقم اسٹور کریڈٹ، یا آپ کے جاز کیش/ایزی پیسہ والیٹ یا بینک اکاؤنٹ میں واپس کی جاتی ہے۔</li><li>شامل نہیں: کٹا ہوا ان سلا کپڑا، کھلے ہوئے تکیے، اور فائنل سیل کی اشیاء۔</li><li>اپنے اکاؤنٹ یا واٹس ایپ سے درخواست کریں — ہم کورئیر پک اپ کا انتظام کریں گے۔</li></ul>')],
     'size-guide': ['Size guide', '<p>Body measurements for our ready-to-wear. Between sizes? Size up for a relaxed fit.</p>' + sizeTable('women', 'in') + '<h2>How to measure</h2><ul><li><b>Chest:</b> around the fullest part of your bust.</li><li><b>Shirt length:</b> from the highest point of the shoulder to the hem.</li><li><b>Trouser length:</b> from waist to ankle.</li></ul>'],
     'bedsheet-size-guide': ['Bedsheet size guide', '<p>Pakistani bed sizes vary, so measure your mattress first and allow 10–12″ on each side for tucking.</p>' + sizeTable('bed', 'in') + '<p class="muted">Dimensions in cm: Single 152 × 229, Double 229 × 254, King 254 × 274, Super King 274 × 274.</p>'],
-    'faq': ['Frequently asked questions', '<div class="faq">' + [['Do you offer Cash on Delivery?', 'Yes, across Pakistan. We\'ll confirm your order by WhatsApp or SMS before dispatch.'], ['How long does delivery take?', 'Lahore 1–2 days, major cities 2–4 days, rest of Pakistan 4–7 working days.'], ['Can I pay with JazzCash or Easypaisa?', 'Yes — and online payments get ' + money(S.prepaidDiscount) + ' off.'], ['Is unstitched fabric exchangeable?', 'Yes, if it hasn\'t been cut and still has its tags, within 7 days.'], ['Do you ship outside Pakistan?', 'International stores for the UAE, Saudi Arabia and the UK are coming soon. Join the waitlist from the country selector.']].map(function (q) { return '<details><summary>' + q[0] + ic('plus', 'sm') + '</summary><p>' + q[1] + '</p></details>'; }).join('') + '</div>'],
+    'faq': ['Frequently asked questions', '<div class="faq">' + [['Do you offer Cash on Delivery?', 'Yes, across Pakistan. We\'ll confirm your order by WhatsApp or SMS before dispatch.'], ['How long does delivery take?', 'Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 working days. We ship from our Faisalabad warehouse.'], ['Can I pay with JazzCash or Easypaisa?', 'Yes — and online payments get ' + money(S.prepaidDiscount) + ' off.'], ['Is unstitched fabric exchangeable?', 'Yes, if it hasn\'t been cut and still has its tags, within 7 days.'], ['Do you ship outside Pakistan?', 'International stores for the UAE, Saudi Arabia and the UK are coming soon. Join the waitlist from the country selector.']].map(function (q) { return '<details><summary>' + q[0] + ic('plus', 'sm') + '</summary><p>' + q[1] + '</p></details>'; }).join('') + '</div>'],
     'fabric-care': ['Fabric & care', '<h2>Lawn &amp; cambric</h2><p>Gentle wash in cold water, dry in shade, iron on reverse.</p><h2>Khaddar &amp; karandi</h2><p>Hand wash separately for the first few washes; avoid wringing.</p><h2>Velvet, silk, chiffon &amp; organza</h2><p>Dry clean only. Store folded in muslin.</p><h2>Bedding</h2><p>Machine wash at 40°C with like colours. Line dry in shade to keep colours bright.</p>'],
     'privacy': ['Privacy policy', '<p>We collect only what we need to process your orders and, with your consent, to send you offers. We never sell your data. Card payments are handled by our payment gateway — RSBRI never sees or stores your card details.</p><p class="muted">This is placeholder copy. Final policy to be reviewed against PECA 2016 and applicable data-protection law.</p>'],
     'terms': ['Terms of service', '<p>All prices are in Pakistani Rupees and include sales tax. Orders are subject to availability and confirmation.</p><p class="muted">Placeholder copy — to be finalised with legal and tax advisers (FBR requirements).</p>'],
@@ -946,8 +957,10 @@
     var hash = location.hash || BASE;
     var path = hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
     var seg = path.split('/').filter(Boolean);
-    if (seg[0] !== S.code) { if (!seg.length) seg = [S.code]; else seg.unshift(S.code); }
-    seg.shift();
+    var pre = /^(en|ur)-pk$/.exec(seg[0] || '');
+    if (pre && pre[1] !== LANG) { store.set('lang', pre[1]); location.reload(); return; } // language switch rebuilds the page
+    if (pre) seg.shift();
+    $$('#lang-btn, #lang-btn-m').forEach(function (a) { a.href = otherLangHash(); });
     var app = $('#app'), html = '', mount = null, nav = seg[0] || '';
     L = null; clearInterval(heroTimer); clearInterval(timerInt);
     document.title = 'RSBRI Fashion — Women\'s Clothing & Bedding | Pakistan';
@@ -1006,7 +1019,7 @@
   function syncRails() {
     $$('.carousel').forEach(function (c) {
       var r = $('.rail', c), prev = $('.prev', c), next = $('.next', c);
-      function upd() { prev.disabled = r.scrollLeft < 8; next.disabled = r.scrollLeft + r.clientWidth >= r.scrollWidth - 8; }
+      function upd() { var x = Math.abs(r.scrollLeft); prev.disabled = x < 8; next.disabled = x + r.clientWidth >= r.scrollWidth - 8; } // abs(): RTL scrollLeft runs negative
       r.addEventListener('scroll', upd, { passive: true }); upd();
     });
   }
@@ -1027,7 +1040,7 @@
     }
     if ((el = t.closest('[data-qv]'))) { quickView(el.dataset.qv); return; }
     if ((el = t.closest('[data-qa]'))) { var qp = byId(el.dataset.qa); if (qp.sizes || (qp.bedSizes && qp.bedSizes.length > 1)) quickView(qp.id); else addToCart(qp.id, 0, qp.bedSizes ? qp.bedSizes[0] : null, 1, true); return; }
-    if ((el = t.closest('[data-rail]'))) { var rr = $('.rail', el.parentNode); rr.scrollBy({ left: rr.clientWidth * +el.dataset.rail, behavior: 'smooth' }); return; }
+    if ((el = t.closest('[data-rail]'))) { var rr = $('.rail', el.parentNode); rr.scrollBy({ left: rr.clientWidth * +el.dataset.rail * (LANG === 'ur' ? -1 : 1), behavior: 'smooth' }); return; }
     if ((el = t.closest('[data-acc]'))) { var li = el.parentNode; li.classList.toggle('open'); el.setAttribute('aria-expanded', li.classList.contains('open')); return; }
     if ((el = t.closest('[data-lq]'))) {
       var ln = state.cart.filter(function (x) { return x.k === el.dataset.k; })[0];
@@ -1089,6 +1102,12 @@
   window.addEventListener('hashchange', function () { route(false); });
 
   /* ---------------- boot ---------------- */
+  store.set('lang', LANG);
+  $$('a[href^="#/en-pk/"]').forEach(function (a) { a.setAttribute('href', a.getAttribute('href').replace('#/en-pk/', BASE)); });
+  $('#lang-btn').textContent = LANG === 'ur' ? 'English' : 'اردو';
+  $('#lang-btn').setAttribute('lang', LANG === 'ur' ? 'en' : 'ur');
+  $('#lang-btn').setAttribute('aria-label', LANG === 'ur' ? 'View in English' : 'اردو میں دیکھیں');
+  if (R.i18n) R.i18n.init(LANG);
   $('#year').textContent = new Date().getFullYear();
   $('#wa-float').href = waLink('Assalam o Alaikum RSBRI! I have a question.');
   if (!store.get('cookie', null)) setTimeout(function () { $('#cookie').classList.add('on'); }, 1200);

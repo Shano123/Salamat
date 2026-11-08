@@ -22,12 +22,13 @@
   ];
 
   var CITIES = [
-    { name: 'Lahore', zone: 'local', days: '1–2' },
-    { name: 'Karachi', zone: 'major', days: '2–3' },
-    { name: 'Islamabad', zone: 'major', days: '2–3' },
-    { name: 'Rawalpindi', zone: 'major', days: '2–3' },
-    { name: 'Faisalabad', zone: 'major', days: '2–3' },
-    { name: 'Multan', zone: 'major', days: '2–4' },
+    /* Warehouse: Faisalabad. zone drives the delivery fee; express = next-working-day lanes. */
+    { name: 'Faisalabad', zone: 'local', days: '1–2', express: true },
+    { name: 'Lahore', zone: 'major', days: '1–2', express: true },
+    { name: 'Karachi', zone: 'major', days: '2–4' },
+    { name: 'Islamabad', zone: 'major', days: '2–3', express: true },
+    { name: 'Rawalpindi', zone: 'major', days: '2–3', express: true },
+    { name: 'Multan', zone: 'major', days: '2–3' },
     { name: 'Peshawar', zone: 'major', days: '2–4' },
     { name: 'Quetta', zone: 'rest', days: '4–7' },
     { name: 'Sialkot', zone: 'major', days: '2–3' },

@@ -7,6 +7,7 @@
   <meta name="description" content="Shop RSBRI Fashion: unstitched lawn, ready-to-wear, luxury formals, bridal bed sets and premium bedding. Cash on Delivery, JazzCash & Easypaisa. Free delivery across Pakistan over Rs. 3,000.">
   <meta name="theme-color" content="#1E4A66">
   <link rel="alternate" hreflang="en-pk" href="https://rsbrifashion.com/en-pk/">
+  <link rel="alternate" hreflang="ur-pk" href="https://rsbrifashion.com/ur-pk/">
   <link rel="alternate" hreflang="x-default" href="https://rsbrifashion.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="RSBRI Fashion">
@@ -14,7 +15,7 @@
   <meta property="og:description" content="Premium Pakistani women's wear and home textiles. Cash on Delivery across Pakistan.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E4A66'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' text-anchor='middle' fill='%23E8C766'%3ER%3C/text%3E%3C/svg%3E">
 </head>
@@ -66,8 +67,9 @@
       <button class="hbtn only-mob" data-open="search" aria-label="Search"><svg class="icon"><use href="#i-search"/></svg></button>
       <button class="search-pill" data-open="search"><svg class="icon sm"><use href="#i-search"/></svg><span>Search lawn, bedsheets, chadar…</span></button>
     </div>
-    <a href="#/en-pk/" class="logo" aria-label="RSBRI Fashion — home"><b>RSBRI</b><small>FASHION</small></a>
+    <a href="#/en-pk/" class="logo" aria-label="RSBRI Fashion — home"><img src="assets/logo.webp" alt="RSBRI Fashion" width="480" height="181"></a>
     <div class="header-right">
+      <a class="hbtn lang-btn only-desk" id="lang-btn" href="#/ur-pk/" lang="ur" aria-label="اردو میں دیکھیں">اردو</a>
       <button class="hbtn country-btn only-desk" data-open="country" aria-label="Change country and currency"><span class="flag">🇵🇰</span> PKR</button>
       <a class="hbtn only-desk" href="#/en-pk/account" aria-label="Account"><svg class="icon"><use href="#i-user"/></svg></a>
       <a class="hbtn" href="#/en-pk/wishlist" aria-label="Wishlist"><svg class="icon"><use href="#i-heart"/></svg><span class="count" id="wish-count" data-n="0"></span></a>
@@ -83,7 +85,7 @@
   <div class="wrap">
     <div class="f-top">
       <div>
-        <a href="#/en-pk/" class="logo"><b>RSBRI</b><small>FASHION</small></a>
+        <a href="#/en-pk/" class="logo"><img src="assets/logo-light.webp" alt="RSBRI Fashion" width="480" height="181" loading="lazy"></a>
         <p class="f-about">Premium women's wear and home textiles, designed in Pakistan. Shop online 24/7 with Cash on Delivery, JazzCash and Easypaisa.</p>
         <div class="socials">
           <a href="#" aria-label="Instagram"><svg class="icon sm"><use href="#i-ig"/></svg></a>
@@ -138,13 +140,14 @@
 <div class="scrim" id="scrim"></div>
 
 <aside class="drawer left" id="menu" aria-label="Menu" aria-hidden="true">
-  <div class="drawer-head"><a href="#/en-pk/" class="logo" style="align-items:flex-start"><b>RSBRI</b><small>FASHION</small></a><button class="hbtn" data-close aria-label="Close menu"><svg class="icon"><use href="#i-x"/></svg></button></div>
+  <div class="drawer-head"><a href="#/en-pk/" class="logo" style="align-items:flex-start"><img src="assets/logo.webp" alt="RSBRI Fashion" width="480" height="181" style="height:40px"></a><button class="hbtn" data-close aria-label="Close menu"><svg class="icon"><use href="#i-x"/></svg></button></div>
   <div class="drawer-body"><ul class="mnav-list" id="mnav"></ul>
     <div class="mnav-extra">
       <a href="#/en-pk/account"><svg class="icon"><use href="#i-user"/></svg> Sign in / Register</a>
       <a href="#/en-pk/track"><svg class="icon"><use href="#i-truck"/></svg> Track your order</a>
       <a href="#/en-pk/page/contact"><svg class="icon"><use href="#i-wa"/></svg> WhatsApp us</a>
       <button data-open="country"><span style="font-size:20px">🇵🇰</span> Pakistan · PKR</button>
+      <a class="lang-btn" id="lang-btn-m" href="#/ur-pk/"><span style="font-size:20px">ع</span> <span lang="ur">اردو</span> / English</a>
     </div>
   </div>
 </aside>
@@ -183,6 +186,7 @@
 
 <script src="assets/data.js"></script>
 <script src="assets/art.js"></script>
+<script src="assets/i18n.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>
