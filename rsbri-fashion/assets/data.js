@@ -10,7 +10,9 @@
     expressFee: 450,
     giftWrapFee: 250,
     prepaidDiscount: 100,
-    whatsapp: '923001234567', // placeholder — replace with the business number
+    whatsapp: '923001234567', // PLACEHOLDER — business WhatsApp number, country code first, digits only (e.g. 923XXXXXXXXX)
+    couriers: ['Leopards', 'TCS'],
+    facebook: 'https://www.facebook.com/RSBRiFashion/',
     discountCodes: { WELCOME10: { type: 'pct', value: 10, label: '10% off your first order' }, EID500: { type: 'flat', value: 500, min: 5000, label: 'Rs. 500 off orders over Rs. 5,000' } }
   };
 
@@ -169,6 +171,7 @@
       gsm: o.gsm || null,
       lowStock: !!o.lowStock,
       badges: o.badges || [],
+      images: o.images || null, // real photos, e.g. ['assets/products/gulnar-1.webp', ...] — see assets/products/README.md
       added: now - (o.badges && o.badges.indexOf('new') > -1 ? (i % 7) : 20 + i) * day,
       sold: ((i * 37) % 97) + (o.badges && o.badges.indexOf('best') > -1 ? 200 : 0),
       rating: 4 + ((i * 7) % 10) / 10

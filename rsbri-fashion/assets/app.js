@@ -24,6 +24,7 @@
   function productUrl(p) { return BASE + DEPT_SLUG[p.dept] + '/' + p.cat + '/' + p.slug; }
   function catName(dept, slug) { var c = R.DEPARTMENTS[dept].cats.filter(function (c) { return c.slug === slug; })[0]; return c ? c.name : slug; }
   function waLink(text) { return 'https://wa.me/' + S.whatsapp + '?text=' + encodeURIComponent(text); }
+  function waDisplay() { var n = S.whatsapp; return '+' + n.slice(0, 2) + ' ' + n.slice(2, 5) + ' ' + n.slice(5); } // 923001234567 → +92 300 1234567
   function absUrl(hash) { return location.href.split('#')[0] + hash; }
 
   var store = {
@@ -522,7 +523,7 @@
         '<details open><summary>Description' + ic('plus') + '</summary><div class="acc-body"><p style="margin-top:0">' + esc(p.desc) + '</p></div></details>' +
         '<details><summary>Details &amp; pieces' + ic('plus') + '</summary><div class="acc-body"><table class="spec">' + specs.map(function (s) { return '<tr><th>' + s[0] + '</th><td>' + s[1] + '</td></tr>'; }).join('') + '</table></div></details>' +
         '<details><summary>Fabric &amp; care' + ic('plus') + '</summary><div class="acc-body">' + esc(p.care) + '<br><br><small class="muted">Colours may vary slightly due to photography and screen settings.</small></div></details>' +
-        '<details><summary>Delivery &amp; exchange' + ic('plus') + '</summary><div class="acc-body">Dispatched within 24 hours from our Faisalabad warehouse via TCS / Leopards. Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 days. You\'ll get WhatsApp and SMS updates with your tracking number. <a class="link" href="' + BASE + 'page/returns">Exchange policy</a></div></details>' +
+        '<details><summary>Delivery &amp; exchange' + ic('plus') + '</summary><div class="acc-body">Dispatched within 24 hours from our Faisalabad warehouse via Leopards / TCS. Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 days. You\'ll get WhatsApp and SMS updates with your tracking number. <a class="link" href="' + BASE + 'page/returns">Exchange policy</a></div></details>' +
       '</div>';
     updateWaOrder();
   }
@@ -676,7 +677,7 @@
     if (!expressOK && CO.ship === 'express') CO.ship = 'standard';
     var std = shippingFor(city, sub, 'standard');
     $('#ship-opts').innerHTML =
-      rc('ship', 'standard', 'Standard delivery', c.days + ' working days · TCS / Leopards', std ? money(std) : 'Free', CO.ship === 'standard') +
+      rc('ship', 'standard', 'Standard delivery', c.days + ' working days · Leopards / TCS', std ? money(std) : 'Free', CO.ship === 'standard') +
       (expressOK ? rc('ship', 'express', 'Express delivery', 'Next working day if ordered before 2pm PKT', money(S.expressFee), CO.ship === 'express') : '');
     var prepaid = '<span class="tag-green">Save ' + money(S.prepaidDiscount) + '</span>';
     $('#pay-opts').innerHTML =
@@ -887,8 +888,8 @@
 
   var PAGES = {
     'about': ['About RSBRI', '<p>RSBRI Fashion is a Pakistani label for women\'s clothing and home textiles. We design every print, choose every fabric and finish every piece with the care of a designer house — and we sell it directly to you, so you get premium quality at honest prices.</p><h2>Our promise</h2><ul><li>Fabrics you can trust — true-to-description lawn, khaddar, sateen and percale.</li><li>Clear measurements — metres per piece and bedsheet sizes on every product.</li><li>Service that answers — WhatsApp us and a real person replies.</li></ul>'],
-    'contact': ['Contact & WhatsApp', '<p>We\'re here 10am – 8pm PKT, Monday to Saturday.</p><ul><li><b>WhatsApp:</b> <a class="link" target="_blank" rel="noopener" href="' + waLink('Assalam o Alaikum RSBRI!') + '">+92 300 1234567</a></li><li><b>Email:</b> care@rsbrifashion.com</li><li><b>Warehouse:</b> Faisalabad, Pakistan</li></ul><p>For order questions, please keep your order number (RS-XXXXXX) handy.</p>'],
-    'delivery': ['Delivery information', '<p>We ship across Pakistan with TCS and Leopards, and Pakistan Post for remote areas.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th>Time</th><th>Fee</th></tr></thead><tbody><tr><td>Faisalabad</td><td>1–2 working days</td><td>Rs. 200</td></tr><tr><td>Major cities</td><td>1–4 working days</td><td>Rs. 250</td></tr><tr><td>Rest of Pakistan</td><td>4–7 working days</td><td>Rs. 350</td></tr><tr><td>Express (Faisalabad, Lahore, Islamabad, Rawalpindi)</td><td>Next working day</td><td>Rs. 450</td></tr></tbody></table></div><p><b>Free standard delivery</b> on all orders over ' + money(S.freeDeliveryThreshold) + '. You\'ll get WhatsApp and SMS updates at every step: confirmed → dispatched (with tracking) → out for delivery → delivered.</p>'],
+    'contact': ['Contact & WhatsApp', '<p>We\'re here 10am – 8pm PKT, Monday to Saturday.</p><ul><li><b>WhatsApp:</b> <a class="link" target="_blank" rel="noopener" href="' + waLink('Assalam o Alaikum RSBRI!') + '">' + waDisplay() + '</a></li><li><b>Email:</b> care@rsbrifashion.com</li><li><b>Warehouse:</b> Faisalabad, Pakistan</li></ul><p>For order questions, please keep your order number (RS-XXXXXX) handy.</p>'],
+    'delivery': ['Delivery information', '<p>We ship across Pakistan with Leopards and TCS, and Pakistan Post for remote areas.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th>Time</th><th>Fee</th></tr></thead><tbody><tr><td>Faisalabad</td><td>1–2 working days</td><td>Rs. 200</td></tr><tr><td>Major cities</td><td>1–4 working days</td><td>Rs. 250</td></tr><tr><td>Rest of Pakistan</td><td>4–7 working days</td><td>Rs. 350</td></tr><tr><td>Express (Faisalabad, Lahore, Islamabad, Rawalpindi)</td><td>Next working day</td><td>Rs. 450</td></tr></tbody></table></div><p><b>Free standard delivery</b> on all orders over ' + money(S.freeDeliveryThreshold) + '. You\'ll get WhatsApp and SMS updates at every step: confirmed → dispatched (with tracking) → out for delivery → delivered.</p>'],
     'returns': ['Exchange & returns', T('<p>Not quite right? Exchange it within <b>7 days</b> of delivery.</p><ul><li>Items must be unused, unwashed and have original tags.</li><li>Refunds are issued as store credit, or to your JazzCash/Easypaisa wallet or bank account.</li><li>Not eligible: cut unstitched fabric, opened pillows, and final-sale items.</li><li>Request from your account or on WhatsApp — we\'ll arrange a courier pickup.</li></ul>',
       '<p>پسند نہیں آیا؟ ڈیلیوری کے <b>7 دن</b> کے اندر تبدیل کریں۔</p><ul><li>اشیاء غیر استعمال شدہ، بغیر دھلی اور اصل ٹیگ کے ساتھ ہوں۔</li><li>رقم اسٹور کریڈٹ، یا آپ کے جاز کیش/ایزی پیسہ والیٹ یا بینک اکاؤنٹ میں واپس کی جاتی ہے۔</li><li>شامل نہیں: کٹا ہوا ان سلا کپڑا، کھلے ہوئے تکیے، اور فائنل سیل کی اشیاء۔</li><li>اپنے اکاؤنٹ یا واٹس ایپ سے درخواست کریں — ہم کورئیر پک اپ کا انتظام کریں گے۔</li></ul>')],
     'size-guide': ['Size guide', '<p>Body measurements for our ready-to-wear. Between sizes? Size up for a relaxed fit.</p>' + sizeTable('women', 'in') + '<h2>How to measure</h2><ul><li><b>Chest:</b> around the fullest part of your bust.</li><li><b>Shirt length:</b> from the highest point of the shoulder to the hem.</li><li><b>Trouser length:</b> from waist to ankle.</li></ul>'],

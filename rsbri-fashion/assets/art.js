@@ -147,8 +147,22 @@
   var SHAPES = { kurta: kurta, folded: folded, dupatta: dupatta, bed: bed, cushion: cushion };
 
   /* view: 0 = main, 1 = fabric close-up, 2 = detail/embroidery, 3 = styled (alternate background) */
+  /* Real photos win over artwork. p.images is either a list of photo paths
+     (front, styled, fabric close-up, detail) or one such list per colour. */
+  var VIEW_SLOT = { 0: 0, 3: 1, 1: 2, 2: 3 };
+  function photo(p, colorIndex, view) {
+    var imgs = p.images;
+    if (!imgs || !imgs.length) return null;
+    if (Array.isArray(imgs[0])) imgs = imgs[colorIndex % imgs.length] || imgs[0];
+    if (!imgs.length) return null;
+    var slot = VIEW_SLOT[view] || 0;
+    return imgs[slot < imgs.length ? slot : slot % imgs.length];
+  }
+
   function product(p, colorIndex, view) {
     colorIndex = colorIndex || 0; view = view || 0;
+    var real = photo(p, colorIndex, view);
+    if (real) return real;
     var key = p.id + ':' + colorIndex + ':' + view;
     if (cache[key]) return cache[key];
     var c = p.colors[colorIndex % p.colors.length].hex;
