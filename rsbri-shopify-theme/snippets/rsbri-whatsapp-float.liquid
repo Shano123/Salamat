@@ -1,0 +1,16 @@
+{%- comment -%}
+  RSBRI: floating WhatsApp chat button.
+  Turn on/off and set the number in Customize → Theme settings → RSBRI.
+{%- endcomment -%}
+{%- assign rsbri_wa = settings.rsbri_whatsapp | remove: '+' | remove: ' ' | remove: '-' -%}
+{%- if rsbri_wa != blank and settings.rsbri_whatsapp_float -%}
+  <a
+    class="rsbri-wa-float"
+    href="https://wa.me/{{ rsbri_wa }}?text={{ 'rsbri.whatsapp.chat_message' | t | url_encode }}"
+    target="_blank"
+    rel="noopener"
+    aria-label="{{ 'rsbri.whatsapp.chat_label' | t | escape }}"
+  >
+    {%- render 'rsbri-whatsapp-icon' -%}
+  </a>
+{%- endif -%}

@@ -1,0 +1,390 @@
+{
+  "sections": {
+    "hero": {
+      "type": "slideshow",
+      "blocks": {
+        "eid": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 20,
+            "heading": "The <em>Eid</em> Edit",
+            "heading_size": "h0",
+            "subheading": "Embroidered lawn, chiffon and festive suits — Naya Collection.",
+            "button_label": "Shop the collection",
+            "link": "shopify://collections/all",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
+          }
+        },
+        "bedding": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 20,
+            "heading": "Printed <em>bedsheets</em>",
+            "heading_size": "h0",
+            "subheading": "Pure cotton prints in Single, Double and King. Cash on Delivery.",
+            "button_label": "Shop bedsheets",
+            "link": "shopify://collections/all",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
+          }
+        },
+        "covers": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 20,
+            "heading": "Waterproof <em>mattress covers</em>",
+            "heading_size": "h0",
+            "subheading": "Keep your mattress fresh — terry, zipper and baby cot sizes.",
+            "button_label": "Shop covers",
+            "link": "shopify://collections/all",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
+          }
+        }
+      },
+      "block_order": [
+        "eid",
+        "bedding",
+        "covers"
+      ],
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "large",
+        "slider_visual": "dots",
+        "auto_rotate": true,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "show_text_below": true,
+        "accessibility_info": "RSBRI campaigns"
+      }
+    },
+    "trust": {
+      "type": "multicolumn",
+      "blocks": {
+        "cod": {
+          "type": "column",
+          "settings": {
+            "title": "Cash on Delivery",
+            "text": "<p>Pay when your parcel arrives</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "free": {
+          "type": "column",
+          "settings": {
+            "title": "Free delivery",
+            "text": "<p>On orders over Rs. 3,000</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "exchange": {
+          "type": "column",
+          "settings": {
+            "title": "7-day exchange",
+            "text": "<p>Unused items with tags</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "secure": {
+          "type": "column",
+          "settings": {
+            "title": "Secure payment",
+            "text": "<p>JazzCash · Easypaisa · Cards</p>",
+            "link_label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "cod",
+        "free",
+        "exchange",
+        "secure"
+      ],
+      "settings": {
+        "title": "",
+        "heading_size": "h2",
+        "image_width": "third",
+        "image_ratio": "adapt",
+        "button_label": "",
+        "button_link": "",
+        "columns_desktop": 4,
+        "column_alignment": "center",
+        "background_style": "none",
+        "color_scheme": "scheme-2",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "c0": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "c1": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "c2": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "c3": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        }
+      },
+      "block_order": [
+        "c0",
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "settings": {
+        "title": "Shop by category",
+        "heading_size": "h1",
+        "image_ratio": "square",
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "show_view_all": false,
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 48,
+        "padding_bottom": 24
+      }
+    },
+    "new_in": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "all",
+        "products_to_show": 8,
+        "title": "New In",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "link",
+        "color_scheme": "scheme-1",
+        "image_ratio": "portrait",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "deal": {
+      "type": "rich-text",
+      "blocks": {
+        "cap": {
+          "type": "caption",
+          "settings": {
+            "caption": "White Week · Limited time",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "small"
+          }
+        },
+        "head": {
+          "type": "heading",
+          "settings": {
+            "heading": "Up to <em>30% off</em>",
+            "heading_size": "h0"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>On selected lawn suits, bedsheets and mattress covers. While stocks last.</p>"
+          }
+        },
+        "btn": {
+          "type": "button",
+          "settings": {
+            "button_label": "Shop the sale",
+            "button_link": "shopify://collections/all",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "cap",
+        "head",
+        "text",
+        "btn"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-3",
+        "full_width": true,
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "best": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "all",
+        "products_to_show": 8,
+        "title": "Best Sellers",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "link",
+        "color_scheme": "scheme-1",
+        "image_ratio": "portrait",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "bridal": {
+      "type": "image-with-text",
+      "blocks": {
+        "cap": {
+          "type": "caption",
+          "settings": {
+            "caption": "The Jahez Edit",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "small"
+          }
+        },
+        "head": {
+          "type": "heading",
+          "settings": {
+            "heading": "Bedding, beautifully boxed",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Bridal bed sets and printed bedsheets in Single, Double and King — gift-wrapped and ready for the rukhsati.</p>",
+            "text_style": "body"
+          }
+        },
+        "btn": {
+          "type": "button",
+          "settings": {
+            "button_label": "Shop bedding",
+            "button_link": "shopify://collections/all",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "cap",
+        "head",
+        "text",
+        "btn"
+      ],
+      "settings": {
+        "height": "medium",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "image_behavior": "none",
+        "content_layout": "no-overlap",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "scheme-1",
+        "color_scheme": "scheme-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "blocks": {
+        "head": {
+          "type": "heading",
+          "settings": {
+            "heading": "Join the RSBRI circle",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Get 10% off your first order, plus new launches and Eid offers first.</p>"
+          }
+        },
+        "form": {
+          "type": "email_form",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "head",
+        "text",
+        "form"
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "full_width": true,
+        "padding_top": 44,
+        "padding_bottom": 52
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "trust",
+    "categories",
+    "new_in",
+    "deal",
+    "best",
+    "bridal",
+    "newsletter"
+  ]
+}

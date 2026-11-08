@@ -1,0 +1,146 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title"
+        },
+        "price": {
+          "type": "price"
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector"
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "description": {
+          "type": "description"
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        },
+        "size_guide": {
+          "type": "popup",
+          "settings": {
+            "text": "Size guide",
+            "page": ""
+          }
+        },
+        "whatsapp": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'rsbri-whatsapp-order', product: product %}"
+          }
+        },
+        "delivery_note": {
+          "type": "text",
+          "settings": {
+            "text": "Cash on Delivery · Faisalabad & Lahore 1–2 days · other cities 2–4 days",
+            "text_style": "subtitle"
+          }
+        },
+        "tab_delivery": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Delivery & exchange",
+            "icon": "truck",
+            "content": "<p>Dispatched within 24 hours from Faisalabad by Leopards or TCS. Faisalabad and Lahore 1–2 working days, other major cities 2–4, rest of Pakistan 4–7. Free delivery on orders over Rs. 3,000.</p><p>Exchange within 7 days of delivery for unused items with tags. Cut unstitched fabric and opened bedding can't be exchanged.</p>",
+            "page": ""
+          }
+        },
+        "tab_care": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Fabric & care",
+            "icon": "washing",
+            "content": "<p>Lawn & cotton: gentle wash in cold water, dry in shade, iron on reverse. Bedsheets: machine wash at 40°C with similar colours. Waterproof covers: machine wash cold, do not iron the waterproof side, line dry.</p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "price",
+        "variant_picker",
+        "size_guide",
+        "quantity_selector",
+        "buy_buttons",
+        "whatsapp",
+        "delivery_note",
+        "description",
+        "tab_delivery",
+        "tab_care",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_position": "left",
+        "gallery_layout": "stacked",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "image_zoom": "lightbox",
+        "mobile_thumbnails": "hide",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "disclosures": {
+      "type": "disclosures",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    }
+  },
+  "order": [
+    "main",
+    "disclosures",
+    "related-products"
+  ]
+}

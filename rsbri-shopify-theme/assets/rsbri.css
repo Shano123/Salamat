@@ -1,0 +1,84 @@
+/* =========================================================
+   RSBRI Fashion — additions on top of Dawn
+   Colours and fonts are set in Customize → Theme settings
+   (Colors / Typography). This file adds the RSBRI details:
+   gold accents, button style, WhatsApp, free-delivery bar,
+   and right-to-left support for the Urdu store.
+   ========================================================= */
+
+:root {
+  --rsbri-navy: #1B2F5E;
+  --rsbri-navy-dark: #111C3A;
+  --rsbri-gold: #B08A2E;
+  --rsbri-gold-light: #E8C766;
+  --rsbri-sale: #C0392B;
+  --rsbri-whatsapp: #1FA855;
+}
+
+/* ---------- type & accents ---------- */
+h1, h2, .h0, .h1, .h2, .hxl, .hxxl { letter-spacing: 0.01em; }
+.caption-with-letter-spacing { color: var(--rsbri-gold); letter-spacing: 0.22rem; font-weight: 600; }
+.color-scheme-3 .caption-with-letter-spacing,
+.color-scheme-4 .caption-with-letter-spacing { color: var(--rsbri-gold-light); }
+.color-scheme-3 h1 em, .color-scheme-3 h2 em,
+.color-scheme-4 h1 em, .color-scheme-4 h2 em,
+.banner__heading em, .slideshow__text em { color: var(--rsbri-gold-light); font-style: italic; }
+
+.button, .shopify-payment-button__button--unbranded {
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+.announcement-bar__message { letter-spacing: 0.06rem; }
+.color-scheme-3 .announcement-bar__message { color: #F1DFA6; }
+
+/* product cards: a little more air under the image */
+.card__information { padding-top: 1rem; }
+.price--on-sale .price-item--sale { color: var(--rsbri-sale); }
+
+/* ---------- WhatsApp ---------- */
+.rsbri-wa-icon { width: 2rem; height: 2rem; flex: none; }
+.rsbri-wa-order {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  margin-top: 1rem; background: var(--rsbri-whatsapp); color: #fff;
+}
+.rsbri-wa-order:hover { background: #18934A; }
+.rsbri-wa-order::after { box-shadow: none; }
+.rsbri-wa-float {
+  position: fixed; right: 1.6rem; bottom: calc(1.8rem + env(safe-area-inset-bottom, 0px)); z-index: 30;
+  width: 5.6rem; height: 5.6rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--rsbri-whatsapp); color: #fff;
+  box-shadow: 0 0.8rem 2.4rem rgba(31, 168, 85, 0.4);
+  transition: transform 0.2s;
+}
+.rsbri-wa-float:hover { transform: scale(1.06); }
+.rsbri-wa-float .rsbri-wa-icon { width: 2.8rem; height: 2.8rem; }
+
+/* ---------- free-delivery bar ---------- */
+.rsbri-free-bar {
+  margin: 0 0 1.6rem; padding: 1.2rem 1.4rem; border-radius: 0.6rem;
+  background: rgba(var(--color-foreground), 0.05); font-size: 1.4rem; line-height: 1.5;
+}
+.rsbri-free-bar__text { margin: 0; }
+.rsbri-free-bar__track { height: 0.4rem; margin-top: 0.8rem; border-radius: 0.4rem; background: rgba(var(--color-foreground), 0.12); overflow: hidden; }
+.rsbri-free-bar__track span { display: block; height: 100%; background: var(--rsbri-navy); border-radius: 0.4rem; transition: width 0.5s; }
+.rsbri-free-bar.is-done .rsbri-free-bar__track span { background: #2F6B4F; }
+
+/* ---------- Urdu / right-to-left ---------- */
+html[dir='rtl'] body,
+html[dir='rtl'] h1, html[dir='rtl'] h2, html[dir='rtl'] h3,
+html[dir='rtl'] .h0, html[dir='rtl'] .h1, html[dir='rtl'] .h2, html[dir='rtl'] .hxl, html[dir='rtl'] .hxxl,
+html[dir='rtl'] .button, html[dir='rtl'] input, html[dir='rtl'] select, html[dir='rtl'] textarea {
+  font-family: 'Noto Nastaliq Urdu', var(--font-body-family);
+}
+html[dir='rtl'] body { line-height: 2.1; }
+html[dir='rtl'] h1, html[dir='rtl'] h2, html[dir='rtl'] h3 { line-height: 1.8; }
+/* letter-spacing and capitals break the joining of Urdu letters */
+html[dir='rtl'] *, html[dir='rtl'] *::before, html[dir='rtl'] *::after { letter-spacing: 0 !important; text-transform: none !important; }
+html[dir='rtl'] em { font-style: normal; }
+/* prices, phone numbers and codes stay left-to-right */
+html[dir='rtl'] .price, html[dir='rtl'] .totals__total-value, html[dir='rtl'] input[type='tel'], html[dir='rtl'] input[type='email'] { direction: ltr; unicode-bidi: isolate; }
+html[dir='rtl'] .rsbri-wa-float { right: auto; left: 1.6rem; }
+html[dir='rtl'] .icon-arrow, html[dir='rtl'] .slider-button .icon { transform: scaleX(-1); }

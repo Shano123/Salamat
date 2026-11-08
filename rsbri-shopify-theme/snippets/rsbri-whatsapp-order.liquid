@@ -1,0 +1,42 @@
+{%- comment -%}
+  RSBRI: "Order on WhatsApp" button for the product page.
+  Added to the product template as a Custom Liquid block, so it can be moved or removed in Customize.
+  The message includes the product, the options the customer picked, quantity, price and link.
+  Usage: {% render 'rsbri-whatsapp-order', product: product %}
+{%- endcomment -%}
+{%- assign rsbri_wa = settings.rsbri_whatsapp | remove: '+' | remove: ' ' | remove: '-' -%}
+{%- if rsbri_wa != blank and settings.rsbri_whatsapp_product -%}
+  {%- capture rsbri_wa_base -%}{{ 'rsbri.whatsapp.order_intro' | t }}
+{{ product.title }}
+{{ product.selected_or_first_available_variant.price | money_without_trailing_zeros | strip_html }}
+{{ shop.url }}{{ product.url }}{%- endcapture -%}
+  <a
+    class="button button--full-width rsbri-wa-order"
+    href="https://wa.me/{{ rsbri_wa }}?text={{ rsbri_wa_base | url_encode }}"
+    target="_blank"
+    rel="noopener"
+    data-rsbri-wa="{{ rsbri_wa }}"
+    data-base="{{ rsbri_wa_base | escape }}"
+    data-label-option="{{ 'rsbri.whatsapp.option' | t | escape }}"
+    data-label-qty="{{ 'rsbri.whatsapp.quantity' | t | escape }}"
+  >
+    {%- render 'rsbri-whatsapp-icon' -%}
+    <span>{{ 'rsbri.whatsapp.order_button' | t }}</span>
+  </a>
+  <script>
+    (function () {
+      if (window.rsbriWaBound) return;
+      window.rsbriWaBound = true;
+      // Add the chosen size/colour and quantity to the message at the moment of the click.
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('[data-rsbri-wa]');
+        if (!a) return;
+        var scope = a.closest('product-info, .product') || document;
+        var opts = [].map.call(scope.querySelectorAll('variant-selects input:checked, variant-selects select'), function (el) { return el.value; }).filter(Boolean);
+        var q = scope.querySelector('quantity-input input, input[name="quantity"]');
+        var msg = a.dataset.base + (opts.length ? '\n' + a.dataset.labelOption + ': ' + opts.join(' / ') : '') + (q ? '\n' + a.dataset.labelQty + ': ' + q.value : '');
+        a.href = 'https://wa.me/' + a.dataset.rsbriWa + '?text=' + encodeURIComponent(msg);
+      });
+    })();
+  </script>
+{%- endif -%}

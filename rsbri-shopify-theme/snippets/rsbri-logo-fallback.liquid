@@ -1,0 +1,15 @@
+{%- comment -%}
+  RSBRI: shows the logo that ships with the theme (assets/rsbri-logo.webp)
+  until a logo is uploaded in Customize → Theme settings → Logo.
+{%- endcomment -%}
+{%- assign rsbri_logo_w = settings.logo_width | default: 140 -%}
+<div class="header__heading-logo-wrapper">
+  <img
+    src="{{ 'rsbri-logo.webp' | asset_url }}"
+    alt="{{ shop.name | escape }}"
+    width="{{ rsbri_logo_w }}"
+    height="{{ rsbri_logo_w | times: 181 | divided_by: 480 }}"
+    class="header__heading-logo motion-reduce"
+    style="width: {{ rsbri_logo_w }}px; max-width: 100%; height: auto;"
+  >
+</div>

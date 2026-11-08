@@ -1,0 +1,22 @@
+{%- comment -%}
+  RSBRI: free-delivery progress bar for the cart drawer and cart page.
+  Amount comes from Customize → Theme settings → RSBRI → "Free delivery from (Rs.)".
+  It only shows the message; the actual free shipping rate is set in Shopify Settings → Shipping and delivery.
+{%- endcomment -%}
+{%- assign rsbri_threshold = settings.rsbri_free_shipping | default: 0 | times: 100 -%}
+{%- if rsbri_threshold > 0 and cart.item_count > 0 -%}
+  {%- assign rsbri_left = rsbri_threshold | minus: cart.total_price -%}
+  {%- assign rsbri_pct = cart.total_price | times: 100 | divided_by: rsbri_threshold -%}
+  {%- if rsbri_pct > 100 -%}{%- assign rsbri_pct = 100 -%}{%- endif -%}
+  <div class="rsbri-free-bar{% if rsbri_left <= 0 %} is-done{% endif %}" role="status">
+    <p class="rsbri-free-bar__text">
+      {%- if rsbri_left > 0 -%}
+        {%- assign rsbri_left_money = rsbri_left | money_without_trailing_zeros | strip_html -%}
+        {{ 'rsbri.free_delivery.add_more_html' | t: amount: rsbri_left_money }}
+      {%- else -%}
+        {{ 'rsbri.free_delivery.unlocked_html' | t }}
+      {%- endif -%}
+    </p>
+    <div class="rsbri-free-bar__track"><span style="width: {{ rsbri_pct }}%;"></span></div>
+  </div>
+{%- endif -%}
