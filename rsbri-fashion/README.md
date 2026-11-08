@@ -9,7 +9,7 @@ A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD 
 | PRD | Built |
 |---|---|
 | §4 Brand | Champagne-ivory / ink / petrol-blue palette with gold detailing, red only for sale. Cormorant Garamond headings + Inter body. Mughal-arch motif. |
-| §5 Country stores & language | English `/en-pk/` and Urdu `/ur-pk/` (right-to-left, Noto Nastaliq Urdu, header/menu switch), hreflang for both. `/en-pk/` URL prefix, header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), hreflang tags, +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
+| §5 Country stores & language | English `/en-pk/` and Urdu `/ur-pk/` (right-to-left, Noto Nastaliq Urdu, header/menu switch), hreflang for both; header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
 | §7 Navigation | Announcement bar, mega-menu (desktop), drawer (mobile), full footer, floating WhatsApp, cookie banner. |
 | §8.1 Home | Hero slider with separate mobile art (H-1), department tiles (H-2), category circles (H-3), New In + Best Sellers carousels (H-4), deal strip with countdown (H-5), trust strip (H-6), shoppable social gallery (H-7), WhatsApp/email opt-in (H-8). |
 | §8.2 Listing | 2/4-column grid with second image on hover, department-specific filters (women: type, pieces, fabric, size, colour, occasion, price; bedding: category, bed size, thread count, material, pieces, colour, price), 6 sort options, badges, quick view + quick add, "Load more" with `?page=` URLs. |
