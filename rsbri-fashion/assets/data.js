@@ -163,7 +163,23 @@
     ['Memory Foam Pillow', 'home', 'pillows', null, 'Microfibre', 1, 4490, 0, [['White', '#F3F0EA']], 'plain', 'cushion', { badges: [], noBedSize: true }],
     ['Embroidered Pillow Covers (Pair)', 'home', 'pillows', 'eid-edit', 'Cotton', 2, 1990, 1490, [['Ivory', '#EDE3CF'], ['Grey', '#A9A6A3']], 'lattice', 'cushion', { badges: ['best'], noBedSize: true }],
     ['Ralli Patchwork Cushion', 'home', 'cushions', null, 'Cotton', 1, 1990, 0, [['Red', '#9C2F2A'], ['Indigo', '#2E4570']], 'check', 'cushion', { badges: ['new'], noBedSize: true }],
-    ['Quilted Mattress Protector', 'home', 'mattress-protectors', null, 'Cotton', 1, 4990, 3990, [['White', '#F3F0EA']], 'lattice', 'bed', { badges: [] }]
+    ['Quilted Mattress Protector', 'home', 'mattress-protectors', null, 'Cotton', 1, 4990, 3990, [['White', '#F3F0EA']], 'lattice', 'bed', { badges: [] }],
+
+    // ---------- RSBRI's own lines (from the Facebook page: ladies' suits, waterproof mattress covers, printed bedsheets) ----------
+    // Names, prices and colours are placeholders until real photos and details are supplied.
+    ['RSBRI Waterproof Terry Mattress Cover', 'home', 'mattress-protectors', null, 'Cotton terry', 1, 2490, 1990, [['White', '#F3F0EA'], ['Grey', '#A9A6A3']], 'check', 'bed', { badges: ['best'] }],
+    ['RSBRI Waterproof Zipper Mattress Cover', 'home', 'mattress-protectors', null, 'Poly-cotton', 1, 3290, 0, [['White', '#F3F0EA'], ['Beige', '#D3C1A0']], 'plain', 'bed', { badges: ['new'] }],
+    ['RSBRI Waterproof Cover + 2 Pillow Protectors', 'home', 'mattress-protectors', null, 'Cotton terry', 3, 3490, 2990, [['White', '#F3F0EA'], ['Sky', '#9BB8D3']], 'check', 'bed', { badges: ['best'] }],
+    ['RSBRI Waterproof Baby Cot Sheet', 'home', 'mattress-protectors', null, 'Cotton terry', 1, 1290, 0, [['White', '#F3F0EA'], ['Pink', '#E5C4BC']], 'dots', 'cushion', { badges: ['new'], noBedSize: true }],
+    ['RSBRI Rang Bahar Printed Bedsheet', 'home', 'bedsheets', 'summer-lawn', 'Cotton', 3, 2290, 0, [['Pink Floral', '#D99AA3'], ['Blue Floral', '#6E8DB5']], 'floral', 'bed', { threadCount: 144, badges: ['best'] }],
+    ['RSBRI Mughal Jaal Printed Bedsheet', 'home', 'bedsheets', 'eid-edit', 'Cotton', 3, 2690, 0, [['Teal', '#2F6B6B'], ['Maroon', '#6E2434']], 'lattice', 'bed', { threadCount: 160, badges: ['new'] }],
+    ['RSBRI Geometric Print Bedsheet', 'home', 'bedsheets', null, 'Poly-cotton', 3, 1890, 1590, [['Grey', '#A9A6A3'], ['Mustard', '#C8A04A']], 'check', 'bed', { threadCount: 120, badges: [] }],
+    ['RSBRI Crystal Cotton Printed Bedsheet', 'home', 'bedsheets', null, 'Cotton', 3, 2990, 0, [['Peach', '#E8B79A'], ['Lilac', '#B7A5C9']], 'paisley', 'bed', { threadCount: 180, badges: ['new'] }],
+    ['RSBRI Star Print Kids Bedsheet', 'home', 'bedsheets', null, 'Cotton', 2, 1590, 0, [['Sky', '#9BB8D3'], ['Mint', '#A9C9B8']], 'dots', 'bed', { threadCount: 144, badges: [] }],
+    ['RSBRI Printed Lawn 3-Piece', 'women', 'unstitched', 'summer-lawn', 'Lawn', 3, 3290, 0, [['Peach', '#E8B79A'], ['Teal', '#2F6B6B']], 'floral', 'folded', { occasion: 'Casual', badges: ['new', 'best'] }],
+    ['RSBRI Embroidered Lawn 3-Piece', 'women', 'unstitched', 'eid-edit', 'Lawn', 3, 4590, 3990, [['White', '#F1EEE7'], ['Black', '#262424']], 'lattice', 'folded', { occasion: 'Festive', embroidery: 'Neckline embroidery', badges: ['best'] }],
+    ['RSBRI Printed Khaddar 3-Piece', 'women', 'unstitched', 'winter', 'Khaddar', 3, 3790, 0, [['Mustard', '#C8A04A'], ['Brown', '#6E5440']], 'paisley', 'folded', { occasion: 'Everyday', badges: ['new'] }],
+    ['RSBRI Cotton 2-Piece Suit', 'women', 'unstitched', null, 'Cambric', 2, 2490, 1990, [['Blue', '#3F5277'], ['Pink', '#D4A6A1']], 'dots', 'folded', { occasion: 'Everyday', badges: [] }]
   ];
 
   function slugify(s) { return s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
