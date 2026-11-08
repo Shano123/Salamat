@@ -9,7 +9,8 @@ This theme is **Shopify Dawn** (Shopify's free official theme, version 16.1.1) s
 - a floating WhatsApp chat button
 - an "Order on WhatsApp" button on product pages
 - a free-delivery progress bar in the cart
-- a size guide pop-up, plus Delivery & exchange and Fabric & care sections on product pages
+- a size chart pop-up, plus Delivery & exchange and Fabric & care sections on product pages
+- set up for **unstitched suits only** (no clothing sizes; each suit lists its fabric lengths)
 - Urdu (right-to-left) support
 
 Follow the steps in order. You don't need to write any code.
@@ -43,10 +44,14 @@ The RSBRI logo already shows in the header. To use a sharper file, go to **Theme
 1. **Products → Add product.** For each product:
    - **Title**, **Description**, **Media** (2–5 photos, portrait 3:4 looks best).
    - **Price**, and **Compare-at price** for the old price. This shows the red **Sale** badge.
-   - **Variants:** add options such as *Size* (S, M, L, XL) or *Bed size* (Single, Double, King) and *Colour*, and enter **stock** for each one.
+   - **Variants:** suits are unstitched, so they have **no clothing sizes**. Add only *Colour* for suits, and *Bed size* (Single, Double, King) plus *Colour* for bedding. Enter **stock** for each one.
+   - In the **Description**, list the fabric in each piece, for example: *Shirt 3 m · Dupatta 2.5 m · Trouser 2.5 m*.
 2. **Products → Collections → Create collection.** Suggested collections:
-   - Unstitched
-   - Ready to Wear
+   - Lawn Suits
+   - Cotton & Cambric
+   - Winter Suits (khaddar, karandi, marina, linen)
+   - Formal & Party Wear (chiffon, velvet, organza, silk)
+   - Dupattas & Shawls
    - Bedsheets
    - Mattress Covers
    - Sale (set it to automatic: "Compare-at price is greater than 0")
@@ -57,8 +62,8 @@ The RSBRI logo already shows in the header. To use a sharper file, go to **Theme
 
 ## Step 5 — Menus (Online Store → Navigation)
 
-- **Main menu:** New In · Women (with Unstitched, Ready to Wear under it) · Bedding & Home (with Bedsheets, Mattress Covers) · Sale
-- **Footer menu:** Contact · Delivery information · Exchange & returns · Size guide · Track your order · Privacy policy
+- **Main menu:** New In · Unstitched (with Lawn, Cotton & Cambric, Winter, Formal & Party, Dupattas under it) · Bedding & Home (with Bedsheets, Mattress Covers) · Sale
+- **Footer menu:** Contact · Delivery information · Exchange & returns · Tailoring size chart · Track your order · Privacy policy
 
 ## Step 6 — Delivery (Settings → Shipping and delivery)
 
@@ -81,7 +86,7 @@ Apply for **JazzCash**, **Easypaisa** and a card payment service (for example **
 
 Create these pages and paste in your text:
 
-- **Size guide** (for clothing sizes). Then go to **Customize → Products → Default product → "Size guide" pop-up** and choose this page.
+- **Tailoring size chart:** body measurements to give the tailor, plus the fabric length of each piece. Then go to **Customize → Products → Default product → "Size chart" pop-up** and choose this page.
 - **Delivery information**
 - **Exchange & returns**
 - **Contact**

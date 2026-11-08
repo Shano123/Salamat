@@ -168,6 +168,15 @@
     'Body measurements. Between sizes? Choose the larger size for a relaxed fit.': 'جسمانی پیمائش۔ دو سائز کے بیچ ہیں؟ آرام دہ فٹنگ کے لیے بڑا سائز لیں۔',
     'Delivery information': 'ڈیلیوری کی معلومات', 'Exchange & returns': 'تبادلہ اور واپسی', 'Frequently asked questions': 'عام سوالات',
     'Terms of service': 'شرائط و ضوابط', 'Gift cards': 'گفٹ کارڈز', 'Zone': 'زون', 'Time': 'وقت', 'Fee': 'فیس', 'Major cities': 'بڑے شہر', 'Rest of Pakistan': 'باقی پاکستان',
+    'Unstitched Suits': 'ان سلے سوٹ', 'Shop Unstitched Suits': 'ان سلے سوٹ کی خریداری', 'View all Unstitched Suits →': 'تمام ان سلے سوٹ ←',
+    'Lawn Suits': 'لان سوٹ', 'Cotton & Cambric': 'کاٹن اور کیمبرک', 'Winter Suits': 'سردیوں کے سوٹ', 'Formal & Party Wear': 'فارمل اور پارٹی ویئر', 'Dupattas & Shawls': 'دوپٹے اور شالیں',
+    'Lawn': 'لان', 'Cotton': 'کاٹن', 'Formal': 'فارمل', 'Mattress Covers': 'میٹرس کور',
+    'Printed, embroidered and jacquard lawn — 1, 2 and 3-piece': 'پرنٹڈ، کڑھائی والی اور جیکارڈ لان — 1، 2 اور 3 پیس',
+    'Everyday cotton, cambric and cotton satin': 'روزمرہ کاٹن، کیمبرک اور کاٹن ساٹن', 'Khaddar, karandi, marina and linen': 'کھدر، کرینڈی، مرینا اور لینن',
+    'Chiffon, velvet, organza and silk — unstitched': 'شیفون، ویلوٹ، آرگنزا اور سلک — ان سلے',
+    'Every RSBRI suit is unstitched — lawn, cotton, khaddar and chiffon, ready for your own tailor.': 'RSBRI کا ہر سوٹ ان سلا ہے — لان، کاٹن، کھدر اور شیفون، آپ کے اپنے درزی کے لیے تیار۔',
+    'Shop Unstitched': 'ان سلے سوٹ دیکھیں', 'Unstitched suits': 'ان سلے سوٹ', 'Tailoring Size Chart': 'سلائی کا سائز چارٹ', 'Tailoring size chart': 'سلائی کا سائز چارٹ',
+    'Do you sell stitched clothes?': 'کیا آپ سلے ہوئے کپڑے بیچتے ہیں؟',
     'Become an affiliate': 'ایفیلیٹ بنیں', 'Staff login': 'اسٹاف لاگ ان',
     'This page has moved on': 'یہ صفحہ موجود نہیں', 'Go to homepage': 'ہوم پیج پر جائیں'
   };

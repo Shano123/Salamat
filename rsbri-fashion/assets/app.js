@@ -1,6 +1,6 @@
 /* RSBRI Fashion — storefront prototype
    Vanilla JS, hash routing so it runs on any static host.
-   URL shape mirrors the PRD: #/en-pk/women/unstitched/<product-slug> */
+   URL shape mirrors the PRD: #/en-pk/women/lawn/<product-slug> */
 (function () {
   'use strict';
 
@@ -28,8 +28,8 @@
   function absUrl(hash) { return location.href.split('#')[0] + hash; }
 
   var store = {
-    get: function (k, d) { try { var v = localStorage.getItem('rsbri:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-    set: function (k, v) { try { localStorage.setItem('rsbri:' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+    get: function (k, d) { try { var v = localStorage.getItem('rsbri2:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem('rsbri2:' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
   };
 
   /* Language comes from the URL prefix (/en-pk/ or /ur-pk/, PRD §5), then the saved preference. */
@@ -167,20 +167,21 @@
     store.set('ordersSeeded', true);
     var P = R.PRODUCTS, d = 864e5, t0 = Date.now();
     function o(id, ago, name, city, pay, status, lines, aff) {
-      var sub = lines.reduce(function (s, l) { return s + now(P[l[0]]) * l[3]; }, 0);
+      lines = lines.map(function (l) { return [bySlug(l[0]), l[1], l[2], l[3]]; });
+      var sub = lines.reduce(function (s, l) { return s + now(l[0]) * l[3]; }, 0);
       var ship = sub >= 3000 ? 0 : 250, pre = pay === 'cod' ? 0 : 100, total = sub + ship - pre;
       return { id: id, at: t0 - ago, demo: true, phone: '0300-55500' + id.slice(-2), email: '', addr: { fname: name.split(' ')[0], lname: name.split(' ')[1] || '', city: city, area: 'Demo area', street: 'Demo street', landmark: '' },
-        lines: lines.map(function (l) { return { k: P[l[0]].id + '|' + l[1] + '|' + (l[2] || ''), id: P[l[0]].id, color: l[1], size: l[2], qty: l[3] }; }),
+        lines: lines.map(function (l) { return { k: l[0].id + '|' + l[1] + '|' + (l[2] || ''), id: l[0].id, color: l[1], size: l[2], qty: l[3] }; }),
         totals: { sub: sub, disc: 0, ship: ship, gw: 0, pre: pre, total: total }, pay: pay, ship: 'standard', status: status,
         aff: aff || null, commission: aff ? Math.round(sub * AFFSET.rate / 100) : 0 };
     }
     return [
-      o('RS-100411', 0.1 * d, 'Mehwish Ali', 'Faisalabad', 'cod', 0, [[0, 0, null, 1], [15, 0, 'M', 1]]),
-      o('RS-100410', 0.3 * d, 'Nimra Shah', 'Lahore', 'jazzcash', 1, [[22, 0, 'King', 1]], 'AYESHA10'),
-      o('RS-100409', 1.2 * d, 'Farah Iqbal', 'Karachi', 'cod', 0, [[8, 1, 'S', 2]]),
-      o('RS-100408', 2.1 * d, 'Rabia Noor', 'Islamabad', 'card', 3, [[19, 1, 'Double', 1], [28, 0, null, 2]], 'HIRAHOME'),
-      o('RS-100407', 3.4 * d, 'Saima Tariq', 'Multan', 'easypaisa', 4, [[2, 0, null, 1]], 'AYESHA10'),
-      o('RS-100406', 5.0 * d, 'Uzma Javed', 'Rawalpindi', 'cod', -1, [[6, 0, null, 1]])
+      o('RS-100411', 0.1 * d, 'Mehwish Ali', 'Faisalabad', 'cod', 0, [['gulnar-embroidered-lawn', 0, null, 1], ['kashmiri-pashmina-shawl', 0, null, 1]]),
+      o('RS-100410', 0.3 * d, 'Nimra Shah', 'Lahore', 'jazzcash', 1, [['dulhan-8-piece-bridal-bed-set', 0, 'King', 1]], 'AYESHA10'),
+      o('RS-100409', 1.2 * d, 'Farah Iqbal', 'Karachi', 'cod', 0, [['noor-cambric-suit', 1, null, 2]]),
+      o('RS-100408', 2.1 * d, 'Rabia Noor', 'Islamabad', 'card', 3, [['shireen-percale-bedsheet', 1, 'Double', 1], ['hollow-fibre-pillow-pair', 0, null, 2]], 'HIRAHOME'),
+      o('RS-100407', 3.4 * d, 'Saima Tariq', 'Multan', 'easypaisa', 4, [['saba-chikankari-lawn', 0, null, 1]], 'AYESHA10'),
+      o('RS-100406', 5.0 * d, 'Uzma Javed', 'Rawalpindi', 'cod', -1, [['laila-karandi-suit', 0, null, 1]])
     ];
   }
 
@@ -275,7 +276,7 @@
 
     $('#nav-list').innerHTML =
       '<li><a href="' + BASE + 'new-in" data-nav="new-in">New In</a></li>' +
-      '<li><a href="' + BASE + 'women" data-nav="women">Women</a>' + mega('women') + '</li>' +
+      '<li><a href="' + BASE + 'women" data-nav="women">Unstitched</a>' + mega('women') + '</li>' +
       '<li><a href="' + BASE + 'bedding-home" data-nav="bedding-home">Bedding &amp; Home</a>' + mega('home') + '</li>' +
       '<li><a href="' + BASE + 'collections" data-nav="collections">Collections</a>' + collMega + '</li>' +
       '<li><a href="' + BASE + 'best-sellers" data-nav="best-sellers">Best Sellers</a></li>' +
@@ -316,7 +317,7 @@
     return '<div class="badges">' + b.slice(0, 2).join('') + '</div>';
   }
   function metaLine(p) {
-    if (p.dept === 'women') return p.stitched ? (p.pieces > 1 ? p.pieces + '-Piece · ' : '') + 'Ready-to-wear' : 'Unstitched · ' + p.pieces + '-Piece';
+    if (p.dept === 'women') return p.cat === 'dupattas' ? p.fabric : 'Unstitched · ' + p.pieces + '-Piece';
     return p.fabric + (p.threadCount ? ' · ' + p.threadCount + ' TC' : '') + (p.pieces > 2 ? ' · ' + p.pieces + ' pcs' : '');
   }
   function card(p) {
@@ -356,9 +357,9 @@
     var best = P.slice().sort(function (a, b) { return b.sold - a.sold; }).slice(0, 10);
     var C = R.COLLECTIONS;
     var slides = [
-      { tone: C[1].tone, subject: 'kurta', eyebrow: T('Eid ul Adha · Naya Collection', 'عید الاضحیٰ · نیا کلیکشن'), title: T('The <em>Eid</em> Edit', '<em>عید</em> ایڈٹ'), text: T('Hand-finished chikankari, chiffon and silk — festive pieces made to be remembered.', 'ہاتھ سے تیار چکن کاری، شیفون اور سلک — یادگار تہوار کے ملبوسات۔'), cta: [T('Shop the Eid Edit', 'عید ایڈٹ دیکھیں'), BASE + 'collections/eid-edit'], cta2: [T('Shop Women', 'خواتین کی خریداری'), BASE + 'women'] },
+      { tone: C[1].tone, subject: 'kurta', eyebrow: T('Eid ul Adha · Naya Collection', 'عید الاضحیٰ · نیا کلیکشن'), title: T('The <em>Eid</em> Edit', '<em>عید</em> ایڈٹ'), text: T('Hand-finished chikankari, chiffon and silk — festive pieces made to be remembered.', 'ہاتھ سے تیار چکن کاری، شیفون اور سلک — یادگار تہوار کے ملبوسات۔'), cta: [T('Shop the Eid Edit', 'عید ایڈٹ دیکھیں'), BASE + 'collections/eid-edit'], cta2: [T('Shop Unstitched', 'ان سلے سوٹ دیکھیں'), BASE + 'women'] },
       { tone: ['#111C3A', '#EFE8DA', '#C9A23F'], subject: 'bed', eyebrow: T('Wedding Season', 'شادی سیزن'), title: T('Bridal <em>bed sets</em> for the jahez', 'جہیز کے لیے <em>برائیڈل بیڈ سیٹس</em>'), text: T('8 and 10-piece sateen and velvet sets in royal blue, emerald and ivory gold.', 'رائل بلیو، زمردی اور آئیوری گولڈ میں 8 اور 10 پیس ساٹن اور ویلوٹ سیٹس۔'), cta: [T('Shop Bridal Sets', 'برائیڈل سیٹس خریدیں'), BASE + 'bedding-home/bridal-bed-sets'], cta2: [T('All Bedding', 'تمام بیڈنگ'), BASE + 'bedding-home'] },
-      { tone: ['#E6E2D8', '#F7F4EC', '#1B2F5E'], subject: 'kurta', light: true, eyebrow: T('Summer Lawn 2026', 'سمر لان 2026'), title: T('Lawn, <em>lightly</em> done', 'ہلکی پھلکی <em>لان</em>'), text: T('Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', '2 اور 3 پیس پرنٹڈ اور کڑھائی والی لان — ہوادار، پکے رنگ، صرف ' + money(3990) + ' سے۔'), cta: [T('Shop Lawn', 'لان خریدیں'), BASE + 'women/unstitched'], cta2: [T('New In', 'نئی آمد'), BASE + 'new-in'] }
+      { tone: ['#E6E2D8', '#F7F4EC', '#1B2F5E'], subject: 'kurta', light: true, eyebrow: T('Summer Lawn 2026', 'سمر لان 2026'), title: T('Lawn, <em>lightly</em> done', 'ہلکی پھلکی <em>لان</em>'), text: T('Printed and embroidered lawn in 2 and 3-piece — breathable, colour-fast, from ' + money(3990) + '.', '2 اور 3 پیس پرنٹڈ اور کڑھائی والی لان — ہوادار، پکے رنگ، صرف ' + money(3990) + ' سے۔'), cta: [T('Shop Lawn', 'لان خریدیں'), BASE + 'women/lawn'], cta2: [T('New In', 'نئی آمد'), BASE + 'new-in'] }
     ];
     var hero = '<section class="hero" aria-roledescription="carousel" aria-label="Featured campaigns"><div class="hero-track">' + slides.map(function (s, i) {
       var copy = '<div class="wrap" style="height:100%"><div class="slide-copy"><span class="eyebrow">' + s.eyebrow + '</span>' +
@@ -377,16 +378,16 @@
       '<li>' + ic('lock') + '<div><b>Secure payment</b><span>JazzCash · Easypaisa · Cards</span></div></li>' +
       '</ul></div></section>';
 
-    var circleCats = [['women', 'unstitched', 'Unstitched'], ['women', 'pret', 'Pret'], ['women', 'luxury-pret', 'Formals'], ['home', 'bedsheets', 'Bedsheets'], ['home', 'bridal-bed-sets', 'Bridal Sets'], ['home', 'comforters', 'Comforters'], ['women', 'dupattas', 'Shawls'], ['home', 'cushions', 'Cushions']];
+    var circleCats = [['women', 'lawn', 'Lawn'], ['women', 'cotton', 'Cotton'], ['women', 'winter', 'Winter'], ['women', 'formal', 'Formal'], ['home', 'bedsheets', 'Bedsheets'], ['home', 'mattress-protectors', 'Mattress Covers'], ['home', 'bridal-bed-sets', 'Bridal Sets'], ['women', 'dupattas', 'Shawls']];
     var circles = '<section class="section tight"><div class="wrap"><div class="sec-head center reveal"><span class="eyebrow">Shop by category</span></div><div class="circles reveal">' + circleCats.map(function (c) {
       var p = R.PRODUCTS.filter(function (x) { return x.dept === c[0] && x.cat === c[1]; })[0];
       return '<a class="circle" href="' + BASE + DEPT_SLUG[c[0]] + '/' + c[1] + '"><div class="ph"><img src="' + R.art.product(p, 0, 0) + '" alt="" loading="lazy"></div>' + c[2] + '</a>';
     }).join('') + '</div></div></section>';
 
-    var womanHero = R.PRODUCTS.filter(function (p) { return p.cat === 'luxury-pret'; })[0];
+    var womanHero = R.PRODUCTS.filter(function (p) { return p.cat === 'formal'; })[0];
     var homeHero = R.PRODUCTS.filter(function (p) { return p.cat === 'bridal-bed-sets'; })[0];
     var depts = '<section class="section" style="padding-top:12px"><div class="wrap depts">' +
-      '<a class="dept reveal" href="' + BASE + 'women"><img src="' + R.art.product(womanHero, 1, 0) + '" alt="Women\'s clothing" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E8C766">Department</span><h3>Women</h3><p>' + esc(R.DEPARTMENTS.women.blurb) + '</p><span class="btn btn-light">Shop Women</span></div></a>' +
+      '<a class="dept reveal" href="' + BASE + 'women"><img src="' + R.art.product(womanHero, 1, 0) + '" alt="Unstitched suits" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E8C766">Department</span><h3>Unstitched Suits</h3><p>' + esc(R.DEPARTMENTS.women.blurb) + '</p><span class="btn btn-light">Shop Unstitched</span></div></a>' +
       '<a class="dept reveal" href="' + BASE + 'bedding-home"><img src="' + R.art.product(homeHero, 0, 0) + '" alt="Bedding and home textiles" loading="lazy"><div class="dept-copy"><span class="eyebrow" style="color:#E8C766">Department</span><h3>Bedding &amp; Home</h3><p>' + esc(R.DEPARTMENTS.home.blurb) + '</p><span class="btn btn-light">Shop Bedding</span></div></a>' +
       '</div></section>';
 
@@ -483,7 +484,7 @@
   };
   function labelIdx(l) { for (var i = 0; i < PRICE_BUCKETS.length; i++) if (PRICE_BUCKETS[i][2] === l) return i; return 99; }
   var FACET_SETS = {
-    women: ['type', 'pieces', 'fabric', 'size', 'colour', 'occasion', 'price'],
+    women: ['category', 'pieces', 'fabric', 'colour', 'occasion', 'price'],
     home: ['category', 'bedSize', 'threadCount', 'material', 'pieces', 'colour', 'price'],
     mixed: ['category', 'fabric', 'colour', 'price']
   };
@@ -641,7 +642,7 @@
         opts.map(function (s) { var out = isOut(p, PDP.color, s); return '<button class="size-btn' + (PDP.size === s ? ' on' : '') + (out ? ' out' : '') + '" data-size="' + esc(s) + '"' + (out ? ' aria-disabled="true" title="Sold out — tap to get notified"' : '') + '>' + esc(s) + '</button>'; }).join('') +
         '</div><div class="error" id="size-err" hidden>Please select a ' + (p.sizes ? 'size' : 'bed size') + '.</div></div>' : '') +
 
-      (p.dept === 'women' && !p.stitched ? '<div class="opt-block" style="font-size:13.5px;color:var(--ink-2)">' + ic('ruler', 'sm') + ' <span style="vertical-align:3px">Unstitched — ' + esc(p.meters) + '</span></div>' : '') +
+      (p.meters ? '<div class="opt-block" style="font-size:13.5px;color:var(--ink-2)">' + ic('ruler', 'sm') + ' <span style="vertical-align:3px">' + T('Unstitched', 'ان سلا') + ' — ' + esc(p.meters) + ' · <a class="link" href="' + BASE + 'page/size-guide">' + T('Tailoring size chart', 'سلائی کا سائز چارٹ') + '</a></span></div>' : '') +
 
       (left > 0 && left <= 3 ? '<p class="stock-note">' + T('Only ' + left + ' left — order soon', 'صرف ' + left + ' باقی — جلد آرڈر کریں') + '</p>' : '') +
       '<div id="notify-wrap"></div>' +
@@ -656,7 +657,7 @@
         '<div class="row">' + ic('truck') + '<div>Delivery to <label class="sr-only" for="city-sel">City</label><select id="city-sel">' + R.CITIES.map(function (c) { return '<option value="' + esc(c.name) + '"' + (c.name === city.name ? ' selected' : '') + ' translate="no">' + c.name + '</option>'; }).join('') + '</select>: <b>' + city.days + ' working days</b>' +
           '<div class="muted" style="font-size:12.5px">' + (now(p) >= S.freeDeliveryThreshold ? 'Free delivery on this item' : 'Free delivery on orders over ' + money(S.freeDeliveryThreshold)) + '</div></div></div>' +
         '<div class="row">' + ic('cash') + '<div>Cash on Delivery available · JazzCash · Easypaisa · Cards</div></div>' +
-        '<div class="row">' + ic('swap') + '<div>7-day exchange on unused items with tags' + (p.dept === 'women' && !p.stitched ? ' (cut fabric excluded)' : '') + '</div></div>' +
+        '<div class="row">' + ic('swap') + '<div>7-day exchange on unused items with tags' + (p.dept === 'women' ? ' (cut fabric excluded)' : '') + '</div></div>' +
       '</div>' +
 
       '<div class="acc">' +
@@ -677,7 +678,7 @@
       look = R.PRODUCTS.filter(function (x) { return x.dept === 'home' && (x.cat === 'cushions' || x.cat === 'pillows' || x.cat === 'comforters') && x.id !== p.id; });
       title = 'Matching cushions & pillow covers';
     } else {
-      look = R.PRODUCTS.filter(function (x) { return x.id !== p.id && x.dept === 'women' && (x.cat === 'dupattas' || x.cat === 'bottoms' || (p.collection && x.collection === p.collection)); });
+      look = R.PRODUCTS.filter(function (x) { return x.id !== p.id && x.dept === 'women' && (x.cat === 'dupattas' || (p.collection && x.collection === p.collection)); });
       title = 'Complete the look';
     }
     var also = R.PRODUCTS.filter(function (x) { return x.cat === p.cat && x.id !== p.id; });
@@ -1000,7 +1001,7 @@
     if (R.SYNONYMS[q]) terms = R.SYNONYMS[q];
     var words = terms.split(/\s+/);
     return R.PRODUCTS.map(function (p) {
-      var hay = (p.title + ' ' + p.fabric + ' ' + catName(p.dept, p.cat) + ' ' + p.cat + ' ' + (p.collection || '') + ' ' + p.colors.map(function (c) { return c.name; }).join(' ') + ' ' + (p.occasion || '') + ' ' + R.DEPARTMENTS[p.dept].name + (p.cat === 'pret' ? ' kurti kurta' : '') + (p.cat === 'duvets-quilts' ? ' razai quilt' : '') + (p.cat === 'bedsheets' ? ' bedsheet' : '')).toLowerCase();
+      var hay = (p.title + ' ' + p.fabric + ' ' + catName(p.dept, p.cat) + ' ' + p.cat + ' ' + (p.collection || '') + ' ' + p.colors.map(function (c) { return c.name; }).join(' ') + ' ' + (p.occasion || '') + ' ' + R.DEPARTMENTS[p.dept].name + (p.dept === 'women' ? ' unstitched suit piece ' + (p.meters || '') : '') + (p.cat === 'duvets-quilts' ? ' razai quilt' : '') + (p.cat === 'bedsheets' ? ' bedsheet' : '')).toLowerCase();
       var score = words.reduce(function (s, w) { return s + (hay.indexOf(w) > -1 ? (p.title.toLowerCase().indexOf(w) > -1 ? 3 : 1) : 0); }, 0);
       return { p: p, s: score };
     }).filter(function (x) { return x.s > 0; }).sort(function (a, b) { return b.s - a.s || b.p.sold - a.p.sold; }).map(function (x) { return x.p; });
@@ -1051,9 +1052,9 @@
     'delivery': ['Delivery information', '<p>We ship across Pakistan with Leopards and TCS, and Pakistan Post for remote areas.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th>Time</th><th>Fee</th></tr></thead><tbody><tr><td>Faisalabad</td><td>1–2 working days</td><td>Rs. 200</td></tr><tr><td>Major cities</td><td>1–4 working days</td><td>Rs. 250</td></tr><tr><td>Rest of Pakistan</td><td>4–7 working days</td><td>Rs. 350</td></tr><tr><td>Express (Faisalabad, Lahore, Islamabad, Rawalpindi)</td><td>Next working day</td><td>Rs. 450</td></tr></tbody></table></div><p><b>Free standard delivery</b> on all orders over ' + money(S.freeDeliveryThreshold) + '. You\'ll get WhatsApp and SMS updates at every step: confirmed → dispatched (with tracking) → out for delivery → delivered.</p>'],
     'returns': ['Exchange & returns', T('<p>Not quite right? Exchange it within <b>7 days</b> of delivery.</p><ul><li>Items must be unused, unwashed and have original tags.</li><li>Refunds are issued as store credit, or to your JazzCash/Easypaisa wallet or bank account.</li><li>Not eligible: cut unstitched fabric, opened pillows, and final-sale items.</li><li>Request from your account or on WhatsApp — we\'ll arrange a courier pickup.</li></ul>',
       '<p>پسند نہیں آیا؟ ڈیلیوری کے <b>7 دن</b> کے اندر تبدیل کریں۔</p><ul><li>اشیاء غیر استعمال شدہ، بغیر دھلی اور اصل ٹیگ کے ساتھ ہوں۔</li><li>رقم اسٹور کریڈٹ، یا آپ کے جاز کیش/ایزی پیسہ والیٹ یا بینک اکاؤنٹ میں واپس کی جاتی ہے۔</li><li>شامل نہیں: کٹا ہوا ان سلا کپڑا، کھلے ہوئے تکیے، اور فائنل سیل کی اشیاء۔</li><li>اپنے اکاؤنٹ یا واٹس ایپ سے درخواست کریں — ہم کورئیر پک اپ کا انتظام کریں گے۔</li></ul>')],
-    'size-guide': ['Size guide', '<p>Body measurements for our ready-to-wear. Between sizes? Size up for a relaxed fit.</p>' + sizeTable('women', 'in') + '<h2>How to measure</h2><ul><li><b>Chest:</b> around the fullest part of your bust.</li><li><b>Shirt length:</b> from the highest point of the shoulder to the hem.</li><li><b>Trouser length:</b> from waist to ankle.</li></ul>'],
+    'size-guide': ['Tailoring size chart', '<p>All RSBRI suits are <b>unstitched</b>. Share these body measurements with your tailor. Between sizes? Ask your tailor to stitch for the larger size.</p>' + sizeTable('women', 'in') + '<h2>Fabric in each suit</h2><ul><li><b>3-piece:</b> shirt 3 m · dupatta 2.5 m · trouser 2.5 m</li><li><b>2-piece:</b> shirt 3 m · trouser 2.5 m</li><li><b>1-piece:</b> shirt 3 m</li></ul><h2>How to measure</h2><ul><li><b>Chest:</b> around the fullest part of your bust.</li><li><b>Shirt length:</b> from the highest point of the shoulder to the hem.</li><li><b>Trouser length:</b> from waist to ankle.</li></ul>'],
     'bedsheet-size-guide': ['Bedsheet size guide', '<p>Pakistani bed sizes vary, so measure your mattress first and allow 10–12″ on each side for tucking.</p>' + sizeTable('bed', 'in') + '<p class="muted">Dimensions in cm: Single 152 × 229, Double 229 × 254, King 254 × 274, Super King 274 × 274.</p>'],
-    'faq': ['Frequently asked questions', '<div class="faq">' + [['Do you offer Cash on Delivery?', 'Yes, across Pakistan. We\'ll confirm your order by WhatsApp or SMS before dispatch.'], ['How long does delivery take?', 'Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 working days. We ship from our Faisalabad warehouse.'], ['Can I pay with JazzCash or Easypaisa?', 'Yes — and online payments get ' + money(S.prepaidDiscount) + ' off.'], ['Is unstitched fabric exchangeable?', 'Yes, if it hasn\'t been cut and still has its tags, within 7 days.'], ['Do you ship outside Pakistan?', 'International stores for the UAE, Saudi Arabia and the UK are coming soon. Join the waitlist from the country selector.']].map(function (q) { return '<details><summary>' + q[0] + ic('plus', 'sm') + '</summary><p>' + q[1] + '</p></details>'; }).join('') + '</div>'],
+    'faq': ['Frequently asked questions', '<div class="faq">' + [['Do you sell stitched clothes?', 'No — every RSBRI suit is unstitched, so you can get it tailored exactly the way you like. Each product shows the fabric length of every piece.'], ['Do you offer Cash on Delivery?', 'Yes, across Pakistan. We\'ll confirm your order by WhatsApp or SMS before dispatch.'], ['How long does delivery take?', 'Faisalabad and Lahore 1–2 days, other major cities 2–4 days, rest of Pakistan 4–7 working days. We ship from our Faisalabad warehouse.'], ['Can I pay with JazzCash or Easypaisa?', 'Yes — and online payments get ' + money(S.prepaidDiscount) + ' off.'], ['Is unstitched fabric exchangeable?', 'Yes, if it hasn\'t been cut and still has its tags, within 7 days.'], ['Do you ship outside Pakistan?', 'International stores for the UAE, Saudi Arabia and the UK are coming soon. Join the waitlist from the country selector.']].map(function (q) { return '<details><summary>' + q[0] + ic('plus', 'sm') + '</summary><p>' + q[1] + '</p></details>'; }).join('') + '</div>'],
     'fabric-care': ['Fabric & care', '<h2>Lawn &amp; cambric</h2><p>Gentle wash in cold water, dry in shade, iron on reverse.</p><h2>Khaddar &amp; karandi</h2><p>Hand wash separately for the first few washes; avoid wringing.</p><h2>Velvet, silk, chiffon &amp; organza</h2><p>Dry clean only. Store folded in muslin.</p><h2>Bedding</h2><p>Machine wash at 40°C with like colours. Line dry in shade to keep colours bright.</p>'],
     'privacy': ['Privacy policy', '<p>We collect only what we need to process your orders and, with your consent, to send you offers. We never sell your data. Card payments are handled by our payment gateway — RSBRI never sees or stores your card details.</p><p class="muted">This is placeholder copy. Final policy to be reviewed against PECA 2016 and applicable data-protection law.</p>'],
     'terms': ['Terms of service', '<p>All prices are in Pakistani Rupees and include sales tax. Orders are subject to availability and confirmation.</p><p class="muted">Placeholder copy — to be finalised with legal and tax advisers (FBR requirements).</p>'],

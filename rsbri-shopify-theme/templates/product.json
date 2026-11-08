@@ -45,7 +45,7 @@
         "size_guide": {
           "type": "popup",
           "settings": {
-            "text": "Size guide",
+            "text": "Size chart",
             "page": ""
           }
         },
@@ -58,7 +58,7 @@
         "delivery_note": {
           "type": "text",
           "settings": {
-            "text": "Cash on Delivery · Faisalabad & Lahore 1–2 days · other cities 2–4 days",
+            "text": "Unstitched · Cash on Delivery · Faisalabad & Lahore 1–2 days · other cities 2–4 days",
             "text_style": "subtitle"
           }
         },

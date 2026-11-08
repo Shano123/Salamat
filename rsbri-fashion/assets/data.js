@@ -48,17 +48,14 @@
 
   var DEPARTMENTS = {
     women: {
-      name: 'Women',
-      blurb: 'Unstitched lawn to luxury formals — designed in Pakistan, made for every season.',
+      name: 'Unstitched Suits',
+      blurb: 'Every RSBRI suit is unstitched — lawn, cotton, khaddar and chiffon, ready for your own tailor.',
       cats: [
-        { slug: 'unstitched', name: 'Unstitched', note: 'Lawn, Cambric, Khaddar, Karandi, Velvet, Chiffon' },
-        { slug: 'pret', name: 'Ready-to-Wear', note: 'Kurtis, Suits, Co-ords' },
-        { slug: 'luxury-pret', name: 'Luxury Pret & Formals' },
-        { slug: 'bridal', name: 'Bridal & Wedding Wear' },
-        { slug: 'bottoms', name: 'Bottoms', note: 'Trousers, Shalwar, Palazzo' },
-        { slug: 'dupattas', name: 'Dupattas, Shawls & Stoles' },
-        { slug: 'abayas', name: 'Abayas & Modest Wear' },
-        { slug: 'nightwear', name: 'Nightwear & Loungewear' }
+        { slug: 'lawn', name: 'Lawn Suits', note: 'Printed, embroidered and jacquard lawn — 1, 2 and 3-piece' },
+        { slug: 'cotton', name: 'Cotton & Cambric', note: 'Everyday cotton, cambric and cotton satin' },
+        { slug: 'winter', name: 'Winter Suits', note: 'Khaddar, karandi, marina and linen' },
+        { slug: 'formal', name: 'Formal & Party Wear', note: 'Chiffon, velvet, organza and silk — unstitched' },
+        { slug: 'dupattas', name: 'Dupattas & Shawls' }
       ]
     },
     home: {
@@ -105,21 +102,11 @@
     ['Areeba Chiffon Festive', 'women', 'unstitched', 'eid-edit', 'Chiffon', 3, 12990, 0, [['Blush', '#E5B9B0'], ['Powder Blue', '#A9BFD6']], 'floral', 'folded', { occasion: 'Festive', embroidery: 'Hand-finished tilla', badges: ['new'] }],
 
     // ---------- Women · Pret ----------
-    ['Hira Printed Kurti', 'women', 'pret', 'summer-lawn', 'Lawn', 1, 2990, 0, [['Coral', '#D98166'], ['Navy', '#2B3A55']], 'floral', 'kurta', { occasion: 'Casual', stitched: true, badges: ['new', 'best'] }],
-    ['Iman Co-ord Set', 'women', 'pret', 'summer-lawn', 'Linen', 2, 5990, 4490, [['Sand', '#D3B98F'], ['Moss', '#5E6D4A']], 'stripe', 'kurta', { occasion: 'Casual', stitched: true, badges: [] }],
-    ['Rania Embroidered Suit', 'women', 'pret', 'eid-edit', 'Cambric', 3, 8490, 0, [['Teal', '#2F6B6B'], ['Wine', '#6B2737']], 'paisley', 'kurta', { occasion: 'Festive', stitched: true, badges: ['best'], soldOut: ['XS'] }],
-    ['Kiran Khaddar Kurta', 'women', 'pret', 'winter', 'Khaddar', 1, 3990, 2790, [['Mustard', '#C8A04A'], ['Black', '#262424']], 'check', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
 
     // ---------- Women · Luxury / Bridal ----------
-    ['Mahnoor Organza Formal', 'women', 'luxury-pret', 'wedding-season', 'Organza', 3, 24990, 0, [['Champagne', '#E2CFA8'], ['Rose Gold', '#C99A8A']], 'lattice', 'kurta', { occasion: 'Formal', stitched: true, embroidery: 'Dabka, zardozi', badges: ['new'] }],
-    ['Zoya Silk Pishwas', 'women', 'luxury-pret', 'eid-edit', 'Silk', 2, 19990, 15990, [['Emerald', '#1F5A45'], ['Ruby', '#8E2234']], 'floral', 'kurta', { occasion: 'Formal', stitched: true, badges: [] }],
-    ['Rukhsati Bridal Lehenga', 'women', 'bridal', 'wedding-season', 'Silk', 3, 89990, 0, [['Bridal Red', '#8E1B2A'], ['Gold', '#B88A3A']], 'lattice', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Hand zardozi, kora, dabka', badges: [], lowStock: true }],
 
     // ---------- Women · Others ----------
-    ['Straight Cotton Trouser', 'women', 'bottoms', null, 'Cambric', 1, 1990, 0, [['White', '#F1EEE7'], ['Black', '#262424']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: ['best'] }],
     ['Kashmiri Pashmina Shawl', 'women', 'dupattas', 'winter', 'Wool', 1, 6990, 0, [['Fawn', '#C4A57F'], ['Maroon', '#5E1A28']], 'paisley', 'dupatta', { occasion: 'Everyday', badges: ['new'] }],
-    ['Nida Classic Abaya', 'women', 'abayas', null, 'Nida', 1, 7490, 5990, [['Black', '#232122'], ['Taupe', '#857463']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
-    ['Lounge Lawn Pyjama Set', 'women', 'nightwear', 'summer-lawn', 'Lawn', 2, 3490, 0, [['Lilac', '#B7A5C9'], ['Peach', '#E8B79A']], 'dots', 'kurta', { occasion: 'Lounge', stitched: true, badges: [] }],
 
     // ---------- Home ----------
     ['Shireen Percale Bedsheet', 'home', 'bedsheets', null, 'Percale', 3, 4990, 3490, [['White', '#F3F0EA'], ['Dusty Rose', '#D4A6A1'], ['Grey', '#A9A6A3']], 'stripe', 'bed', { threadCount: 300, badges: ['best'] }],
@@ -141,18 +128,8 @@
     ['Hareem Embroidered Khaddar', 'women', 'unstitched', 'winter', 'Khaddar', 3, 7490, 0, [['Navy', '#2B3A55'], ['Maroon', '#6E2434']], 'paisley', 'folded', { occasion: 'Everyday', embroidery: 'Front & sleeve embroidery', badges: ['new'] }],
     ['Dua Velvet Formal 3-Piece', 'women', 'unstitched', 'wedding-season', 'Velvet', 3, 21990, 17590, [['Black', '#232122'], ['Royal Blue', '#24406B']], 'lattice', 'folded', { occasion: 'Formal', embroidery: 'Tilla & sequins', badges: [] }],
     ['Mehrunisa Chiffon Party Wear', 'women', 'unstitched', 'eid-edit', 'Chiffon', 3, 14990, 0, [['Mint', '#A9C9B8'], ['Gold', '#C9A24A']], 'floral', 'folded', { occasion: 'Festive', embroidery: 'Hand-finished pearls', badges: ['best'] }],
-    ['Alina Cotton Kurti', 'women', 'pret', 'summer-lawn', 'Cambric', 1, 2490, 1990, [['White', '#F1EEE7'], ['Teal', '#2F6B6B']], 'dots', 'kurta', { occasion: 'Casual', stitched: true, badges: [] }],
-    ['Zara Printed Co-ord', 'women', 'pret', null, 'Linen', 2, 4990, 0, [['Rust', '#A4532F'], ['Olive', '#6C6B3A']], 'stripe', 'kurta', { occasion: 'Casual', stitched: true, badges: ['new'] }],
-    ['Noor-e-Eid Embroidered Kurta', 'women', 'pret', 'eid-edit', 'Lawn', 1, 4490, 0, [['Pistachio', '#B9C99A'], ['Pink', '#E2B4AE']], 'paisley', 'kurta', { occasion: 'Festive', stitched: true, badges: ['best'], soldOut: ['XL'] }],
-    ['Karandi Winter Shirt', 'women', 'pret', 'winter', 'Karandi', 1, 3990, 0, [['Charcoal', '#3D3B3C'], ['Camel', '#B48A5E']], 'check', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
-    ['Ayra Net Maxi', 'women', 'luxury-pret', 'wedding-season', 'Organza', 2, 32990, 0, [['Ivory', '#EDE3CF'], ['Mauve', '#B08A9A']], 'floral', 'kurta', { occasion: 'Formal', stitched: true, embroidery: 'Hand-crafted dabka', badges: ['new'] }],
-    ['Baraat Red Bridal Gharara', 'women', 'bridal', 'wedding-season', 'Silk', 3, 129990, 0, [['Bridal Red', '#8E1B2A']], 'lattice', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Zardozi, kora, dabka', badges: [], lowStock: true }],
-    ['Walima Pastel Bridal Lehenga', 'women', 'bridal', 'wedding-season', 'Organza', 3, 99990, 0, [['Champagne', '#E2CFA8'], ['Powder Pink', '#E5C4BC']], 'floral', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Pearls & sequins', badges: ['new'] }],
-    ['Cotton Shalwar', 'women', 'bottoms', null, 'Cambric', 1, 1490, 0, [['White', '#F1EEE7'], ['Beige', '#D3C1A0'], ['Black', '#262424']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
     ['Embroidered Chiffon Dupatta', 'women', 'dupattas', 'eid-edit', 'Chiffon', 1, 3490, 2790, [['Pink', '#E2B4AE'], ['Ivory', '#EDE3CF']], 'floral', 'dupatta', { occasion: 'Festive', badges: [] }],
     ['Printed Lawn Dupatta', 'women', 'dupattas', 'summer-lawn', 'Lawn', 1, 1790, 0, [['Multi Blue', '#5E7FAF'], ['Multi Green', '#6E9A75']], 'paisley', 'dupatta', { occasion: 'Casual', badges: ['new'] }],
-    ['Everyday Jersey Abaya', 'women', 'abayas', null, 'Jersey', 1, 5490, 0, [['Black', '#232122'], ['Navy', '#1E2A44']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: ['best'] }],
-    ['Satin Night Suit', 'women', 'nightwear', null, 'Satin', 2, 3990, 2990, [['Champagne', '#E2CFA8'], ['Wine', '#6B2737']], 'plain', 'kurta', { occasion: 'Lounge', stitched: true, badges: [] }],
     ['Gulshan Floral Bedsheet', 'home', 'bedsheets', 'summer-lawn', 'Cotton', 3, 2990, 2390, [['Pink Floral', '#D99AA3'], ['Yellow Floral', '#D9BE6A']], 'floral', 'bed', { threadCount: 180, badges: ['best'] }],
     ['Hotel Stripe Sateen Bedsheet', 'home', 'bedsheets', null, 'Sateen', 3, 5990, 0, [['White', '#F3F0EA'], ['Silver', '#BDBAB6']], 'stripe', 'bed', { threadCount: 300, badges: ['new'] }],
     ['Polka Dot Cotton Bedsheet', 'home', 'bedsheets', null, 'Cotton', 3, 1990, 0, [['Sky Blue', '#9BB8D3'], ['Mint', '#A9C9B8']], 'dots', 'bed', { threadCount: 144, badges: [] }],
@@ -188,15 +165,7 @@
     ['Mishal Marina 3-Piece', 'women', 'unstitched', 'winter', 'Marina', 3, 4290, 3590, [['Maroon', '#6E2434'], ['Bottle Green', '#1F4A3C']], 'check', 'folded', { occasion: 'Everyday', badges: ['new'] }],
     ['Anaya Printed Linen 3-Piece', 'women', 'unstitched', 'winter', 'Linen', 3, 5990, 0, [['Camel', '#B48A5E'], ['Grey', '#8E8B88']], 'stripe', 'folded', { occasion: 'Everyday', badges: [] }],
     ['Mahnoor Embroidered Chiffon 3-Piece', 'women', 'unstitched', 'eid-edit', 'Chiffon', 3, 16990, 0, [['Peach', '#E8B79A'], ['Sea Green', '#5E9C8C']], 'floral', 'folded', { occasion: 'Festive', embroidery: 'Sequins & resham', badges: [] }],
-    ['Iqra Printed Kurti', 'women', 'pret', 'summer-lawn', 'Lawn', 1, 1990, 0, [['Yellow', '#E3D27A'], ['Blue', '#5E7FAF']], 'floral', 'kurta', { occasion: 'Casual', stitched: true, badges: ['new'] }],
-    ['Hania Embroidered 2-Piece Pret', 'women', 'pret', 'eid-edit', 'Cambric', 2, 5490, 4390, [['Black', '#262424'], ['Off White', '#EDE6D6']], 'paisley', 'kurta', { occasion: 'Festive', stitched: true, badges: ['best'] }],
-    ['Rabia Khaddar 2-Piece Pret', 'women', 'pret', 'winter', 'Khaddar', 2, 4990, 0, [['Olive', '#6C6B3A'], ['Plum', '#6A3B55']], 'check', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
-    ['Eman Short Kurti & Cigarette Pants', 'women', 'pret', null, 'Cotton', 2, 3990, 0, [['Pink', '#E2B4AE'], ['Sky', '#9BB8D3']], 'dots', 'kurta', { occasion: 'Casual', stitched: true, badges: ['new'] }],
-    ['Zainab Raw Silk Formal', 'women', 'luxury-pret', 'wedding-season', 'Raw silk', 3, 24990, 0, [['Emerald', '#1F5A45'], ['Wine', '#6B2737']], 'lattice', 'kurta', { occasion: 'Formal', stitched: true, embroidery: 'Gota & zari', badges: [] }],
-    ['Nikah Ivory Bridal Sharara', 'women', 'bridal', 'wedding-season', 'Organza', 3, 74990, 0, [['Ivory', '#EDE3CF']], 'floral', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Pearl & dabka', badges: ['new'], lowStock: true }],
-    ['Cotton Palazzo Trouser', 'women', 'bottoms', null, 'Cambric', 1, 1790, 0, [['White', '#F1EEE7'], ['Black', '#262424']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
     ['Jamawar Shawl', 'women', 'dupattas', 'winter', 'Wool', 1, 4490, 0, [['Maroon', '#6E2434'], ['Black', '#262424']], 'paisley', 'dupatta', { occasion: 'Everyday', badges: ['new'] }],
-    ['Front-Open Nida Abaya', 'women', 'abayas', null, 'Nida', 1, 4990, 4290, [['Black', '#232122'], ['Maroon', '#5E1A28']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
     ['Cotton King Bedsheet Set', 'home', 'bedsheets', null, 'Cotton', 3, 3490, 0, [['White Stripe', '#EEE9DF'], ['Grey Check', '#A9A6A3']], 'stripe', 'bed', { threadCount: 200, badges: ['best'] }],
     ['Embroidered Sateen Bedsheet', 'home', 'bedsheets', 'eid-edit', 'Sateen', 3, 6490, 5490, [['Ivory', '#EDE3CF'], ['Silver', '#BDBAB6']], 'lattice', 'bed', { threadCount: 300, badges: [] }],
     ['Jahez 9-Piece Bridal Bed Set', 'home', 'bridal-bed-sets', 'wedding-season', 'Sateen', 9, 22990, 0, [['Red & Gold', '#8E1B2A'], ['Pink & Gold', '#D4A6A1']], 'paisley', 'bed', { threadCount: 300, badges: ['new'], bridal: true }],
@@ -204,6 +173,16 @@
     ['Hand-Filled Cotton Razai', 'home', 'duvets-quilts', 'winter', 'Cotton', 1, 6490, 0, [['Red Print', '#9C2F2A'], ['Green Print', '#5E8A5A']], 'floral', 'bed', { gsm: 450, badges: ['best'] }],
     ['Double Bed Mink Blanket', 'home', 'blankets', 'winter', 'Microfibre', 1, 7490, 0, [['Brown', '#6E5440'], ['Grey', '#8E8B88']], 'floral', 'bed', { badges: ['new'] }],
     ['Hollow Fibre Pillow', 'home', 'pillows', null, 'Polyester', 1, 1290, 0, [['White', '#F3F0EA']], 'plain', 'cushion', { badges: ['best'], noBedSize: true }],
+    // ---------- More unstitched suits ----------
+    ['Sehar Embroidered Organza 3-Piece', 'women', 'unstitched', 'eid-edit', 'Organza', 3, 14990, 0, [['Tea Pink', '#E2B4AE'], ['Ice Blue', '#A9BFD6']], 'floral', 'folded', { occasion: 'Festive', embroidery: 'Organza dupatta with pearl work', badges: ['new'] }],
+    ['Aiza Embroidered Raw Silk 3-Piece', 'women', 'unstitched', 'wedding-season', 'Raw silk', 3, 18990, 0, [['Emerald', '#1F5A45'], ['Wine', '#6B2737']], 'lattice', 'folded', { occasion: 'Formal', embroidery: 'Gota & zari', badges: [] }],
+    ['Rukhsati Bridal Chiffon 3-Piece', 'women', 'unstitched', 'wedding-season', 'Chiffon', 3, 39990, 0, [['Bridal Red', '#8E1B2A'], ['Gold', '#B88A3A']], 'lattice', 'folded', { occasion: 'Bridal', embroidery: 'Heavy hand zardozi & dabka', badges: ['new'], lowStock: true }],
+    ['Shadi Embroidered Velvet Shawl Suit', 'women', 'unstitched', 'wedding-season', 'Velvet', 3, 22990, 19990, [['Black', '#232122'], ['Maroon', '#5E1A28']], 'paisley', 'folded', { occasion: 'Formal', embroidery: 'Tilla border shawl', badges: [] }],
+    ['Laraib Printed Cambric 3-Piece', 'women', 'unstitched', null, 'Cambric', 3, 3990, 0, [['Sky', '#9BB8D3'], ['Rust', '#A4532F']], 'floral', 'folded', { occasion: 'Everyday', badges: ['best'] }],
+    ['Hoor Embroidered Cotton 2-Piece', 'women', 'unstitched', 'summer-lawn', 'Cotton', 2, 4290, 3690, [['White', '#F1EEE7'], ['Lilac', '#B7A5C9']], 'dots', 'folded', { occasion: 'Casual', embroidery: 'Neckline & sleeve embroidery', badges: [] }],
+    ['Nashwa Digital Print 1-Piece Shirt', 'women', 'unstitched', 'summer-lawn', 'Lawn', 1, 1890, 0, [['Yellow', '#E3D27A'], ['Blue', '#5E7FAF']], 'paisley', 'folded', { occasion: 'Casual', badges: ['new'] }],
+    ['Mehak Printed Lawn 3-Piece (Chiffon Dupatta)', 'women', 'unstitched', 'eid-edit', 'Lawn', 3, 4990, 0, [['Peach', '#E8B79A'], ['Mint', '#A9C9B8']], 'floral', 'folded', { occasion: 'Festive', badges: ['best'] }],
+    ['Dilkash Jacquard Khaddar 3-Piece', 'women', 'unstitched', 'winter', 'Khaddar', 3, 5490, 0, [['Mustard', '#C8A04A'], ['Teal', '#2F6B6B']], 'check', 'folded', { occasion: 'Everyday', badges: ['new'] }],
     ['Printed Cushion Covers (Set of 5)', 'home', 'cushions', null, 'Cotton', 5, 1990, 0, [['Blue Print', '#3F5A85'], ['Orange Print', '#C47A3E']], 'paisley', 'cushion', { badges: [], noBedSize: true }]
   ];
 
@@ -212,18 +191,30 @@
   var day = 864e5;
   var now = Date.now();
 
+  /* RSBRI sells unstitched suits only. A suit's category comes from its fabric. */
+  var FABRIC_CAT = {
+    'Lawn': 'lawn',
+    'Cambric': 'cotton', 'Cotton': 'cotton', 'Cotton satin': 'cotton',
+    'Khaddar': 'winter', 'Karandi': 'winter', 'Marina': 'winter', 'Linen': 'winter',
+    'Chiffon': 'formal', 'Velvet': 'formal', 'Organza': 'formal', 'Silk': 'formal', 'Raw silk': 'formal'
+  };
+  var METERS = {
+    1: 'Shirt 3 m',
+    2: 'Shirt 3 m · Trouser 2.5 m',
+    3: 'Shirt 3 m · Dupatta 2.5 m · Trouser 2.5 m'
+  };
+
   var PRODUCTS = RAW.map(function (r, i) {
     var o = r[11] || {};
     var dept = r[1];
     var isBed = dept === 'home' && !o.noBedSize && r[10] === 'bed';
-    var stitched = !!o.stitched;
     var p = {
       id: 'RS' + (1001 + i),
       sku: (dept === 'women' ? 'W' : 'H') + '-' + (1001 + i),
       title: r[0],
       slug: slugify(r[0]),
       dept: dept,
-      cat: r[2],
+      cat: dept === 'women' && r[2] === 'unstitched' ? (FABRIC_CAT[r[4]] || 'lawn') : r[2],
       collection: r[3],
       fabric: r[4],
       pieces: r[5],
@@ -234,8 +225,7 @@
       shape: r[10],
       occasion: o.occasion || null,
       embroidery: o.embroidery || null,
-      stitched: dept === 'women' ? stitched : null,
-      sizes: dept === 'women' && stitched ? SIZES.slice() : null,
+      sizes: null, // unstitched: no clothing sizes
       bedSizes: isBed ? (o.bridal ? ['King', 'Super King'] : ['Single', 'Double', 'King']) : null,
       soldOut: o.soldOut || [],
       threadCount: o.threadCount || null,
@@ -248,11 +238,9 @@
       rating: 4 + ((i * 7) % 10) / 10
     };
     if (dept === 'women') {
-      p.type = stitched ? 'Stitched' : 'Unstitched';
-      if (!stitched) {
-        p.meters = p.pieces === 3 ? 'Shirt 3 m · Dupatta 2.5 m · Trouser 2.5 m' : 'Shirt 3 m · Trouser 2.5 m';
-      }
-      p.care = p.fabric === 'Velvet' || p.fabric === 'Silk' || p.fabric === 'Organza' || p.fabric === 'Chiffon'
+      p.type = 'Unstitched';
+      if (p.cat !== 'dupattas') p.meters = METERS[p.pieces] || METERS[3];
+      p.care = FABRIC_CAT[p.fabric] === 'formal'
         ? 'Dry clean only. Iron on reverse at low heat. Store in a muslin bag.'
         : 'Hand or gentle machine wash in cold water. Wash dark colours separately. Iron on reverse at medium heat. Dry in shade.';
     } else {
@@ -264,9 +252,9 @@
 
   function describe(p) {
     if (p.dept === 'women') {
-      var base = p.stitched
-        ? 'A ready-to-wear piece cut for an easy, flattering fit in soft ' + p.fabric.toLowerCase() + '.'
-        : 'A ' + p.pieces + '-piece unstitched ' + p.fabric.toLowerCase() + ' suit, so you can tailor it exactly the way you like.';
+      var base = p.cat === 'dupattas'
+        ? 'A ' + p.fabric.toLowerCase() + ' piece to pair with any suit.'
+        : 'A ' + p.pieces + '-piece unstitched ' + p.fabric.toLowerCase() + ' suit, so your tailor can stitch it exactly the way you like.';
       return base + (p.embroidery ? ' Finished with ' + p.embroidery.toLowerCase() + '.' : '') + ' Perfect for ' + (p.occasion || 'every day').toLowerCase() + ' wear.';
     }
     return 'Made from ' + p.fabric.toLowerCase() + (p.threadCount ? ' with a ' + p.threadCount + ' thread count' : '') + ', designed to feel cool in summer and cosy in winter. Includes ' + p.pieces + ' piece' + (p.pieces > 1 ? 's' : '') + '.';
@@ -274,9 +262,9 @@
 
   /* Roman-Urdu search synonyms (PRD §8.4) */
   var SYNONYMS = {
-    chadar: 'bedsheet', chaddar: 'bedsheet', 'bed sheet': 'bedsheet', kameez: 'kurti', kurta: 'kurti', qameez: 'kurti',
+    chadar: 'bedsheet', chaddar: 'bedsheet', 'bed sheet': 'bedsheet', kameez: 'shirt lawn', kurta: 'shirt lawn', kurti: 'shirt lawn', qameez: 'shirt lawn', suit: 'suit piece',
     razai: 'razai quilt', rajai: 'razai quilt', quilt: 'razai quilt', takia: 'pillow', takiya: 'pillow', gadda: 'mattress',
-    shalwar: 'trouser', salwar: 'trouser', pajama: 'trouser pyjama', dupatta: 'dupatta shawl', chunri: 'dupatta',
+    shalwar: 'suit 3-piece', salwar: 'suit 3-piece', unstitched: 'suit piece', 'ان سلا': 'suit', dupatta: 'dupatta shawl', chunri: 'dupatta',
     jahez: 'bridal', dulhan: 'bridal', shaadi: 'wedding bridal', shadi: 'wedding bridal', kambal: 'blanket', lawn: 'lawn'
   };
 
