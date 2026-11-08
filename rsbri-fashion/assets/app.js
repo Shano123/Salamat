@@ -240,7 +240,8 @@
     'Free delivery across Pakistan on orders above ' + money(S.freeDeliveryThreshold),
     'Cash on Delivery available nationwide',
     'Pay online with JazzCash or Easypaisa & get ' + money(S.prepaidDiscount) + ' off',
-    'Easy 7-day exchange · WhatsApp us anytime'
+    'Easy 7-day exchange · WhatsApp us anytime',
+    'Become an RSBRI affiliate — earn ' + AFFSET.rate + '% on every sale'
   ];
   function initAnnounce() {
     var t = $('#announce');

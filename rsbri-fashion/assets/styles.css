@@ -703,7 +703,9 @@ html.ur .adm, html.ur .adm h1, html.ur .adm h3 { font-family: var(--sans); line-
 button.link.adm-xs { padding: 0 6px; letter-spacing: 0; font-size: 13px; text-transform: none; }
 .adm-note { margin: 14px 0 0; padding: 10px 14px; border-radius: var(--r); background: var(--accent-soft); color: var(--accent); font-size: 13px; }
 .adm-deny { padding: 12px 14px; border-radius: var(--r); background: #FBEDEB; color: var(--sale); font-size: 14px; }
-.adm-tabs { display: flex; gap: 4px; overflow-x: auto; margin: 22px 0 24px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.adm-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 22px 0 24px; border-bottom: 1px solid var(--line); }
+.adm-tabs .locked { padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--ink-3); opacity: .7; cursor: not-allowed; }
+.adm-tabs .locked small { display: block; font-size: 10.5px; font-weight: 500; }
 .adm-tabs a { flex: none; padding: 12px 16px; font-size: 14px; font-weight: 600; color: var(--ink-3); border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .adm-tabs a:hover { color: var(--ink); }
 .adm-tabs a.on { color: var(--accent); border-color: var(--accent); }

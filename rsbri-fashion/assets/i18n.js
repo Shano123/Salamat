@@ -196,6 +196,7 @@
     [/^Show (\d+) results$/, '$1 نتائج دکھائیں'],
     [/^See all (\d+) results$/, 'تمام $1 نتائج دیکھیں'],
     [/^Up to (\d+)% off$/, '$1% تک رعایت'],
+    [/^Become an RSBRI affiliate — earn (\d+)% on every sale$/, 'RSBRI ایفیلیٹ بنیں — ہر سیل پر $1% کمائیں'],
     [/^Sale — up to (\d+)% off$/, 'سیل — $1% تک رعایت'],
     [/^(\d+)-Piece$/, '$1 پیس'],
     [/^Unstitched · (\d+)-Piece$/, 'ان سلا · $1 پیس'],

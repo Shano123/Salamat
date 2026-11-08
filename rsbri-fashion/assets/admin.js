@@ -40,7 +40,11 @@
       '<div class="adm-head"><div><span class="eyebrow">Back office</span><h1>RSBRI Admin</h1></div>' +
       '<div class="adm-user"><div><b>' + e(u.name) + '</b><small>' + a.ROLES[u.role].name + '</small></div><button class="btn btn-outline adm-sm" id="adm-out">Sign out</button></div></div>' +
       '<p class="adm-note">Demo back office: changes are saved in this browser only, so you can try every step. On the live store the same work happens in Shopify admin.</p>' +
-      '<nav class="adm-tabs" aria-label="Admin sections">' + allowed.map(function (t) { return '<a href="' + href(t[0]) + '" class="' + (t === tab ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
+      '<nav class="adm-tabs" aria-label="Admin sections">' + TABS.map(function (t) {
+        if (allowed.indexOf(t) > -1) return '<a href="' + href(t[0]) + '" class="' + (t === tab ? 'on' : '') + '">' + t[1] + '</a>';
+        var who = Object.keys(a.ROLES).filter(function (r) { return a.ROLES[r].perms.indexOf(t[2]) > -1; }).map(function (r) { return a.ROLES[r].name; }).join(' / ');
+        return '<span class="locked" title="Only ' + who + ' can open this">🔒 ' + t[1] + '<small>' + who + ' only</small></span>';
+      }).join('') + '</nav>' +
       (denied ? '<p class="adm-deny">Your role (' + a.ROLES[u.role].name + ') can’t open that section. Ask the owner to change your access.</p>' : '') +
       '<div class="adm-body" id="adm-body">' + RENDER[tab[0]](u) + '</div>');
   }
