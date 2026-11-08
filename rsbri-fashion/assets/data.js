@@ -133,7 +133,37 @@
     ['Hollow-Fibre Pillow (Pair)', 'home', 'pillows', null, 'Cotton', 2, 2490, 0, [['White', '#F3F0EA']], 'plain', 'cushion', { badges: ['best'], noBedSize: true }],
     ['Block-Print Cushion Covers (Set of 4)', 'home', 'cushions', 'eid-edit', 'Cotton', 4, 2990, 2290, [['Indigo', '#2E4570'], ['Terracotta', '#B4623E']], 'paisley', 'cushion', { badges: [], noBedSize: true }],
     ['Velvet Throw with Tassels', 'home', 'cushions', 'winter', 'Velvet', 1, 4490, 0, [['Emerald', '#1F5A45'], ['Mustard', '#C8A04A']], 'plain', 'cushion', { badges: ['new'], noBedSize: true }],
-    ['Waterproof Mattress Protector', 'home', 'mattress-protectors', null, 'Poly-cotton', 1, 3990, 0, [['White', '#F3F0EA']], 'check', 'bed', { badges: [] }]
+    ['Waterproof Mattress Protector', 'home', 'mattress-protectors', null, 'Poly-cotton', 1, 3990, 0, [['White', '#F3F0EA']], 'check', 'bed', { badges: [] }],
+
+    // ---------- More demo stock (temporary, replace with real products) ----------
+    ['Mahira Digital Print Lawn 3-Piece', 'women', 'unstitched', 'summer-lawn', 'Lawn', 3, 4790, 0, [['Lilac', '#B7A5C9'], ['Peach', '#E8B79A']], 'floral', 'folded', { occasion: 'Casual', badges: ['new'] }],
+    ['Sana Jacquard Lawn Suit', 'women', 'unstitched', 'summer-lawn', 'Lawn', 3, 5990, 4490, [['Sky', '#9BB8D3'], ['Lemon', '#E3D27A']], 'lattice', 'folded', { occasion: 'Everyday', badges: [] }],
+    ['Hareem Embroidered Khaddar', 'women', 'unstitched', 'winter', 'Khaddar', 3, 7490, 0, [['Navy', '#2B3A55'], ['Maroon', '#6E2434']], 'paisley', 'folded', { occasion: 'Everyday', embroidery: 'Front & sleeve embroidery', badges: ['new'] }],
+    ['Dua Velvet Formal 3-Piece', 'women', 'unstitched', 'wedding-season', 'Velvet', 3, 21990, 17590, [['Black', '#232122'], ['Royal Blue', '#24406B']], 'lattice', 'folded', { occasion: 'Formal', embroidery: 'Tilla & sequins', badges: [] }],
+    ['Mehrunisa Chiffon Party Wear', 'women', 'unstitched', 'eid-edit', 'Chiffon', 3, 14990, 0, [['Mint', '#A9C9B8'], ['Gold', '#C9A24A']], 'floral', 'folded', { occasion: 'Festive', embroidery: 'Hand-finished pearls', badges: ['best'] }],
+    ['Alina Cotton Kurti', 'women', 'pret', 'summer-lawn', 'Cambric', 1, 2490, 1990, [['White', '#F1EEE7'], ['Teal', '#2F6B6B']], 'dots', 'kurta', { occasion: 'Casual', stitched: true, badges: [] }],
+    ['Zara Printed Co-ord', 'women', 'pret', null, 'Linen', 2, 4990, 0, [['Rust', '#A4532F'], ['Olive', '#6C6B3A']], 'stripe', 'kurta', { occasion: 'Casual', stitched: true, badges: ['new'] }],
+    ['Noor-e-Eid Embroidered Kurta', 'women', 'pret', 'eid-edit', 'Lawn', 1, 4490, 0, [['Pistachio', '#B9C99A'], ['Pink', '#E2B4AE']], 'paisley', 'kurta', { occasion: 'Festive', stitched: true, badges: ['best'], soldOut: ['XL'] }],
+    ['Karandi Winter Shirt', 'women', 'pret', 'winter', 'Karandi', 1, 3990, 0, [['Charcoal', '#3D3B3C'], ['Camel', '#B48A5E']], 'check', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
+    ['Ayra Net Maxi', 'women', 'luxury-pret', 'wedding-season', 'Organza', 2, 32990, 0, [['Ivory', '#EDE3CF'], ['Mauve', '#B08A9A']], 'floral', 'kurta', { occasion: 'Formal', stitched: true, embroidery: 'Hand-crafted dabka', badges: ['new'] }],
+    ['Baraat Red Bridal Gharara', 'women', 'bridal', 'wedding-season', 'Silk', 3, 129990, 0, [['Bridal Red', '#8E1B2A']], 'lattice', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Zardozi, kora, dabka', badges: [], lowStock: true }],
+    ['Walima Pastel Bridal Lehenga', 'women', 'bridal', 'wedding-season', 'Organza', 3, 99990, 0, [['Champagne', '#E2CFA8'], ['Powder Pink', '#E5C4BC']], 'floral', 'kurta', { occasion: 'Bridal', stitched: true, embroidery: 'Pearls & sequins', badges: ['new'] }],
+    ['Cotton Shalwar', 'women', 'bottoms', null, 'Cambric', 1, 1490, 0, [['White', '#F1EEE7'], ['Beige', '#D3C1A0'], ['Black', '#262424']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: [] }],
+    ['Embroidered Chiffon Dupatta', 'women', 'dupattas', 'eid-edit', 'Chiffon', 1, 3490, 2790, [['Pink', '#E2B4AE'], ['Ivory', '#EDE3CF']], 'floral', 'dupatta', { occasion: 'Festive', badges: [] }],
+    ['Printed Lawn Dupatta', 'women', 'dupattas', 'summer-lawn', 'Lawn', 1, 1790, 0, [['Multi Blue', '#5E7FAF'], ['Multi Green', '#6E9A75']], 'paisley', 'dupatta', { occasion: 'Casual', badges: ['new'] }],
+    ['Everyday Jersey Abaya', 'women', 'abayas', null, 'Jersey', 1, 5490, 0, [['Black', '#232122'], ['Navy', '#1E2A44']], 'plain', 'kurta', { occasion: 'Everyday', stitched: true, badges: ['best'] }],
+    ['Satin Night Suit', 'women', 'nightwear', null, 'Satin', 2, 3990, 2990, [['Champagne', '#E2CFA8'], ['Wine', '#6B2737']], 'plain', 'kurta', { occasion: 'Lounge', stitched: true, badges: [] }],
+    ['Gulshan Floral Bedsheet', 'home', 'bedsheets', 'summer-lawn', 'Cotton', 3, 2990, 2390, [['Pink Floral', '#D99AA3'], ['Yellow Floral', '#D9BE6A']], 'floral', 'bed', { threadCount: 180, badges: ['best'] }],
+    ['Hotel Stripe Sateen Bedsheet', 'home', 'bedsheets', null, 'Sateen', 3, 5990, 0, [['White', '#F3F0EA'], ['Silver', '#BDBAB6']], 'stripe', 'bed', { threadCount: 300, badges: ['new'] }],
+    ['Polka Dot Cotton Bedsheet', 'home', 'bedsheets', null, 'Cotton', 3, 1990, 0, [['Sky Blue', '#9BB8D3'], ['Mint', '#A9C9B8']], 'dots', 'bed', { threadCount: 144, badges: [] }],
+    ['Shahnameh 12-Piece Bridal Set', 'home', 'bridal-bed-sets', 'wedding-season', 'Velvet', 12, 64990, 54990, [['Maroon & Gold', '#6E1E2C'], ['Ivory & Gold', '#E9DCC0']], 'paisley', 'bed', { threadCount: 300, badges: [], bridal: true }],
+    ['Winter Velvet Comforter Set', 'home', 'comforters', 'winter', 'Velvet', 7, 18990, 0, [['Emerald', '#1F5A45'], ['Plum', '#6A3B55']], 'lattice', 'bed', { threadCount: 250, gsm: 350, badges: ['new'] }],
+    ['Summer Light Quilt', 'home', 'duvets-quilts', 'summer-lawn', 'Cotton', 1, 5990, 4790, [['Blue Floral', '#6E8DB5'], ['Rose', '#D4A6A1']], 'floral', 'bed', { threadCount: 200, gsm: 150, badges: [] }],
+    ['Fleece Baby Blanket', 'home', 'blankets', 'winter', 'Microfibre', 1, 2490, 0, [['Pink', '#E5C4BC'], ['Blue', '#A9BFD6']], 'dots', 'cushion', { badges: ['new'], noBedSize: true }],
+    ['Memory Foam Pillow', 'home', 'pillows', null, 'Microfibre', 1, 4490, 0, [['White', '#F3F0EA']], 'plain', 'cushion', { badges: [], noBedSize: true }],
+    ['Embroidered Pillow Covers (Pair)', 'home', 'pillows', 'eid-edit', 'Cotton', 2, 1990, 1490, [['Ivory', '#EDE3CF'], ['Grey', '#A9A6A3']], 'lattice', 'cushion', { badges: ['best'], noBedSize: true }],
+    ['Ralli Patchwork Cushion', 'home', 'cushions', null, 'Cotton', 1, 1990, 0, [['Red', '#9C2F2A'], ['Indigo', '#2E4570']], 'check', 'cushion', { badges: ['new'], noBedSize: true }],
+    ['Quilted Mattress Protector', 'home', 'mattress-protectors', null, 'Cotton', 1, 4990, 3990, [['White', '#F3F0EA']], 'lattice', 'bed', { badges: [] }]
   ];
 
   function slugify(s) { return s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
