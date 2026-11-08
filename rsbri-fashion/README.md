@@ -8,7 +8,7 @@ A clickable, mobile-first storefront built from the **RSBRI Fashion Website PRD 
 
 | PRD | Built |
 |---|---|
-| §4 Brand | Champagne-ivory / ink / petrol-blue palette with gold detailing, red only for sale. Cormorant Garamond headings + Inter body. Mughal-arch motif. |
+| §4 Brand | Champagne-ivory / ink / navy-blue palette with gold detailing, red only for sale. Cormorant Garamond headings + Inter body. Mughal-arch motif. |
 | §5 Country stores & language | English `/en-pk/` and Urdu `/ur-pk/` (right-to-left, Noto Nastaliq Urdu, header/menu switch), hreflang for both; header + footer country selector (PK live; UAE/KSA/UK "coming soon" with waitlist), +92 phone validation, Pakistani city dropdown, **nearest landmark** field, PKT delivery promises. |
 | §7 Navigation | Announcement bar, mega-menu (desktop), drawer (mobile), full footer, floating WhatsApp, cookie banner. |
 | §8.1 Home | Hero slider with separate mobile art (H-1), department tiles (H-2), category circles (H-3), New In + Best Sellers carousels (H-4), deal strip with countdown (H-5), trust strip (H-6), shoppable social gallery (H-7), WhatsApp/email opt-in (H-8). |
